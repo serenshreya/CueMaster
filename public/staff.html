@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CueMaster — Staff Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:#f2f2f0;color:#1c1c1e;min-height:100vh}
+/* Login */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+#login-box{background:#fff;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px;width:100%;max-width:380px}
+#login-box h1{font-size:1.4rem;font-weight:700;color:#0f5c3a;margin-bottom:6px}
+#login-box p{color:#666;font-size:.85rem;margin-bottom:20px}
+/* Layout */
+#app{display:none;min-height:100vh}
+header{background:#1c1c1e;color:#fff;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+header .brand{font-weight:700;color:#4ade80;font-size:1.1rem}
+header .user-info{font-size:.8rem;color:#aaa}
+nav{background:#262626;display:flex;gap:2px;padding:6px 12px;flex-wrap:wrap}
+nav button{padding:7px 14px;border:none;background:transparent;color:#aaa;font-size:.8rem;font-weight:500;cursor:pointer;border-radius:6px;font-family:inherit}
+nav button:hover{background:#333;color:#fff}
+nav button.active{background:#0f5c3a;color:#fff}
+.content{max-width:1100px;margin:0 auto;padding:18px 16px}
+.card{background:#fff;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.08);padding:18px;margin-bottom:16px}
+h2{font-size:1rem;font-weight:700;margin-bottom:14px}
+h3{font-size:.9rem;font-weight:600;margin-bottom:8px}
+label{display:block;font-size:.8rem;font-weight:500;margin-bottom:4px;color:#444}
+input,select,textarea{width:100%;padding:8px 11px;border:1px solid #ddd;border-radius:8px;font-size:.85rem;font-family:inherit;outline:none}
+input:focus,select:focus{border-color:#0f5c3a}
+.form-group{margin-bottom:12px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:600px){.row2,.row3{grid-template-columns:1fr}}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;border:none;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-green{background:#0f5c3a;color:#fff}.btn-green:hover{background:#0a4a2f}
+.btn-outline{background:#fff;border:1px solid #0f5c3a;color:#0f5c3a}.btn-outline:hover{background:#f0fff4}
+.btn-dark{background:#1c1c1e;color:#fff}.btn-dark:hover{background:#333}
+.btn-amber{background:#d97706;color:#fff}.btn-amber:hover{background:#b45309}
+.btn-red{background:#dc2626;color:#fff}.btn-red:hover{background:#b91c1c}
+.btn-sm{padding:5px 12px;font-size:.78rem}
+.btn-xs{padding:3px 9px;font-size:.75rem}
+/* Table grid */
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.tcard{border:1px solid #e5e7eb;border-radius:12px;padding:14px 12px}
+.tcard .tc-name{font-weight:600;font-size:.9rem}
+.tcard .tc-sub{font-size:.75rem;color:#666;margin:2px 0}
+.tcard .tc-timer{font-size:1.1rem;font-weight:700;color:#0f5c3a;margin:6px 0}
+.badge,.tag{display:inline-block;font-size:.7rem;font-weight:600;padding:2px 10px;border-radius:20px}
+.badge-available,.tag-available{background:#d1fae5;color:#065f46}
+.badge-reserved,.tag-reserved{background:#fef3c7;color:#92400e}
+.badge-in_play,.tag-in_play{background:#1c1c1e;color:#fff}
+.badge-maintenance,.tag-maintenance{background:#f3f4f6;color:#6b7280}
+.tag-confirmed{background:#dbeafe;color:#1e40af}
+.tag-cancelled{background:#fee2e2;color:#991b1b}
+.tag-no_show{background:#fef3c7;color:#92400e}
+.tag-completed{background:#d1fae5;color:#065f46}
+.tag-checked_in{background:#e0e7ff;color:#3730a3}
+/* Session controls */
+.sess-card{border:1px solid #e5e7eb;border-radius:12px;padding:14px}
+.sess-info{font-size:.82rem;color:#555;margin-bottom:10px;line-height:1.6}
+.ctrl-btns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.ext-row{display:flex;gap:6px;align-items:flex-end;flex-wrap:wrap}
+/* Table */
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+th{text-align:left;padding:8px 10px;background:#f9f9f7;border-bottom:2px solid #eee;font-weight:600;color:#555}
+td{padding:8px 10px;border-bottom:1px solid #f0f0f0;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafafa}
+.empty{color:#888;font-size:.82rem;text-align:center;padding:20px}
+/* Bill preview */
+.bill-row{display:flex;justify-content:space-between;padding:5px 0;font-size:.85rem;border-bottom:1px solid #f0f0f0}
+.bill-row:last-child{border-bottom:none;font-weight:700}
+.bill-row.total{border-top:2px solid #eee;margin-top:4px;padding-top:8px;font-size:.95rem;color:#0f5c3a}
+/* Addons */
+.addon-row{display:flex;gap:8px;margin-bottom:6px;align-items:center}
+.addon-row input{flex:1}
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+.stat-card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.07);padding:14px}
+.stat-card .sv{font-size:1.4rem;font-weight:700;color:#0f5c3a}
+.stat-card .sl{font-size:.75rem;color:#888;margin-top:2px}
+/* Toast */
+#toast{position:fixed;bottom:20px;right:20px;max-width:340px;padding:12px 16px;border-radius:10px;font-size:.83rem;font-weight:500;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
+#toast.show{opacity:1}
+#toast.success{background:#065f46;color:#fff}
+#toast.error{background:#991b1b;color:#fff}
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid #ddd;border-top-color:#0f5c3a;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.clock-box{background:#f8f8f6;border-radius:10px;padding:14px;font-size:.85rem}
+.ledger-summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:14px}
+.ls-item{background:#f8f8f6;border-radius:10px;padding:10px}
+.ls-item .v{font-size:1.1rem;font-weight:700;color:#0f5c3a}
+.ls-item .l{font-size:.72rem;color:#888}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+
+<!-- ── Login ── -->
+<div id="login-screen">
+  <div id="login-box">
+    <h1>CueMaster</h1>
+    <p>Staff / Owner login</p>
+    <div class="form-group">
+      <label>Username</label>
+      <input id="lu" type="text" placeholder="owner or staff" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input id="lp" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div id="lerr" style="color:#dc2626;font-size:.82rem;margin-bottom:10px;display:none"></div>
+    <button class="btn btn-green" style="width:100%" onclick="doLogin()">Login</button>
+    <p style="margin-top:12px;font-size:.75rem;color:#888">Demo: owner/owner123 · staff/staff123</p>
+  </div>
+</div>
+
+<!-- ── App ── -->
+<div id="app">
+  <header>
+    <span class="brand">CueMaster Staff</span>
+    <span class="user-info" id="uinfo"></span>
+    <div style="display:flex;gap:8px">
+      <span id="clock-offset" style="font-size:.75rem;color:#aaa"></span>
+      <button class="btn btn-outline btn-sm" onclick="doLogout()">Logout</button>
+    </div>
+  </header>
+  <nav id="nav">
+    <button onclick="show('tables')" class="active">Tables</button>
+    <button onclick="show('bookings')">Bookings</button>
+    <button onclick="show('walkin')">Walk-in</button>
+    <button onclick="show('session')">Sessions</button>
+    <button onclick="show('billing')">Billing</button>
+    <button onclick="show('customers')">Customers</button>
+    <button onclick="show('admin')" class="owner-only" style="display:none">Admin</button>
+  </nav>
+
+  <div class="content">
+
+    <!-- ── TABLES ── -->
+    <div id="tab-tables">
+      <div class="stats" id="stats-row">
+        <div class="stat-card"><div class="sv" id="st-revenue">—</div><div class="sl">Today Revenue</div></div>
+        <div class="stat-card"><div class="sv" id="st-sessions">—</div><div class="sl">Active Sessions</div></div>
+        <div class="stat-card"><div class="sv" id="st-bookings">—</div><div class="sl">Today Bookings</div></div>
+        <div class="stat-card"><div class="sv" id="st-dues">—</div><div class="sl">Outstanding Dues</div></div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <h2 style="margin:0">Live Table Status</h2>
+          <button class="btn btn-outline btn-sm" onclick="loadTables()">Refresh</button>
+        </div>
+        <div class="tgrid" id="table-grid"></div>
+      </div>
+      <!-- Today's bookings mini-list -->
+      <div class="card">
+        <h2>Today's Bookings</h2>
+        <div id="today-list"></div>
+      </div>
+    </div>
+
+    <!-- ── BOOKINGS ── -->
+    <div id="tab-bookings" style="display:none">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <h2 style="margin:0">All Bookings</h2>
+          <div style="display:flex;gap:8px">
+            <select id="bk-filter-status" onchange="loadBookings()" style="width:auto;padding:5px 10px">
+              <option value="">All statuses</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="checked_in">Checked In</option>
+              <option value="in_play">In Play</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+              <option value="no_show">No Show</option>
+            </select>
+            <input type="date" id="bk-filter-date" onchange="loadBookings()" style="width:auto;padding:5px 10px">
+          </div>
+        </div>
+        <div id="bookings-table"></div>
+      </div>
+    </div>
+
+    <!-- ── WALK-IN ── -->
+    <div id="tab-walkin" style="display:none">
+      <div class="card">
+        <h2>Create Walk-in Session</h2>
+        <div class="row2">
+          <div class="form-group">
+            <label>Table</label>
+            <select id="wi-table"><option value="">Select table...</option></select>
+          </div>
+          <div class="form-group">
+            <label>Customer Phone</label>
+            <input type="tel" id="wi-phone" maxlength="10" placeholder="9876543210"
+              oninput="this.value=this.value.replace(/\D/,'')" onchange="lookupCustomer(this.value,'wi-name')">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Customer Name <span style="color:#888;font-weight:400">(auto-filled if existing)</span></label>
+          <input type="text" id="wi-name" placeholder="Full name">
+        </div>
+        <button class="btn btn-green" onclick="createWalkIn()">Create Walk-in</button>
+      </div>
+    </div>
+
+    <!-- ── SESSIONS ── -->
+    <div id="tab-session" style="display:none">
+      <div class="card">
+        <h2>Check-in a Booking</h2>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="ci-code" placeholder="Booking code, e.g. BK-0001" style="max-width:240px">
+          <button class="btn btn-green" onclick="doCheckin()">Check In</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <h2 style="margin:0">Active Sessions</h2>
+          <button class="btn btn-outline btn-sm" onclick="loadSessions()">Refresh</button>
+        </div>
+        <div id="sessions-list"></div>
+      </div>
+    </div>
+
+    <!-- ── BILLING ── -->
+    <div id="tab-billing" style="display:none">
+      <div class="card">
+        <h2>Create Bill</h2>
+        <div class="form-group">
+          <label>Session ID (from ended session)</label>
+          <div style="display:flex;gap:8px">
+            <input type="number" id="bl-sess-id" placeholder="Session ID" style="max-width:200px">
+            <button class="btn btn-outline btn-sm" onclick="loadSessionForBill()">Load</button>
+          </div>
+        </div>
+        <div id="bill-session-info" style="display:none" class="sess-info"></div>
+        <div id="bill-form" style="display:none">
+          <h3>Add-ons</h3>
+          <div id="addon-list"></div>
+          <button class="btn btn-outline btn-sm" onclick="addAddon()" style="margin-bottom:12px">+ Add Item</button>
+          <div class="form-group">
+            <label>Discount (Rs.)</label>
+            <input type="number" id="bl-discount" value="0" min="0" oninput="previewBill()">
+          </div>
+          <div id="bill-preview" class="card" style="margin:0 0 14px;background:#f8f8f6;border-radius:12px;padding:14px"></div>
+          <button class="btn btn-green" onclick="createBill()">Generate Bill</button>
+        </div>
+      </div>
+
+      <!-- Payment section (appears after bill created) -->
+      <div class="card" id="pay-section" style="display:none">
+        <h2>Record Payment</h2>
+        <div id="pay-bill-info" class="sess-info" style="margin-bottom:12px"></div>
+        <div class="row3">
+          <div class="form-group">
+            <label>Amount (Rs.)</label>
+            <input type="number" id="pay-amt" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>Mode</label>
+            <select id="pay-mode">
+              <option value="cash">Cash</option>
+              <option value="upi">UPI</option>
+              <option value="card">Card</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Note (optional)</label>
+            <input type="text" id="pay-note" placeholder="Reference etc.">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-green" onclick="recordPayment()">Record Payment</button>
+          <button class="btn btn-outline" onclick="openReceipt()">Print Receipt</button>
+        </div>
+      </div>
+
+      <!-- Recent bills lookup -->
+      <div class="card">
+        <h2>Find Bill by Receipt Code</h2>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="rc-lookup" placeholder="RC-0001" style="max-width:200px">
+          <button class="btn btn-outline btn-sm" onclick="loadBillByCode()">Load</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CUSTOMERS ── -->
+    <div id="tab-customers" style="display:none">
+      <div class="card">
+        <h2>Customer Search</h2>
+        <div style="display:flex;gap:8px;margin-bottom:14px">
+          <input type="text" id="cust-q" placeholder="Name or phone..." style="max-width:300px" onkeydown="if(event.key==='Enter')searchCustomers()">
+          <button class="btn btn-green btn-sm" onclick="searchCustomers()">Search</button>
+        </div>
+        <div id="cust-results"></div>
+      </div>
+      <div class="card" id="cust-history" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <h2 style="margin:0" id="cust-history-name">Customer History</h2>
+          <button class="btn btn-outline btn-sm" onclick="document.getElementById('cust-history').style.display='none'">Close</button>
+        </div>
+        <div id="cust-summary" class="ledger-summary"></div>
+        <h3>Visit Ledger</h3>
+        <div id="cust-ledger"></div>
+      </div>
+    </div>
+
+    <!-- ── ADMIN ── -->
+    <div id="tab-admin" style="display:none">
+      <div class="card">
+        <h2>Demo Clock</h2>
+        <div class="clock-box" id="clock-info">Loading...</div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="btn btn-amber" onclick="fastForward(10)">+10 min</button>
+          <button class="btn btn-amber" onclick="fastForward(30)">+30 min</button>
+          <button class="btn btn-amber" onclick="fastForward(60)">+60 min</button>
+          <button class="btn btn-outline" onclick="resetClock()">Reset Clock</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Reset Demo Data</h2>
+        <p style="font-size:.85rem;color:#666;margin-bottom:12px">Wipes all data and re-seeds 6 tables, 8 customers, historical records.</p>
+        <button class="btn btn-red" onclick="resetDemo()">Reset Demo Data</button>
+      </div>
+      <div class="card">
+        <h2>Activity Log</h2>
+        <div id="activity-log"></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /app -->
+
+<script>
+// ── State ──
+let token = localStorage.getItem('staff_token');
+let user  = JSON.parse(localStorage.getItem('staff_user') || 'null');
+let allTables = [];
+let currentBillId = null;
+let currentBillReceiptCode = null;
+let sessionTimers = {};
+
+// ── Auth ──
+async function doLogin() {
+  const u = document.getElementById('lu').value.trim();
+  const p = document.getElementById('lp').value.trim();
+  document.getElementById('lerr').style.display = 'none';
+  const r = await fetch('/api/auth/staff/login', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({username:u, password:p})
+  });
+  const d = await r.json();
+  if (!r.ok) { const el=document.getElementById('lerr'); el.textContent=d.error||'Login failed'; el.style.display='block'; return; }
+  token = d.token; user = d.user;
+  localStorage.setItem('staff_token', token);
+  localStorage.setItem('staff_user', JSON.stringify(user));
+  startApp();
+}
+function doLogout() {
+  localStorage.removeItem('staff_token'); localStorage.removeItem('staff_user');
+  token=null; user=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  clearTimers();
+}
+function startApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('uinfo').textContent = user.username + ' (' + user.role + ')';
+  if (user.role === 'owner') document.querySelectorAll('.owner-only').forEach(e=>e.style.display='');
+  loadTables(); loadAnalytics(); loadSessions();
+  setInterval(loadTables, 10000);
+  setInterval(loadAnalytics, 30000);
+  setInterval(loadSessions, 10000);
+  setInterval(tickTimers, 1000);
+}
+
+// ── Navigation ──
+function show(tab) {
+  document.querySelectorAll('.content > div[id^="tab-"]').forEach(d=>d.style.display='none');
+  document.getElementById('tab-'+tab).style.display='block';
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  if (tab==='bookings') loadBookings();
+  if (tab==='admin') { loadClock(); loadActivityLog(); }
+  if (tab==='walkin') populateWalkInTables();
+}
+
+// ── Tables ──
+async function loadTables() {
+  try {
+    const r = await fetch('/api/tables');
+    const d = await r.json();
+    allTables = d.tables || [];
+    renderTableGrid();
+    renderTodayBookings();
+  } catch(e){}
+}
+function renderTableGrid() {
+  const g = document.getElementById('table-grid');
+  if (!allTables.length) { g.innerHTML='<div class="empty">No tables</div>'; return; }
+  g.innerHTML = allTables.map(t => {
+    const st = t.effectiveStatus || t.status;
+    const timer = sessionTimers['t'+t.id] || '';
+    return `<div class="tcard">
+      <div class="tc-name">${esc(t.name)}</div>
+      <div class="tc-sub">${t.type} · Rs.${t.hourly_rate}/hr</div>
+      ${timer ? '<div class="tc-timer" id="timer-t'+t.id+'">'+timer+'</div>' : ''}
+      <div style="margin-top:6px"><span class="badge badge-${st}">${stLabel(st)}</span></div>
+      ${t.nextAvailableTs ? '<div style="font-size:.72rem;color:#888;margin-top:4px">Next free: '+fmt(t.nextAvailableTs,'time')+'</div>' : ''}
+    </div>`;
+  }).join('');
+}
+async function renderTodayBookings() {
+  const list = document.getElementById('today-list');
+  const today = new Date().toLocaleDateString('en-CA', {timeZone:'Asia/Kolkata'});
+  try {
+    const r = await api('GET', `/api/bookings?date=${today}`);
+    if (!r.bookings || !r.bookings.length) { list.innerHTML='<div class="empty">No bookings today</div>'; return; }
+    list.innerHTML = `<table>
+      <tr><th>Code</th><th>Customer</th><th>Table</th><th>Time</th><th>Status</th><th>Action</th></tr>
+      ${r.bookings.map(b=>`<tr>
+        <td>${b.booking_code}</td>
+        <td>${esc(b.customer_name)}<br><span style="font-size:.72rem;color:#888">${b.customer_phone}</span></td>
+        <td>${esc(b.table_name)}</td>
+        <td>${fmt(b.start_ts,'time')}–${fmt(b.end_ts,'time')}</td>
+        <td><span class="tag tag-${b.status}">${b.status.replace('_',' ')}</span></td>
+        <td>${b.status==='confirmed'
+          ? `<button class="btn btn-green btn-xs" onclick="quickCheckin('${b.booking_code}')">Check-in</button>`
+          : b.status==='checked_in'
+          ? `<button class="btn btn-dark btn-xs" onclick="quickStart('${b.booking_code}')">Start</button>`
+          : ''}</td>
+      </tr>`).join('')}
+    </table>`;
+  } catch(e) { list.innerHTML = '<div class="empty">Error loading</div>'; }
+}
+
+function populateWalkInTables() {
+  const sel = document.getElementById('wi-table');
+  sel.innerHTML = '<option value="">Select table...</option>' +
+    allTables.filter(t=>['available','reserved'].includes(t.effectiveStatus||t.status)).map(t=>
+      `<option value="${t.id}">${esc(t.name)} (Rs.${t.hourly_rate}/hr)</option>`
+    ).join('');
+}
+
+// ── Analytics ──
+async function loadAnalytics() {
+  try {
+    const r = await fetch('/api/analytics');
+    const d = await r.json();
+    document.getElementById('st-revenue').textContent  = 'Rs.' + Math.round(d.todayRevenue||0);
+    document.getElementById('st-sessions').textContent = d.activeSessions || 0;
+    document.getElementById('st-bookings').textContent = d.todayBookings  || 0;
+    document.getElementById('st-dues').textContent     = 'Rs.' + Math.round(d.outstandingDues||0);
+    if (d.offsetMin) document.getElementById('clock-offset').textContent = '(Demo clock +'+d.offsetMin+'m)';
+  } catch(e){}
+}
+
+// ── Bookings ──
+async function loadBookings() {
+  const status = document.getElementById('bk-filter-status').value;
+  const date   = document.getElementById('bk-filter-date').value;
+  let url = '/api/bookings?';
+  if (status) url += 'status='+status+'&';
+  if (date)   url += 'date='+date;
+  const tbl = document.getElementById('bookings-table');
+  tbl.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
+  try {
+    const d = await api('GET', url);
+    if (!d.bookings || !d.bookings.length) { tbl.innerHTML='<div class="empty">No bookings found</div>'; return; }
+    tbl.innerHTML = `<table>
+      <tr><th>Code</th><th>Customer</th><th>Table</th><th>Start</th><th>End</th><th>Payment</th><th>Status</th><th>Actions</th></tr>
+      ${d.bookings.map(b=>`<tr>
+        <td>${b.booking_code}</td>
+        <td>${esc(b.customer_name)}<br><small style="color:#888">${b.customer_phone}</small></td>
+        <td>${esc(b.table_name)}</td>
+        <td>${fmt(b.start_ts,'dt')}</td>
+        <td>${fmt(b.end_ts,'time')}</td>
+        <td>${b.payment_type==='pay_now'?'Online (Rs.'+b.deposit_amount+')':'At Club'}</td>
+        <td><span class="tag tag-${b.status}">${b.status.replace('_',' ')}</span></td>
+        <td>
+          ${b.status==='confirmed'?`<button class="btn btn-green btn-xs" onclick="quickCheckin('${b.booking_code}')">Check-in</button>`:''}
+          ${b.status==='confirmed'?`<button class="btn btn-red btn-xs" style="margin-top:2px" onclick="markNoShow('${b.booking_code}')">No-show</button>`:''}
+        </td>
+      </tr>`).join('')}
+    </table>`;
+  } catch(e) { tbl.innerHTML = '<div class="empty">Error loading</div>'; }
+}
+
+// ── Sessions ──
+async function loadSessions() {
+  try {
+    const d = await api('GET', '/api/sessions');
+    const list = document.getElementById('sessions-list');
+    const sessions = d.sessions || [];
+    if (!sessions.length) { list.innerHTML = '<div class="empty">No active sessions</div>'; clearTimers(); return; }
+
+    // Update timer data
+    const newTimers = {};
+    sessions.forEach(s => {
+      if (s.status==='active' && s.start_ts) {
+        newTimers['s'+s.id] = { startTs: s.start_ts, pausedMs: s.paused_ms||0, serverNow: d.serverNow };
+        newTimers['t'+s.table_id] = newTimers['s'+s.id];
+      }
+    });
+    sessionTimers = newTimers;
+
+    list.innerHTML = sessions.map(s => {
+      const elapsed = s.elapsedMin || 0;
+      return `<div class="sess-card" style="margin-bottom:10px" id="sess-${s.id}">
+        <div class="sess-info">
+          <strong>${esc(s.customer_name)}</strong> · ${s.customer_phone} · ${esc(s.table_name)}<br>
+          ${s.booking_code ? 'Booking: '+s.booking_code+' · ' : 'Walk-in · '}
+          Rate: Rs.${s.rate_at_session}/hr<br>
+          Status: <span class="tag tag-${s.status}">${s.status}</span> · 
+          <span id="timer-s${s.id}" style="font-weight:600;color:#0f5c3a">${fmtMin(elapsed)}</span>
+          ${s.start_ts ? ' (started '+fmt(s.start_ts,'time')+')' : ''}
+        </div>
+        <div class="ctrl-btns">
+          ${s.status==='pending'?`<button class="btn btn-green btn-sm" onclick="sessionAction(${s.id},'start')">Start</button>`:''}
+          ${s.status==='active' ?`<button class="btn btn-amber btn-sm" onclick="sessionAction(${s.id},'pause')">Pause</button>`:''}
+          ${s.status==='paused' ?`<button class="btn btn-green btn-sm" onclick="sessionAction(${s.id},'resume')">Resume</button>`:''}
+          ${['active','paused','pending'].includes(s.status)?`<button class="btn btn-red btn-sm" onclick="sessionAction(${s.id},'end')">End Session</button>`:''}
+        </div>
+        ${['active','paused'].includes(s.status)?`<div class="ext-row">
+          <div style="flex:0 0 auto"><label style="margin-bottom:4px;font-size:.78rem">Extend by</label>
+            <select id="ext-${s.id}" style="width:auto;padding:5px 8px">
+              <option value="15">15 min</option><option value="30">30 min</option><option value="60">60 min</option>
+            </select></div>
+          <button class="btn btn-outline btn-sm" onclick="extendSession(${s.id})">Extend</button>
+        </div>`:''}
+      </div>`;
+    }).join('');
+  } catch(e) { console.error(e); }
+}
+
+function clearTimers() { sessionTimers = {}; }
+
+let _sNow = Date.now();
+let _sNowFetched = Date.now();
+function tickTimers() {
+  const realElapsed = Date.now() - _sNowFetched;
+  const effectiveNow = _sNow + realElapsed;
+  Object.entries(sessionTimers).forEach(([k, v]) => {
+    if (!k.startsWith('s')) return;
+    const id = k.slice(1);
+    const el = document.getElementById('timer-s'+id);
+    if (!el) return;
+    const offset = v.serverNow - Date.now();
+    const curNow = Date.now() + Math.max(0, offset);
+    const ms = Math.max(0, (curNow - v.startTs) - v.pausedMs);
+    el.textContent = fmtMin(Math.round(ms/60000));
+  });
+}
+
+// ── Session Actions ──
+async function sessionAction(id, action) {
+  try {
+    const r = await apiFetch('POST', `/api/sessions/${id}/${action}`, {});
+    if (!r.ok) { const d=await r.json(); toast(d.error||action+' failed','error'); return; }
+    const d = await r.json();
+    toast(d.message || action + ' done', 'success');
+    if (action === 'end') {
+      // Load session for billing
+      toast(`Session ended. ${d.actualMin} min played. Go to Billing tab to create bill.`, 'success');
+      document.getElementById('bl-sess-id').value = id;
+    }
+    loadSessions();
+    loadTables();
+  } catch(e) { toast('Error: '+e.message,'error'); }
+}
+
+async function extendSession(id) {
+  const extra = document.getElementById('ext-'+id)?.value;
+  if (!extra) return;
+  const r = await apiFetch('POST', `/api/sessions/${id}/extend`, {extraMinutes: parseInt(extra)});
+  const d = await r.json();
+  if (!r.ok) { toast(d.error, 'error'); return; }
+  toast(d.message, 'success');
+  loadSessions();
+}
+
+async function doCheckin() {
+  const code = document.getElementById('ci-code').value.trim();
+  if (!code) { toast('Enter a booking code', 'error'); return; }
+  const r = await apiFetch('POST', '/api/sessions/checkin', {bookingCode: code});
+  const d = await r.json();
+  if (!r.ok) { toast(d.error,'error'); return; }
+  toast('Checked in! Session ID: '+d.session.id, 'success');
+  document.getElementById('ci-code').value = '';
+  loadSessions(); loadTables();
+}
+
+async function quickCheckin(code) {
+  const r = await apiFetch('POST', '/api/sessions/checkin', {bookingCode: code});
+  const d = await r.json();
+  if (!r.ok) { toast(d.error,'error'); return; }
+  toast('Checked in! Go to Sessions tab to start.', 'success');
+  loadTables(); renderTodayBookings();
+}
+
+async function quickStart(code) {
+  // Find session by booking code
+  const bd = await api('GET', `/api/bookings/${code}`);
+  if (!bd.booking) return;
+  // find session for this booking
+  const sd = await api('GET', '/api/sessions');
+  const sess = (sd.sessions||[]).find(s=>s.booking_code===code);
+  if (!sess) { toast('No pending session for this booking', 'error'); return; }
+  await sessionAction(sess.id, 'start');
+}
+
+async function markNoShow(code) {
+  if (!confirm('Mark ' + code + ' as no-show?')) return;
+  const r = await apiFetch('POST', `/api/bookings/${code}/cancel`, {reason:'Manual no-show by staff'});
+  const d = await r.json();
+  if (!r.ok) { toast(d.error,'error'); return; }
+  toast('Marked no-show', 'success');
+  loadBookings(); loadTables();
+}
+
+// ── Walk-in ──
+async function createWalkIn() {
+  const tableId = document.getElementById('wi-table').value;
+  const phone   = document.getElementById('wi-phone').value.trim();
+  const name    = document.getElementById('wi-name').value.trim();
+  if (!tableId) { toast('Select a table', 'error'); return; }
+  if (!phone)   { toast('Phone required', 'error'); return; }
+  const r = await apiFetch('POST', '/api/sessions/walkin', {tableId:Number(tableId), phone, name});
+  const d = await r.json();
+  if (!r.ok) { toast(d.error,'error'); return; }
+  toast(`Walk-in created! Session ID: ${d.session.id}. Go to Sessions tab to start.`, 'success');
+  document.getElementById('wi-phone').value = '';
+  document.getElementById('wi-name').value  = '';
+  loadTables(); loadSessions(); show('session'); event.stopPropagation();
+  // Switch to session tab
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('nav button')[3].classList.add('active');
+}
+
+async function lookupCustomer(phone, nameField) {
+  if (!/^\d{10}$/.test(phone)) return;
+  try {
+    const d = await api('GET', `/api/customers?q=${phone}`);
+    const c = (d.customers||[]).find(x=>x.phone===phone);
+    if (c) document.getElementById(nameField).value = c.name;
+  } catch(e){}
+}
+
+// ── Billing ──
+let billSessionData = null;
+let addonCount = 0;
+
+async function loadSessionForBill() {
+  const sid = document.getElementById('bl-sess-id').value;
+  if (!sid) { toast('Enter session ID', 'error'); return; }
+
+  // Check if bill already exists
+  try {
+    const bd = await api('GET', `/api/bills/for-session/${sid}`);
+    if (bd.bill) {
+      currentBillId = bd.bill.id;
+      currentBillReceiptCode = bd.bill.receipt_code;
+      showPaySection(bd.bill);
+      toast('Bill already exists: ' + bd.bill.receipt_code, 'success');
+      return;
+    }
+  } catch(e){}
+
+  try {
+    const d = await api('GET', `/api/sessions/${sid}`);
+    billSessionData = d.session;
+    if (!billSessionData) { toast('Session not found','error'); return; }
+    if (billSessionData.status !== 'completed') { toast('Session must be ended first','error'); return; }
+
+    document.getElementById('bill-session-info').style.display = 'block';
+    document.getElementById('bill-session-info').innerHTML =
+      `Customer: <strong>${esc(billSessionData.customer_name)}</strong> · Table: ${esc(billSessionData.table_name)}<br>
+       Rate: Rs.${billSessionData.rate_at_session}/hr · Elapsed: <strong>${billSessionData.elapsedMin} min</strong>
+       ${billSessionData.deposit_amount > 0 ? ' · Deposit: Rs.'+billSessionData.deposit_amount+' ('+billSessionData.deposit_status+')' : ''}`;
+
+    document.getElementById('bill-form').style.display = 'block';
+    document.getElementById('addon-list').innerHTML = '';
+    addonCount = 0;
+    document.getElementById('bl-discount').value = 0;
+    previewBill();
+  } catch(e) { toast('Error loading session: '+e.message,'error'); }
+}
+
+function addAddon() {
+  const i = ++addonCount;
+  const div = document.createElement('div');
+  div.className = 'addon-row'; div.id = 'addon-'+i;
+  div.innerHTML = `<input type="text" placeholder="Item name" id="addon-name-${i}">
+    <input type="number" placeholder="Rs." id="addon-amt-${i}" min="0" oninput="previewBill()" style="max-width:100px">
+    <button class="btn btn-outline btn-xs" onclick="document.getElementById('addon-${i}').remove();previewBill()">X</button>`;
+  document.getElementById('addon-list').appendChild(div);
+}
+
+function getAddons() {
+  const rows = document.querySelectorAll('.addon-row');
+  return Array.from(rows).map(r => {
+    const i = r.id.split('-')[1];
+    return { name: document.getElementById('addon-name-'+i)?.value||'Item', amount: parseFloat(document.getElementById('addon-amt-'+i)?.value||0)||0 };
+  }).filter(a => a.amount > 0);
+}
+
+function previewBill() {
+  if (!billSessionData) return;
+  const s = billSessionData;
+  const actualMin = s.elapsedMin || 1;
+  const base = Math.round((s.rate_at_session / 60) * actualMin * 100) / 100;
+  const addons = getAddons();
+  const addonsAmt = addons.reduce((t,a)=>t+a.amount,0);
+  const disc = parseFloat(document.getElementById('bl-discount')?.value||0)||0;
+  const depCredit = (s.deposit_status==='paid' && s.deposit_amount>0) ? s.deposit_amount : 0;
+  const total = Math.max(0, base + addonsAmt - disc);
+  const due   = Math.max(0, total - depCredit);
+
+  document.getElementById('bill-preview').innerHTML = `
+    <div class="bill-row"><span>Base (${actualMin} min @ Rs.${s.rate_at_session}/hr)</span><span>Rs.${base.toFixed(2)}</span></div>
+    ${addons.map(a=>`<div class="bill-row"><span>${esc(a.name)}</span><span>Rs.${a.amount.toFixed(2)}</span></div>`).join('')}
+    ${disc > 0 ? `<div class="bill-row"><span>Discount</span><span style="color:#dc2626">-Rs.${disc.toFixed(2)}</span></div>` : ''}
+    <div class="bill-row total"><span>Total</span><span>Rs.${total.toFixed(2)}</span></div>
+    ${depCredit > 0 ? `<div class="bill-row"><span>Deposit credit</span><span style="color:#065f46">-Rs.${depCredit.toFixed(2)}</span></div>` : ''}
+    <div class="bill-row total"><span>Due Now</span><span>Rs.${due.toFixed(2)}</span></div>`;
+}
+
+async function createBill() {
+  if (!billSessionData) { toast('Load a session first', 'error'); return; }
+  const addons = getAddons();
+  const disc   = parseFloat(document.getElementById('bl-discount').value)||0;
+  const r = await apiFetch('POST', '/api/bills', {sessionId: billSessionData.id, addons, discount: disc});
+  const d = await r.json();
+  if (!r.ok) {
+    if (d.receiptCode) { toast('Bill already exists: '+d.receiptCode,'error'); return; }
+    toast(d.error,'error'); return;
+  }
+  currentBillId = d.bill.id;
+  currentBillReceiptCode = d.receiptCode;
+  toast('Bill created: ' + d.receiptCode, 'success');
+  document.getElementById('bill-form').style.display = 'none';
+  showPaySection(d.bill);
+}
+
+function showPaySection(bill) {
+  document.getElementById('pay-section').style.display = 'block';
+  document.getElementById('pay-amt').value = bill.due_amount;
+  document.getElementById('pay-bill-info').innerHTML =
+    `Receipt: <strong>${bill.receipt_code}</strong> · Total: Rs.${bill.total_amount} · 
+     Due: <strong>Rs.${bill.due_amount}</strong> · Status: <span class="tag tag-${bill.status==='paid'?'completed':'reserved'}">${bill.status}</span>`;
+}
+
+async function recordPayment() {
+  if (!currentBillId) { toast('No bill loaded','error'); return; }
+  const amt  = parseFloat(document.getElementById('pay-amt').value)||0;
+  const mode = document.getElementById('pay-mode').value;
+  const note = document.getElementById('pay-note').value;
+  if (!amt) { toast('Enter amount','error'); return; }
+  const r = await apiFetch('POST', `/api/bills/${currentBillId}/pay`, {amount:amt, mode, note});
+  const d = await r.json();
+  if (!r.ok) { toast(d.error,'error'); return; }
+  toast('Payment recorded!', 'success');
+  showPaySection(d.bill);
+  document.getElementById('pay-amt').value = d.bill.due_amount;
+  loadAnalytics();
+}
+
+function openReceipt() {
+  if (!currentBillReceiptCode) { toast('No receipt yet','error'); return; }
+  window.open('/receipt.html?code='+currentBillReceiptCode, '_blank');
+}
+
+async function loadBillByCode() {
+  const code = document.getElementById('rc-lookup').value.trim();
+  if (!code) return;
+  try {
+    const d = await api('GET', '/api/bills/'+code);
+    if (!d.bill) { toast('Not found','error'); return; }
+    currentBillId = d.bill.id;
+    currentBillReceiptCode = d.bill.receipt_code;
+    showPaySection(d.bill);
+    toast('Bill loaded: '+code, 'success');
+  } catch(e) { toast('Error loading','error'); }
+}
+
+// ── Customers ──
+async function searchCustomers() {
+  const q = document.getElementById('cust-q').value.trim();
+  const res = document.getElementById('cust-results');
+  res.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
+  try {
+    const d = await api('GET', `/api/customers?q=${encodeURIComponent(q)}`);
+    if (!d.customers || !d.customers.length) { res.innerHTML='<div class="empty">No customers found</div>'; return; }
+    res.innerHTML = `<table>
+      <tr><th>Code</th><th>Name</th><th>Phone</th><th>No-shows</th><th></th></tr>
+      ${d.customers.map(c=>`<tr>
+        <td>${c.customer_code}</td>
+        <td>${esc(c.name)}</td>
+        <td>${c.phone}</td>
+        <td>${c.no_show_count}</td>
+        <td><button class="btn btn-outline btn-xs" onclick="loadCustomerHistory(${c.id},'${esc(c.name)}')">View History</button></td>
+      </tr>`).join('')}
+    </table>`;
+  } catch(e) { res.innerHTML='<div class="empty">Error</div>'; }
+}
+
+async function loadCustomerHistory(id, name) {
+  document.getElementById('cust-history').style.display = 'block';
+  document.getElementById('cust-history-name').textContent = name + ' — History';
+  document.getElementById('cust-ledger').innerHTML = '<div class="empty"><span class="spinner"></span></div>';
+  try {
+    const d = await api('GET', `/api/customers/${id}/history`);
+    const s = d.summary || {};
+    document.getElementById('cust-summary').innerHTML = [
+      ['Total Visits', s.visitCount||0],
+      ['Total Spend', 'Rs.'+(s.totalSpend||0).toFixed(0)],
+      ['Total Min', (s.totalMin||0)+' min'],
+      ['No-shows', s.noShowCount||0],
+      ['Cancellations', s.cancelCount||0],
+      ['Pending Dues', 'Rs.'+(s.pendingDues||0).toFixed(0)],
+    ].map(([l,v])=>`<div class="ls-item"><div class="v">${v}</div><div class="l">${l}</div></div>`).join('');
+
+    if (!d.bookings || !d.bookings.length) { document.getElementById('cust-ledger').innerHTML='<div class="empty">No visits</div>'; return; }
+    document.getElementById('cust-ledger').innerHTML = `<table>
+      <tr><th>Code</th><th>Table</th><th>Date</th><th>Duration</th><th>Status</th><th>Amount</th><th>Receipt</th></tr>
+      ${d.bookings.map(b => {
+        const bill = d.bills.find(bl=>bl.booking_id===b.id);
+        return `<tr>
+          <td>${b.booking_code}</td>
+          <td>${esc(b.table_name)}</td>
+          <td>${fmt(b.start_ts,'dt')}</td>
+          <td>${b.duration_min} min</td>
+          <td><span class="tag tag-${b.status}">${b.status.replace('_',' ')}</span></td>
+          <td>${bill ? 'Rs.'+bill.total_amount : '—'}</td>
+          <td>${bill ? `<a href="/receipt.html?code=${bill.receipt_code}" target="_blank">${bill.receipt_code}</a>` : '—'}</td>
+        </tr>`;
+      }).join('')}
+    </table>`;
+  } catch(e) { document.getElementById('cust-ledger').innerHTML='<div class="empty">Error</div>'; }
+}
+
+// ── Admin ──
+async function loadClock() {
+  try {
+    const d = await api('GET', '/api/admin/clock');
+    document.getElementById('clock-info').innerHTML =
+      `Server time: <strong>${fmt(d.serverNow,'full')}</strong><br>
+       Clock offset: <strong>+${d.offsetMin} minutes</strong><br>
+       Real time:    ${fmt(Date.now(),'full')}`;
+  } catch(e){}
+}
+
+async function fastForward(min) {
+  const r = await apiFetch('POST', '/api/admin/clock/forward', {minutes:min});
+  const d = await r.json();
+  if (!r.ok) { toast(d.error,'error'); return; }
+  toast('Clock advanced by '+min+' minutes', 'success');
+  loadClock(); loadAnalytics();
+}
+
+async function resetClock() {
+  const r = await apiFetch('POST', '/api/admin/clock/reset', {});
+  toast('Clock reset', 'success');
+  loadClock();
+}
+
+async function resetDemo() {
+  if (!confirm('Reset all demo data? This cannot be undone.')) return;
+  const r = await apiFetch('POST', '/api/admin/reset', {});
+  const d = await r.json();
+  if (!r.ok) { toast(d.error,'error'); return; }
+  toast('Demo data reset! Logging out to refresh tokens.', 'success');
+  setTimeout(doLogout, 1500);
+}
+
+async function loadActivityLog() {
+  try {
+    const d = await api('GET', '/api/admin/activity-log?limit=30');
+    const el = document.getElementById('activity-log');
+    if (!d.logs || !d.logs.length) { el.innerHTML='<div class="empty">No activity</div>'; return; }
+    el.innerHTML = `<table><tr><th>Time</th><th>User</th><th>Action</th><th>Detail</th></tr>
+      ${d.logs.map(l=>`<tr>
+        <td style="white-space:nowrap">${fmt(l.created_at,'dt')}</td>
+        <td>${l.username||'system'}</td>
+        <td>${l.action}</td>
+        <td style="font-size:.75rem;max-width:200px;overflow:hidden">${l.detail||''}</td>
+      </tr>`).join('')}
+    </table>`;
+  } catch(e){}
+}
+
+// ── API Helpers ──
+async function api(method, url) {
+  const r = await apiFetch(method, url, null);
+  return r.json();
+}
+
+function apiFetch(method, url, body) {
+  const opts = {
+    method,
+    headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+token },
+  };
+  if (body !== null) opts.body = JSON.stringify(body);
+  return fetch(url, opts);
+}
+
+// ── Utils ──
+function fmt(ts, mode) {
+  if (!ts) return '—';
+  const o = {timeZone:'Asia/Kolkata'};
+  if (mode==='time') return new Date(ts).toLocaleTimeString('en-IN',{...o,hour:'2-digit',minute:'2-digit',hour12:false});
+  if (mode==='dt')   return new Date(ts).toLocaleString('en-IN',{...o,month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});
+  return new Date(ts).toLocaleString('en-IN', o);
+}
+function stLabel(s) { return {available:'Available',reserved:'Reserved',in_play:'In Play',maintenance:'Maintenance',disabled:'Disabled'}[s]||s; }
+function esc(s) { return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmtMin(m) { const h=Math.floor(m/60); const mn=m%60; return (h?h+'h ':'')+mn+'m'; }
+function toast(msg, type) {
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='show '+(type||'success');
+  clearTimeout(el._t); el._t=setTimeout(()=>{el.className='';},4000);
+}
+
+// ── Init ──
+if (token) {
+  startApp();
+} else {
+  document.getElementById('login-screen').style.display='flex';
+}
+</script>
+</body>
+</html>

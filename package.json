@@ -1,0 +1,20 @@
+{
+  "name": "cuemaster",
+  "version": "1.0.0",
+  "description": "Snooker & Pool Club Booking & Management System",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^9.4.3",
+    "bcryptjs": "^2.4.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "uuid": "^9.0.0"
+  },
+  "engines": {
+    "node": "20.x"
+  }
+}

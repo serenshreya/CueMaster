@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CueMaster Receipt</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,sans-serif;background:#fff;color:#1c1c1e;max-width:400px;margin:0 auto;padding:24px 20px;font-size:.88rem}
+.logo{font-size:1.3rem;font-weight:800;color:#0f5c3a;margin-bottom:2px}
+.club-info{font-size:.75rem;color:#666;margin-bottom:16px;line-height:1.6}
+.divider{border:none;border-top:1px dashed #ccc;margin:12px 0}
+.divider.solid{border-top:2px solid #1c1c1e}
+.row{display:flex;justify-content:space-between;padding:3px 0;font-size:.84rem}
+.row.bold{font-weight:700}
+.row.total{font-size:.95rem;font-weight:700;color:#0f5c3a;border-top:1px solid #ccc;margin-top:4px;padding-top:8px}
+.row.due{font-size:1rem;font-weight:700;color:#1c1c1e}
+.label{color:#555}
+.section{margin:10px 0}
+.status-badge{display:inline-block;font-size:.72rem;font-weight:600;padding:2px 10px;border-radius:20px}
+.paid{background:#d1fae5;color:#065f46}
+.unpaid{background:#fee2e2;color:#991b1b}
+.partial{background:#fef3c7;color:#92400e}
+.payment-row{font-size:.8rem;padding:3px 0;display:flex;justify-content:space-between;color:#444}
+.thank-you{text-align:center;color:#0f5c3a;font-weight:700;margin-top:16px;font-size:.9rem}
+.no-print{margin-top:20px;display:flex;gap:8px}
+.btn{padding:9px 18px;border-radius:8px;border:none;font-size:.85rem;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-green{background:#0f5c3a;color:#fff}
+.btn-outline{background:#fff;border:1px solid #ccc;color:#333}
+@media print{.no-print{display:none}body{padding:10px}}
+</style>
+</head>
+<body>
+
+<div id="receipt">
+  <div style="display:flex;align-items:center;justify-content:center;min-height:200px;color:#888">Loading receipt...</div>
+</div>
+
+<div class="no-print">
+  <button class="btn btn-green" onclick="window.print()">Print</button>
+  <button class="btn btn-outline" onclick="window.close()">Close</button>
+</div>
+
+<script>
+function fmt(ts, mode) {
+  if (!ts) return '—';
+  const o = {timeZone:'Asia/Kolkata'};
+  if (mode==='time') return new Date(ts).toLocaleTimeString('en-IN',{...o,hour:'2-digit',minute:'2-digit',hour12:false});
+  return new Date(ts).toLocaleString('en-IN', {...o, day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:false});
+}
+function esc(s){return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+async function load() {
+  const params = new URLSearchParams(location.search);
+  const code = params.get('code');
+  if (!code) { document.getElementById('receipt').innerHTML = '<div style="color:red;padding:20px">No receipt code provided</div>'; return; }
+
+  const token = localStorage.getItem('staff_token');
+  if (!token) { document.getElementById('receipt').innerHTML = '<div style="color:red;padding:20px">Staff login required. Please login at <a href="/staff.html">staff.html</a></div>'; return; }
+
+  const r = await fetch('/api/bills/receipt/'+code, {headers:{Authorization:'Bearer '+token}});
+  if (!r.ok) { document.getElementById('receipt').innerHTML = '<div style="color:red;padding:20px">Receipt not found: '+code+'</div>'; return; }
+  const d = await r.json();
+
+  const { bill, addons, payments, depositPmt, customer, table, session, booking, settings } = d;
+  const billDate = fmt(bill.created_at);
+  const totalPaid = payments.reduce((s,p)=>s+p.amount,0) + bill.deposit_credit;
+
+  document.getElementById('receipt').innerHTML = `
+    <div class="logo">${esc(settings.club_name||'CueMaster')}</div>
+    <div class="club-info">
+      ${esc(settings.club_address||'')}<br>
+      Phone: ${esc(settings.club_phone||'')}<br>
+      GST: ${esc(settings.gst_number||'N/A')}
+    </div>
+
+    <hr class="divider solid">
+    <div style="text-align:center;font-weight:700;font-size:1rem;margin:6px 0">RECEIPT</div>
+    <div class="row"><span class="label">Receipt</span><span>${esc(bill.receipt_code)}</span></div>
+    ${booking ? `<div class="row"><span class="label">Booking</span><span>${esc(booking.booking_code)}</span></div>` : '<div class="row"><span class="label">Type</span><span>Walk-in</span></div>'}
+    <div class="row"><span class="label">Date</span><span>${billDate}</span></div>
+    <div class="row"><span class="label">Status</span><span class="status-badge ${bill.status}">${bill.status}</span></div>
+
+    <hr class="divider">
+    <div class="section">
+      <div class="row bold" style="margin-bottom:4px">Customer</div>
+      <div class="row"><span class="label">Name</span><span>${esc(customer.name)}</span></div>
+      <div class="row"><span class="label">Phone</span><span>${customer.phone}</span></div>
+      <div class="row"><span class="label">Code</span><span>${customer.customer_code}</span></div>
+    </div>
+
+    <hr class="divider">
+    <div class="section">
+      <div class="row bold" style="margin-bottom:4px">Session</div>
+      <div class="row"><span class="label">Table</span><span>${esc(table.name)} (${table.type})</span></div>
+      <div class="row"><span class="label">Start</span><span>${fmt(session.start_ts)}</span></div>
+      <div class="row"><span class="label">End</span><span>${fmt(session.end_ts)}</span></div>
+      <div class="row"><span class="label">Playing time</span><span>${bill.actual_min} min</span></div>
+      <div class="row"><span class="label">Rate</span><span>Rs.${session.rate_at_session}/hr</span></div>
+    </div>
+
+    <hr class="divider">
+    <div class="section">
+      <div class="row"><span>Base charge (${bill.actual_min} min)</span><span>Rs.${bill.base_amount.toFixed(2)}</span></div>
+      ${(addons||[]).map(a=>`<div class="row"><span>${esc(a.name)}</span><span>Rs.${a.amount.toFixed(2)}</span></div>`).join('')}
+      ${bill.discount > 0 ? `<div class="row"><span>Discount</span><span style="color:#dc2626">-Rs.${bill.discount.toFixed(2)}</span></div>` : ''}
+      <div class="row total"><span>Total</span><span>Rs.${bill.total_amount.toFixed(2)}</span></div>
+    </div>
+
+    <hr class="divider">
+    <div class="section">
+      <div class="row bold" style="margin-bottom:4px">Payments</div>
+      ${bill.deposit_credit > 0 ? `<div class="payment-row"><span>Deposit credit</span><span>Rs.${bill.deposit_credit.toFixed(2)}</span></div>` : ''}
+      ${(payments||[]).map(p=>`<div class="payment-row"><span>${p.mode.toUpperCase()}${p.note?' ('+esc(p.note)+')':''}</span><span>Rs.${p.amount.toFixed(2)}</span></div>`).join('')}
+      <div class="row due" style="margin-top:6px"><span>Balance Due</span><span>Rs.${bill.due_amount.toFixed(2)}</span></div>
+    </div>
+
+    <hr class="divider">
+    <div class="thank-you">Thank you for visiting!</div>
+    <div style="text-align:center;font-size:.72rem;color:#888;margin-top:6px">
+      Generated: ${new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})}
+    </div>
+  `;
+}
+
+load();
+</script>
+</body>
+</html>

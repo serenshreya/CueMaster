@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CueMaster — Book a Table</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:#f2f2f0;color:#1c1c1e;min-height:100vh}
+header{background:#1c1c1e;color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header h1{font-size:1.2rem;font-weight:700;color:#4ade80}
+header .info{font-size:.8rem;color:#aaa}
+main{max-width:900px;margin:0 auto;padding:20px 16px}
+.card{background:#fff;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.08);padding:20px;margin-bottom:18px}
+h2{font-size:1rem;font-weight:700;margin-bottom:14px;color:#1c1c1e}
+h3{font-size:.9rem;font-weight:600;margin-bottom:10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.table-card{border:1px solid #eee;border-radius:12px;padding:14px 12px;cursor:pointer;transition:border-color .15s}
+.table-card:hover{border-color:#0f5c3a}
+.table-card .tc-name{font-weight:600;font-size:.9rem;margin-bottom:4px}
+.table-card .tc-rate{font-size:.75rem;color:#555;margin-bottom:8px}
+.table-card .tc-next{font-size:.7rem;color:#888;margin-top:4px}
+.badge{display:inline-block;font-size:.7rem;font-weight:600;padding:2px 10px;border-radius:20px}
+.badge-available{background:#d1fae5;color:#065f46}
+.badge-reserved{background:#fef3c7;color:#92400e}
+.badge-in_play{background:#1c1c1e;color:#fff}
+.badge-maintenance{background:#f3f4f6;color:#6b7280}
+.badge-disabled{background:#f3f4f6;color:#9ca3af}
+label{display:block;font-size:.8rem;font-weight:500;margin-bottom:4px;color:#444}
+input,select{width:100%;padding:9px 11px;border:1px solid #ddd;border-radius:8px;font-size:.9rem;font-family:inherit;outline:none}
+input:focus,select:focus{border-color:#0f5c3a}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.row{grid-template-columns:1fr}}
+.btn{display:inline-block;padding:10px 20px;border-radius:8px;border:none;font-size:.9rem;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-green{background:#0f5c3a;color:#fff}
+.btn-green:hover{background:#0a4a2f}
+.btn-outline{background:#fff;border:1px solid #0f5c3a;color:#0f5c3a}
+.btn-outline:hover{background:#f0fff4}
+.btn-danger{background:#dc2626;color:#fff}
+.btn-sm{padding:6px 14px;font-size:.8rem}
+.price-box{background:#f0fff4;border:1px solid #a7f3d0;border-radius:10px;padding:12px;margin:12px 0;font-size:.9rem}
+.price-box strong{color:#065f46;font-size:1.1rem}
+.form-group{margin-bottom:14px}
+.otp-row{display:flex;gap:10px}
+.otp-row input{flex:1}
+a{color:#0f5c3a;text-decoration:none}
+a:hover{text-decoration:underline}
+.booking-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #eee;gap:8px;flex-wrap:wrap}
+.booking-row:last-child{border-bottom:none}
+.tag{font-size:.7rem;font-weight:600;padding:2px 8px;border-radius:20px;background:#e5e7eb;color:#374151}
+.tag-confirmed{background:#dbeafe;color:#1e40af}
+.tag-cancelled{background:#fee2e2;color:#991b1b}
+.tag-no_show{background:#fef3c7;color:#92400e}
+.tag-completed{background:#d1fae5;color:#065f46}
+.tag-in_play{background:#1c1c1e;color:#fff}
+.tag-checked_in{background:#e0e7ff;color:#3730a3}
+.empty{color:#888;font-size:.85rem;padding:16px 0;text-align:center}
+/* toast */
+#toast{position:fixed;bottom:20px;right:20px;max-width:320px;padding:12px 16px;border-radius:10px;font-size:.85rem;font-weight:500;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
+#toast.show{opacity:1}
+#toast.success{background:#065f46;color:#fff}
+#toast.error{background:#991b1b;color:#fff}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid #ccc;border-top-color:#0f5c3a;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.countdown{font-size:.75rem;color:#92400e;font-weight:500}
+.refund-note{background:#fefce8;border:1px solid #fde68a;border-radius:8px;padding:10px;font-size:.8rem;margin:8px 0}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+
+<header>
+  <h1 id="club-name">CueMaster</h1>
+  <div class="info" id="club-info"></div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span id="auth-status" style="font-size:.8rem;color:#aaa"></span>
+    <button class="btn btn-outline btn-sm" id="auth-btn" onclick="toggleAuth()">Login</button>
+  </div>
+</header>
+
+<main>
+  <!-- Table Grid -->
+  <div class="card">
+    <h2>Live Table Status <span id="refresh-indicator" style="font-size:.75rem;color:#888;font-weight:400"></span></h2>
+    <div class="grid" id="table-grid"><div class="empty"><span class="spinner"></span> Loading...</div></div>
+  </div>
+
+  <!-- Booking Form -->
+  <div class="card" id="booking-section" style="display:none">
+    <h2>Book a Table</h2>
+    <div class="row">
+      <div class="form-group">
+        <label>Table</label>
+        <select id="bk-table" onchange="previewPrice()">
+          <option value="">Select table...</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="bk-date" onchange="previewPrice()">
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label>Start Time (IST)</label>
+        <input type="time" id="bk-time" onchange="previewPrice()">
+      </div>
+      <div class="form-group">
+        <label>Duration</label>
+        <select id="bk-dur" onchange="previewPrice()">
+          <option value="60">1 hour</option>
+          <option value="90">1.5 hours</option>
+          <option value="120">2 hours</option>
+          <option value="30">30 minutes</option>
+        </select>
+      </div>
+    </div>
+    <div id="price-preview" class="price-box" style="display:none"></div>
+    <div class="row">
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" id="bk-name" placeholder="Full name">
+      </div>
+      <div class="form-group">
+        <label>Phone (10 digits)</label>
+        <input type="tel" id="bk-phone" maxlength="10" placeholder="9876543210" oninput="this.value=this.value.replace(/\D/,'')">
+      </div>
+    </div>
+    <div class="form-group" id="otp-row" style="display:none">
+      <label>OTP (demo: 1234)</label>
+      <div class="otp-row">
+        <input type="tel" id="bk-otp" maxlength="4" placeholder="1234">
+        <button class="btn btn-outline btn-sm" onclick="sendOtp('bk-phone')">Send OTP</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label>Payment</label>
+        <select id="bk-pay">
+          <option value="pay_at_club">Pay at Club</option>
+          <option value="pay_now">Pay Now (online deposit)</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-green" onclick="createBooking()">Confirm Booking</button>
+    <button class="btn btn-outline" style="margin-left:8px" onclick="closeBooking()">Cancel</button>
+    <div id="bk-result" style="margin-top:12px;font-size:.85rem"></div>
+  </div>
+
+  <!-- Auth + My Bookings -->
+  <div class="card" id="auth-card">
+    <div id="login-section">
+      <h2>My Bookings — Login</h2>
+      <p style="font-size:.85rem;color:#666;margin-bottom:14px">Enter your phone and OTP (demo: 1234) to view your bookings.</p>
+      <div class="form-group">
+        <label>Phone (10 digits)</label>
+        <input type="tel" id="auth-phone" maxlength="10" placeholder="9876543210" oninput="this.value=this.value.replace(/\D/,'')">
+      </div>
+      <div class="form-group">
+        <label>Your Name <span style="color:#888;font-weight:400">(only needed if new)</span></label>
+        <input type="text" id="auth-name" placeholder="Full name">
+      </div>
+      <div class="form-group" id="auth-otp-row" style="display:none">
+        <label>OTP (demo: 1234)</label>
+        <div class="otp-row">
+          <input type="tel" id="auth-otp" maxlength="4" placeholder="1234">
+          <button class="btn btn-outline btn-sm" onclick="sendOtp('auth-phone')">Resend</button>
+        </div>
+      </div>
+      <button class="btn btn-green" onclick="authStep()">Continue</button>
+    </div>
+
+    <div id="my-bookings" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <h2 style="margin:0">My Bookings</h2>
+        <button class="btn btn-outline btn-sm" onclick="logout()">Logout</button>
+      </div>
+      <div id="my-bookings-list"><div class="empty"><span class="spinner"></span></div></div>
+    </div>
+  </div>
+</main>
+
+<!-- Cancel confirm modal -->
+<div id="cancel-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:flex;align-items:center;justify-content:center">
+  <div class="card" style="max-width:380px;width:90%;margin:0">
+    <h3>Cancel Booking</h3>
+    <div id="cancel-refund-info" class="refund-note"></div>
+    <div class="form-group" style="margin-top:10px">
+      <label>Reason (optional)</label>
+      <input type="text" id="cancel-reason" placeholder="Reason for cancellation">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btn-danger" onclick="confirmCancel()">Yes, Cancel</button>
+      <button class="btn btn-outline" onclick="closeCancelModal()">Back</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = '';
+let custToken = localStorage.getItem('cust_token');
+let custData  = JSON.parse(localStorage.getItem('cust_data') || 'null');
+let tables    = [];
+let selectedTableId = null;
+let cancelBookingCode = null;
+
+// ── Init ──
+async function init() {
+  await loadClubInfo();
+  await loadTables();
+  setInterval(loadTables, 15000);
+  if (custToken) showMyBookings();
+  updateAuthUI();
+  // Set default date to tomorrow
+  const d = new Date(); d.setDate(d.getDate() + 1);
+  document.getElementById('bk-date').value = d.toISOString().slice(0,10);
+  document.getElementById('bk-time').value = '11:00';
+}
+
+async function loadClubInfo() {
+  try {
+    const r = await fetch('/api/tables');
+    const d = await r.json();
+    // Get settings from health-adjacent endpoint — use admin if logged in, else skip
+    document.getElementById('club-name').textContent = 'CueMaster Snooker & Pool';
+    document.getElementById('club-info').textContent = '42 MG Road, Bengaluru  |  10:00 – 23:00  |  +91 98765 43210';
+  } catch(e){}
+}
+
+async function loadTables() {
+  try {
+    const r = await fetch('/api/tables');
+    const d = await r.json();
+    tables = d.tables || [];
+    renderTables();
+    document.getElementById('refresh-indicator').textContent = 'Updated ' + new Date().toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',hour12:false});
+  } catch(e) { console.error(e); }
+}
+
+function renderTables() {
+  const grid = document.getElementById('table-grid');
+  if (!tables.length) { grid.innerHTML = '<div class="empty">No tables found</div>'; return; }
+  grid.innerHTML = tables.map(t => {
+    const st = t.effectiveStatus || t.status;
+    const nextAvail = t.nextAvailableTs ? 'Next free: ' + fmt(t.nextAvailableTs,'time') : '';
+    const canBook = st === 'available';
+    return `<div class="table-card" onclick="${canBook ? 'openBooking('+t.id+')' : ''}">
+      <div class="tc-name">${esc(t.name)}</div>
+      <div class="tc-rate">Rs.${t.hourly_rate}/hr${t.peak_rate ? ' · Peak Rs.'+t.peak_rate : ''}</div>
+      <span class="badge badge-${st}">${stLabel(st)}</span>
+      ${nextAvail ? '<div class="tc-next">'+nextAvail+'</div>' : ''}
+      ${canBook ? '<div class="tc-next" style="color:#0f5c3a;margin-top:4px">Click to book</div>' : ''}
+    </div>`;
+  }).join('');
+
+  // Populate table dropdown
+  const sel = document.getElementById('bk-table');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Select table...</option>' +
+    tables.filter(t => ['available','reserved'].includes(t.effectiveStatus || t.status)).map(t =>
+      `<option value="${t.id}">${esc(t.name)} (Rs.${t.hourly_rate}/hr)</option>`
+    ).join('');
+  if (cur) sel.value = cur;
+}
+
+function openBooking(tableId) {
+  document.getElementById('booking-section').style.display = 'block';
+  document.getElementById('bk-table').value = tableId;
+  previewPrice();
+  document.getElementById('booking-section').scrollIntoView({behavior:'smooth'});
+}
+function closeBooking() {
+  document.getElementById('booking-section').style.display = 'none';
+  document.getElementById('bk-result').innerHTML = '';
+  document.getElementById('price-preview').style.display = 'none';
+}
+
+async function previewPrice() {
+  const tid = document.getElementById('bk-table').value;
+  const dt  = document.getElementById('bk-date').value;
+  const tm  = document.getElementById('bk-time').value;
+  const dur = document.getElementById('bk-dur').value;
+  const box = document.getElementById('price-preview');
+  if (!tid || !dt || !tm || !dur) { box.style.display='none'; return; }
+  const startTs = new Date(`${dt}T${tm}:00+05:30`).getTime();
+  try {
+    const r = await fetch(`/api/bookings/price?tableId=${tid}&startTs=${startTs}&durationMin=${dur}`);
+    const d = await r.json();
+    if (!r.ok) { box.style.display='none'; return; }
+    const isPeak = d.isPeak ? ' (peak)' : ' (off-peak)';
+    box.style.display = 'block';
+    box.innerHTML = `Rs.${d.rate}/hr${isPeak} × ${dur} min = <strong>Rs.${d.amount}</strong>` +
+      (d.deposit > 0 ? `<br>Online deposit: <strong>Rs.${d.deposit}</strong>` : '');
+  } catch(e) { box.style.display='none'; }
+}
+
+let otpSentPhone = null;
+async function sendOtp(phoneField) {
+  const ph = document.getElementById(phoneField).value.trim();
+  if (!/^\d{10}$/.test(ph)) { toast('Enter a valid 10-digit phone number', 'error'); return; }
+  await fetch('/api/auth/customer/request-otp', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({phone:ph})});
+  otpSentPhone = ph;
+  document.getElementById('auth-otp-row').style.display = 'block';
+  document.getElementById('otp-row').style.display = 'block';
+  toast('OTP sent! (demo: 1234)', 'success');
+}
+
+async function authStep() {
+  const ph   = document.getElementById('auth-phone').value.trim();
+  const name = document.getElementById('auth-name').value.trim();
+  const otp  = document.getElementById('auth-otp')?.value.trim();
+
+  if (!/^\d{10}$/.test(ph)) { toast('Enter a valid 10-digit phone number', 'error'); return; }
+
+  if (!document.getElementById('auth-otp-row').style.display || document.getElementById('auth-otp-row').style.display === 'none') {
+    // Step 1: send OTP
+    await sendOtp('auth-phone');
+    return;
+  }
+
+  if (!otp) { toast('Enter the OTP', 'error'); return; }
+
+  const r = await fetch('/api/auth/customer/verify-otp', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({phone:ph, otp, name})
+  });
+  const d = await r.json();
+  if (!r.ok) {
+    if (d.newCustomer) { toast('Please enter your name', 'error'); return; }
+    toast(d.error || 'Login failed', 'error'); return;
+  }
+  custToken = d.token;
+  custData  = d.customer;
+  localStorage.setItem('cust_token', custToken);
+  localStorage.setItem('cust_data', JSON.stringify(custData));
+  toast('Welcome, ' + custData.name + '!', 'success');
+  showMyBookings();
+  updateAuthUI();
+}
+
+function toggleAuth() {
+  if (custToken) {
+    document.getElementById('auth-card').scrollIntoView({behavior:'smooth'});
+  } else {
+    document.getElementById('auth-card').scrollIntoView({behavior:'smooth'});
+  }
+}
+
+function logout() {
+  custToken = null; custData = null;
+  localStorage.removeItem('cust_token');
+  localStorage.removeItem('cust_data');
+  document.getElementById('my-bookings').style.display = 'none';
+  document.getElementById('login-section').style.display = 'block';
+  updateAuthUI();
+  toast('Logged out', 'success');
+}
+
+function updateAuthUI() {
+  const btn = document.getElementById('auth-btn');
+  const st  = document.getElementById('auth-status');
+  if (custToken && custData) {
+    st.textContent  = custData.name;
+    btn.textContent = 'My Bookings';
+  } else {
+    st.textContent  = '';
+    btn.textContent = 'Login';
+  }
+}
+
+function showMyBookings() {
+  document.getElementById('login-section').style.display = 'none';
+  document.getElementById('my-bookings').style.display   = 'block';
+  loadMyBookings();
+}
+
+async function loadMyBookings() {
+  const list = document.getElementById('my-bookings-list');
+  list.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
+  try {
+    const r = await fetch('/api/customers/me/history', {headers:{Authorization:'Bearer '+custToken}});
+    if (!r.ok) { logout(); return; }
+    const d = await r.json();
+    if (!d.bookings || !d.bookings.length) { list.innerHTML = '<div class="empty">No bookings yet.</div>'; return; }
+    list.innerHTML = d.bookings.map(b => {
+      const active = ['confirmed','checked_in','in_play'].includes(b.status);
+      const canCancel = ['confirmed'].includes(b.status) && b.start_ts > Date.now();
+      const bill = d.bills.find(bl => bl.booking_id === b.id);
+      return `<div class="booking-row">
+        <div>
+          <div style="font-weight:600;font-size:.9rem">${esc(b.table_name)} · ${fmt(b.start_ts,'dt')}</div>
+          <div style="font-size:.8rem;color:#555">${b.duration_min} min · Rs.${b.rate_at_booking}/hr · ${b.booking_code}</div>
+          ${b.payment_type==='pay_now' ? '<div style="font-size:.75rem;color:#666">Deposit: Rs.'+b.deposit_amount+' ('+b.deposit_status+')</div>' : ''}
+          ${bill ? '<div style="font-size:.75rem;color:#0f5c3a">Bill: Rs.'+bill.total_amount+' · '+bill.status+'</div>' : ''}
+          ${active && b.grace_deadline ? '<div class="countdown">Grace deadline: '+fmt(b.grace_deadline,'dt')+'</div>' : ''}
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+          <span class="tag tag-${b.status}">${b.status.replace('_',' ')}</span>
+          ${canCancel ? `<button class="btn btn-outline btn-sm" onclick="openCancelModal('${b.booking_code}',${b.start_ts},${b.deposit_amount},'${b.payment_type}')">Cancel</button>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) { list.innerHTML = '<div class="empty">Error loading bookings</div>'; }
+}
+
+async function createBooking() {
+  const tid  = document.getElementById('bk-table').value;
+  const dt   = document.getElementById('bk-date').value;
+  const tm   = document.getElementById('bk-time').value;
+  const dur  = parseInt(document.getElementById('bk-dur').value);
+  const ph   = document.getElementById('bk-phone').value.trim();
+  const name = document.getElementById('bk-name').value.trim();
+  const otp  = document.getElementById('bk-otp').value.trim();
+  const pay  = document.getElementById('bk-pay').value;
+  const res  = document.getElementById('bk-result');
+
+  if (!tid || !dt || !tm) { toast('Fill in table, date and time', 'error'); return; }
+  if (!ph) { toast('Phone number required', 'error'); return; }
+
+  // Ensure customer is logged in
+  if (!custToken) {
+    if (!otp) { await sendOtp('bk-phone'); return; }
+    const ar = await fetch('/api/auth/customer/verify-otp', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({phone:ph, otp, name})
+    });
+    const ad = await ar.json();
+    if (!ar.ok) { toast(ad.error || 'OTP failed', 'error'); return; }
+    custToken = ad.token; custData = ad.customer;
+    localStorage.setItem('cust_token', custToken);
+    localStorage.setItem('cust_data', JSON.stringify(custData));
+    updateAuthUI();
+  }
+
+  const startTs = new Date(`${dt}T${tm}:00+05:30`).getTime();
+  const r = await fetch('/api/bookings', {
+    method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+custToken},
+    body:JSON.stringify({tableId:Number(tid), startTs, durationMin:dur, paymentType:pay})
+  });
+  const d = await r.json();
+  if (!r.ok) { toast(d.error || 'Booking failed', 'error'); return; }
+
+  toast('Booked! ' + d.bookingCode, 'success');
+  res.innerHTML = `<div style="background:#d1fae5;border-radius:8px;padding:12px">
+    <strong>Booking Confirmed!</strong><br>
+    Code: <strong>${d.bookingCode}</strong><br>
+    Table: ${esc(d.tableName)}<br>
+    Start: ${fmt(d.startTs,'dt')}<br>
+    Duration: ${d.durationMin} min<br>
+    Amount: Rs.${d.totalAmount}
+    ${d.depositAmount > 0 ? '<br>Deposit: Rs.'+d.depositAmount : ''}
+  </div>`;
+  closeBooking();
+  await loadTables();
+  if (custToken) { showMyBookings(); }
+}
+
+// Cancel flow
+function openCancelModal(code, startTs, deposit, payType) {
+  cancelBookingCode = code;
+  const minsLeft = (startTs - Date.now()) / 60000;
+  let refund = 0, note = '';
+  if (payType === 'pay_now' && deposit > 0) {
+    if (minsLeft >= 1440)      { refund = deposit; note = '100% refund (>24h before)'; }
+    else if (minsLeft >= 120)  { refund = Math.round(deposit*0.5*100)/100; note = '50% refund (2–24h before)'; }
+    else                       { refund = 0; note = 'No refund (under 2h before)'; }
+  } else { note = 'No deposit to refund (pay-at-club booking)'; }
+
+  document.getElementById('cancel-refund-info').innerHTML =
+    `<strong>Refund Policy:</strong> ${note}` + (deposit > 0 && payType==='pay_now' ? `<br>You will receive: <strong>Rs.${refund}</strong>` : '');
+  const m = document.getElementById('cancel-modal');
+  m.style.display = 'flex';
+}
+
+function closeCancelModal() { document.getElementById('cancel-modal').style.display = 'none'; cancelBookingCode = null; }
+
+async function confirmCancel() {
+  if (!cancelBookingCode) return;
+  const reason = document.getElementById('cancel-reason').value.trim();
+  const r = await fetch(`/api/bookings/${cancelBookingCode}/cancel`, {
+    method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+custToken},
+    body:JSON.stringify({reason})
+  });
+  const d = await r.json();
+  closeCancelModal();
+  if (!r.ok) { toast(d.error || 'Cancel failed', 'error'); return; }
+  toast('Booking cancelled' + (d.refundAmount > 0 ? '. Refund: Rs.' + d.refundAmount : ''), 'success');
+  loadMyBookings();
+  loadTables();
+}
+
+// ── Helpers ──
+function fmt(ts, mode) {
+  if (!ts) return '—';
+  const opts = {timeZone:'Asia/Kolkata'};
+  if (mode==='time') return new Date(ts).toLocaleTimeString('en-IN',{...opts,hour:'2-digit',minute:'2-digit',hour12:false});
+  if (mode==='dt')   return new Date(ts).toLocaleString('en-IN',{...opts,day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',hour12:false});
+  return new Date(ts).toLocaleString('en-IN', opts);
+}
+function stLabel(s){ return {available:'Available',reserved:'Reserved',in_play:'In Play',maintenance:'Maintenance',disabled:'Disabled'}[s]||s; }
+function esc(s){ return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function toast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'show ' + (type||'success');
+  clearTimeout(el._t); el._t = setTimeout(()=>{el.className='';}, 3500);
+}
+
+init();
+</script>
+</body>
+</html>
