@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/brand/logo.svg" alt="KAMUI Logo" width="180" />
+<img src="public/brand/logo.png" alt="KAMUI Logo" width="220" />
 
 # KAMUI (CueMaster)
 ### *Play · Connect · Belong*
@@ -36,7 +36,7 @@ It marries consumer-facing delights—such as 3D floor maps, ELO matchmaking, la
 | 📱 **4** | **Table QR Experience** | `/table` (`table.html`) | • Contactless Dining menu with customization chips (*Less Ice*, *Extra Cheese*, *Jain*)<br>• One-tap Kitchen Order Ticket (KOT) dispatcher<br>• Live Digital Scoreboard (Race to 7) with Instagram Story export<br>• Closing-Hour Ladies Spin & Win wheel & 10-tier loyalty stamps |
 | 📸 **5** | **Scan-to-Get Club Memories** | `/scan-to-get` (`scan-to-get.html`) | • Vintage leather scrapbook design with open album pages<br>• Live camera viewfinder QR scanner<br>• College Friends, Corporate Teams, and Homemakers curated photo streams<br>• High-res ZIP batch download trigger |
 | 🧒 **6** | **Junior Academy & Under-14** | `/junior-zone` (`junior-zone.html`) | • Grassroots Coaching progression (Bronze → Silver → Gold → Elite)<br>• Family Bundles (6ft table, 48" cues, step-box, rip-proof cloth)<br>• Birthday Party Builder with pizza packages & mini tournament<br>• Parent Safety Portal: 9 AM–6 PM Curfew, Live CCTV, ₹150 Spend Cap, 4-digit pickup OTP |
-| ⛩️ **7** | **Brand Identity & Iconography** | `public/brand/` | • Handcrafted SVG vector with sumi-e Torii gate<br>• Watercolor peach sun & blooming sakura cherry blossom branch<br>• Authentic typography (*Playfair Display*, *Inter*, *Caveat*) |
+| ⛩️ **7** | **Brand Identity & Favicon** | `public/brand/` | • Official KAMUI Emblem with Japanese sumi-e Torii gate, watercolor peach sun & blooming sakura branch<br>• High-res PNG & SVG brand assets + browser favicon (`favicon.ico`, `favicon.png`)<br>• Authentic typography (*Playfair Display*, *Inter*, *Caveat*) |
 | 📊 **8** | **Owner & Staff Command Center** | `/staff` (`staff.html`) | • 12 Live Table Sessions grid with active timers (e.g. `28:14 / 60 min`)<br>• IoT Table Light relay switches (ON/OFF sync)<br>• Kitchen Order Ticket (KOT) Kanban board<br>• Digital Khatabook (Credit Ledger) with WhatsApp UPI reminders<br>• Hourly Profit & Expense analytics (56.7% Margin) |
 
 ---
