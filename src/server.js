@@ -1,9 +1,12 @@
 'use strict';
 
+require('dotenv').config();
+
 const express = require('express');
 const path    = require('path');
 const { initSchema } = require('./db');
 const { seedData, serverNow } = require('./seed');
+const { checkSupabaseHealth, SUPABASE_URL } = require('./supabase');
 
 // Routes
 const authRoutes     = require('./routes/auth');
@@ -60,6 +63,12 @@ app.get('/receipt', (req, res) => res.sendFile(path.join(__dirname, '..', 'publi
 // ── Health check ──
 app.get('/api/health', (req, res) => {
   res.json({ ok: true, serverTime: serverNow(), version: '1.0.0-phase3' });
+});
+
+// ── Supabase Status check ──
+app.get('/api/supabase/status', async (req, res) => {
+  const health = await checkSupabaseHealth();
+  res.json(health);
 });
 
 // ── Analytics (simple stats for staff dashboard) ──
