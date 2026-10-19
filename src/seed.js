@@ -1,7 +1,13 @@
 'use strict';
 
+const path = require('path');
+const fs = require('fs');
 const bcrypt = require('bcryptjs');
 const { getDb } = require('./db');
+
+// Ensure data directory exists
+const dataDir = path.join(__dirname, '..', 'data');
+if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
 // Server-side time offset in ms (for demo clock)
 let timeOffset = 0;
@@ -107,11 +113,16 @@ function seedData() {
     insertTable.run(t.code, t.name, t.type, t.status, t.hourly_rate, t.peak_rate);
   }
 
-  // Maintenance block for table 5
+  // Maintenance block for Pool Table 1
+  const maintTable = db.prepare("SELECT id FROM tables WHERE name = ?").get('Pool Table 1');
+  const ownerUser  = db.prepare("SELECT id FROM users WHERE username = ?").get('owner');
+  const maintTableId = maintTable ? maintTable.id : 5;
+  const ownerId      = ownerUser ? ownerUser.id : 1;
+
   const maintStart = serverNow() - 2 * 60 * 60 * 1000;
   const maintEnd   = serverNow() + 4 * 60 * 60 * 1000;
   db.prepare("INSERT INTO maintenance_blocks(table_id,start_ts,end_ts,reason,created_by) VALUES(?,?,?,?,?)")
-    .run(5, maintStart, maintEnd, 'Baize replacement', 1);
+    .run(maintTableId, maintStart, maintEnd, 'Baize replacement', ownerId);
 
   // 8 Customers
   const customerRows = [
