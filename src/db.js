@@ -168,6 +168,16 @@ function initSchema() {
       detail      TEXT,
       created_at  INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000)
     );
+
+    CREATE TABLE IF NOT EXISTS orders (
+      id            INTEGER PRIMARY KEY AUTOINCREMENT,
+      order_code    TEXT UNIQUE NOT NULL,
+      table_id      INTEGER NOT NULL,
+      items_summary TEXT NOT NULL,
+      total_amount  REAL NOT NULL,
+      status        TEXT NOT NULL DEFAULT 'preparing',
+      created_at    INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000)
+    );
   `);
 }
 

@@ -39,6 +39,7 @@ router.get('/', (req, res) => {
       ...t,
       effectiveStatus,
       nextAvailableTs: effectiveStatus === 'maintenance' ? maintEndTs : nextAvailableTs,
+      iotLight: iotStates[t.id] !== undefined ? iotStates[t.id] : (effectiveStatus !== 'maintenance' && effectiveStatus !== 'disabled'),
     };
   });
 
@@ -50,7 +51,18 @@ router.get('/:id', (req, res) => {
   const db = getDb();
   const t  = db.prepare('SELECT * FROM tables WHERE id = ?').get(Number(req.params.id));
   if (!t) return res.status(404).json({ error: 'Table not found' });
-  res.json({ table: t });
+  res.json({ table: { ...t, iotLight: iotStates[t.id] !== undefined ? iotStates[t.id] : true } });
+});
+
+// POST /api/tables/:id/iot-light — toggle IoT light relay
+const iotStates = { 1: true, 2: true, 3: true, 4: true, 5: true, 6: false, 7: true, 8: true, 9: true, 10: false, 11: true, 12: true };
+
+router.post('/:id/iot-light', (req, res) => {
+  const tableId = Number(req.params.id);
+  const { state } = req.body || {};
+  const newState = state !== undefined ? Boolean(state) : !iotStates[tableId];
+  iotStates[tableId] = newState;
+  res.json({ ok: true, tableId, iotLight: newState });
 });
 
 module.exports = router;

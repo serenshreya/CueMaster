@@ -1,0 +1,564 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;0,900;1,600&display=swap');
+
+:root {
+  --paper-bg: #F4ECE1;
+  --paper-card: #FDF9F2;
+  --paper-dark: #E6D9C5;
+  --paper-border: #D8C7B0;
+  --ink: #263328;
+  --ink-muted: #596B5C;
+  --ink-light: #889C8C;
+  --sage: #4E6B4B;
+  --sage-deep: #2A4830;
+  --sage-light: #EBF2EA;
+  --sage-border: #C8DBC6;
+  --sakura: #F3CBC5;
+  --sakura-light: #FBF0EE;
+  --gold: #D29F4D;
+  --gold-deep: #B58232;
+  --gold-light: #FBF4E7;
+  --amber: #E29B2E;
+  --status-green: #2EA259;
+  --status-green-bg: #EAF7EE;
+  --status-amber: #DD9522;
+  --status-amber-bg: #FEF7EA;
+  --status-red: #D64242;
+  --status-red-bg: #FDF0F0;
+  --status-gray: #7E8D82;
+  --status-gray-bg: #F1F4F2;
+  --shadow-paper: 0 10px 30px rgba(54, 43, 27, 0.12), 0 2px 8px rgba(54, 43, 27, 0.06);
+  --shadow-card: 0 6px 20px rgba(50, 40, 25, 0.09);
+  --shadow-polaroid: 0 8px 24px rgba(40, 30, 20, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--paper-bg);
+  color: var(--ink);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Typography Helpers */
+.font-heading {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+.font-handwritten {
+  font-family: 'Caveat', cursive, sans-serif;
+}
+.font-body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* KAMUI Global Navbar */
+.kamui-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(247, 241, 232, 0.96);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1.5px solid var(--paper-border);
+  padding: 0.65rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(60, 48, 32, 0.05);
+}
+
+.kamui-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.kamui-nav-brand img {
+  height: 42px;
+  width: auto;
+  border-radius: 8px;
+}
+
+.kamui-brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.kamui-brand-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.kamui-brand-tagline {
+  font-family: 'Caveat', cursive;
+  font-size: 0.88rem;
+  color: var(--sage);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+
+.kamui-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.8rem;
+  list-style: none;
+}
+
+.kamui-nav-links a {
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--ink);
+  padding: 0.35rem 0.65rem;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.kamui-nav-links a:hover,
+.kamui-nav-links a.active {
+  color: var(--sage-deep);
+  background: var(--paper-dark);
+}
+
+.kamui-nav-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.badge-live-crowd {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #E8F5EB;
+  border: 1px solid #C4E6CA;
+  color: #246B34;
+  padding: 0.35rem 0.85rem;
+  border-radius: 30px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.crowd-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--status-green);
+  display: inline-block;
+  box-shadow: 0 0 0 2px rgba(46, 162, 89, 0.25);
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 162, 89, 0.4); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 6px rgba(46, 162, 89, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 162, 89, 0); }
+}
+
+.badge-loyalty {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #FDF5E6;
+  border: 1px solid #F2DEC0;
+  color: #9E6B18;
+  padding: 0.35rem 0.85rem;
+  border-radius: 30px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.badge-coins {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #FAF0E4;
+  border: 1px solid #ECCFA7;
+  color: #9C6718;
+  padding: 0.35rem 0.85rem;
+  border-radius: 30px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.badge-profile {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid var(--paper-border);
+  background: var(--paper-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* Parchment / Paper Card with Torn Edges */
+.parchment-card {
+  background: var(--paper-card);
+  border: 1px solid var(--paper-border);
+  border-radius: 18px;
+  box-shadow: var(--shadow-paper);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Torn Edge Accent Top */
+.torn-edge-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background-image: radial-gradient(circle at 10px 0, transparent 8px, var(--paper-card) 9px);
+  background-size: 20px 12px;
+  z-index: 2;
+}
+
+/* Washi Tape Strip */
+.washi-tape {
+  position: absolute;
+  height: 22px;
+  background: rgba(226, 175, 120, 0.65);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  border-left: 2px dashed rgba(255,255,255,0.4);
+  border-right: 2px dashed rgba(255,255,255,0.4);
+  z-index: 10;
+  pointer-events: none;
+}
+.washi-tape.tape-top-center {
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-1deg);
+  width: 110px;
+}
+.washi-tape.tape-top-left {
+  top: -8px;
+  left: 25px;
+  transform: rotate(-3deg);
+  width: 90px;
+}
+.washi-tape.tape-top-right {
+  top: -8px;
+  right: 25px;
+  transform: rotate(2deg);
+  width: 90px;
+}
+
+/* Sticky Handwritten Note */
+.sticky-note {
+  background: #FCF4DF;
+  border: 1px solid #EADBB6;
+  border-radius: 4px;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 4px 14px rgba(60, 48, 25, 0.12);
+  transform: rotate(-2deg);
+  position: relative;
+  font-family: 'Caveat', cursive;
+  color: #2F3D30;
+}
+.sticky-note::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 30%;
+  width: 60px;
+  height: 18px;
+  background: rgba(230, 185, 130, 0.6);
+  transform: rotate(2deg);
+}
+
+/* Vintage Polaroid Photo Frame */
+.polaroid-card {
+  background: #FFFFFF;
+  padding: 10px 10px 28px 10px;
+  border-radius: 4px;
+  box-shadow: var(--shadow-polaroid);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+.polaroid-card:hover {
+  transform: translateY(-4px) scale(1.02) !important;
+  box-shadow: 0 14px 32px rgba(40, 30, 20, 0.2);
+  z-index: 5;
+}
+.polaroid-img-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #EFE8DC;
+}
+.polaroid-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.polaroid-caption {
+  font-family: 'Caveat', cursive;
+  font-size: 1.15rem;
+  text-align: center;
+  margin-top: 10px;
+  color: var(--ink);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Buttons */
+.btn-kamui-primary {
+  background-color: var(--sage);
+  color: #FFFFFF;
+  border: none;
+  padding: 0.65rem 1.6rem;
+  border-radius: 30px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  box-shadow: 0 3px 8px rgba(78, 107, 75, 0.25);
+}
+.btn-kamui-primary:hover {
+  background-color: var(--sage-deep);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(78, 107, 75, 0.35);
+}
+
+.btn-kamui-outline {
+  background: transparent;
+  color: var(--sage);
+  border: 1.5px solid var(--sage);
+  padding: 0.6rem 1.5rem;
+  border-radius: 30px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+.btn-kamui-outline:hover {
+  background: var(--sage-light);
+  color: var(--sage-deep);
+  border-color: var(--sage-deep);
+}
+
+.btn-kamui-gold {
+  background: linear-gradient(135deg, #E2A745, #C68F33);
+  color: #FFFFFF;
+  border: none;
+  padding: 0.65rem 1.6rem;
+  border-radius: 30px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 3px 10px rgba(198, 143, 51, 0.28);
+}
+.btn-kamui-gold:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(198, 143, 51, 0.4);
+}
+
+/* Status Badges */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.status-pill::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.status-pill.available {
+  background: var(--status-green-bg);
+  color: var(--status-green);
+  border: 1px solid #B8E4C4;
+}
+.status-pill.available::before { background: var(--status-green); }
+
+.status-pill.reserved {
+  background: var(--status-amber-bg);
+  color: var(--status-amber);
+  border: 1px solid #F5D7A1;
+}
+.status-pill.reserved::before { background: var(--status-amber); }
+
+.status-pill.occupied,
+.status-pill.in_play {
+  background: var(--status-red-bg);
+  color: var(--status-red);
+  border: 1px solid #F8C3C3;
+}
+.status-pill.occupied::before,
+.status-pill.in_play::before { background: var(--status-red); }
+
+.status-pill.maintenance {
+  background: var(--status-gray-bg);
+  color: var(--status-gray);
+  border: 1px solid #D6DCD7;
+}
+.status-pill.maintenance::before { background: var(--status-gray); }
+
+/* Switch Toggle (iOS style for IoT Light) */
+.switch-toggle {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+.switch-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #D3DDD4;
+  transition: .3s;
+  border-radius: 24px;
+}
+.switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+input:checked + .switch-slider {
+  background-color: var(--sage);
+}
+input:checked + .switch-slider:before {
+  transform: translateX(20px);
+}
+
+/* Modals */
+.kamui-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(30, 40, 32, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  padding: 1.5rem;
+}
+.kamui-modal-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.kamui-modal-box {
+  background: var(--paper-card);
+  border: 1px solid var(--paper-border);
+  border-radius: 20px;
+  max-width: 520px;
+  width: 100%;
+  padding: 2rem;
+  box-shadow: 0 20px 50px rgba(35, 25, 15, 0.25);
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Toast Notifications */
+#toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+.kamui-toast {
+  background: var(--ink);
+  color: #FFFFFF;
+  padding: 0.85rem 1.4rem;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  pointer-events: auto;
+  animation: slideIn 0.3s ease;
+}
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .kamui-navbar {
+    padding: 0.6rem 1rem;
+  }
+  .kamui-nav-links {
+    gap: 0.75rem;
+  }
+  .kamui-nav-links a {
+    font-size: 0.82rem;
+    padding: 0.25rem 0.5rem;
+  }
+  .badge-live-crowd,
+  .badge-loyalty,
+  .badge-coins {
+    display: none;
+  }
+}

@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Table & Multi-Gaming Booking Engine | KAMUI</title>
+  <link rel="icon" type="image/x-icon" href="/brand/logo.png">
+  <link rel="stylesheet" href="/css/kamui-theme.css">
+  <style>
+    .booking-page-container {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    /* Top Hero Banner (Image 2) */
+    .booking-hero-banner {
+      background: #FAF5EB;
+      border: 1px solid var(--paper-border);
+      border-radius: 18px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 1.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .booking-hero-banner::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, var(--sage), var(--gold), var(--sakura));
+    }
+    .banner-polaroids {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .banner-polaroid {
+      background: white;
+      padding: 6px 6px 16px 6px;
+      border-radius: 3px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      transform: rotate(2deg);
+      width: 100px;
+    }
+    .banner-polaroid:nth-child(2) {
+      transform: rotate(-3deg);
+      width: 110px;
+    }
+    .banner-polaroid img {
+      width: 100%;
+      height: 65px;
+      object-fit: cover;
+      border-radius: 2px;
+    }
+
+    /* Layout Split: Left Floor Map, Right Booking Wizard */
+    .booking-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 1.8rem;
+    }
+
+    /* Floor Map Container (Image 2) */
+    .floor-map-card {
+      background: #FDFBF7;
+      border: 1px solid var(--paper-border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-card);
+      position: relative;
+    }
+    .floor-filter-pills {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .floor-pill {
+      background: #EDE4D3;
+      border: none;
+      padding: 0.35rem 0.95rem;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .floor-pill.active {
+      background: var(--sage);
+      color: white;
+    }
+
+    /* Interactive Floor Map Graphic with Hotspots */
+    .floor-map-viewport {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1.5px solid #E2D2BE;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .floor-map-viewport img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .map-hotspot {
+      position: absolute;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      padding: 4px;
+    }
+    .map-hotspot:hover {
+      transform: scale(1.08);
+      z-index: 20;
+    }
+    .map-hotspot.glow-green {
+      border: 2px solid #2EA259;
+      box-shadow: 0 0 14px rgba(46, 162, 89, 0.6);
+      background: rgba(46, 162, 89, 0.25);
+    }
+    .map-hotspot.glow-yellow {
+      border: 2px solid #E29B2E;
+      box-shadow: 0 0 14px rgba(226, 155, 46, 0.6);
+      background: rgba(226, 155, 46, 0.25);
+    }
+    .map-hotspot.glow-red {
+      border: 2px solid #D64242;
+      box-shadow: 0 0 14px rgba(214, 66, 66, 0.6);
+      background: rgba(214, 66, 66, 0.25);
+    }
+    .hotspot-timer {
+      background: rgba(0, 0, 0, 0.75);
+      color: #FFFFFF;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-top: 2px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Floor switcher (GF, 1F, 2F) */
+    .floor-switcher {
+      position: absolute;
+      top: 1.5rem;
+      left: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      z-index: 10;
+    }
+    .floor-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 6px;
+      background: #E8DCC9;
+      border: 1px solid #D6C4AD;
+      font-weight: 700;
+      font-size: 0.82rem;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .floor-btn.active {
+      background: var(--sage);
+      color: white;
+      border-color: var(--sage-deep);
+    }
+
+    /* Booking Wizard (Right Side, Image 2) */
+    .wizard-card {
+      background: #FDFBF7;
+      border: 1px solid var(--paper-border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-card);
+    }
+    .wizard-steps-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #EFE4D2;
+      padding-bottom: 0.85rem;
+      margin-bottom: 1.2rem;
+    }
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+    .step-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #DED3C1;
+      color: var(--ink);
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .step-indicator.active .step-circle {
+      background: var(--sage);
+      color: white;
+    }
+    .step-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+    }
+    .step-indicator.active .step-label {
+      color: var(--ink);
+    }
+
+    /* Table selection grid (Step 2) */
+    .table-selection-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+    .table-select-card {
+      background: #FFFFFF;
+      border: 1.5px solid #E5D9C8;
+      border-radius: 12px;
+      padding: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .table-select-card:hover {
+      border-color: var(--sage);
+      transform: translateY(-2px);
+    }
+    .table-select-card.selected {
+      border-color: var(--sage);
+      background: #F3F7F2;
+      box-shadow: 0 4px 12px rgba(78, 107, 75, 0.15);
+    }
+    .table-select-card.occupied {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+    .table-mini-img {
+      width: 100%;
+      height: 60px;
+      background: #2E8540;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      border: 3px solid #7D512D;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    .table-mini-img.pool {
+      background: #276299;
+    }
+
+    /* Add-ons & Filters (Step 3) */
+    .addon-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.65rem 0.5rem;
+      border-bottom: 1px dashed #E8DCC9;
+    }
+
+    /* Bottom Summary Bar */
+    .booking-summary-bar {
+      margin-top: 1.5rem;
+      padding: 1rem 1.25rem;
+      background: #F5EDE0;
+      border: 1px solid #DCCBBB;
+      border-radius: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* "Why Kamui?" Bottom Strip */
+    .why-kamui-strip {
+      background: #FAF5EB;
+      border: 1px solid var(--paper-border);
+      border-radius: 16px;
+      padding: 1.2rem 2rem;
+      margin-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+    .why-feature {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .why-icon {
+      font-size: 1.5rem;
+    }
+    .why-text h4 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .why-text p {
+      font-size: 0.75rem;
+      color: var(--ink-muted);
+    }
+
+    @media (max-width: 960px) {
+      .booking-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Top Navbar (Reference Image 2) ── -->
+  <header class="kamui-navbar">
+    <a href="/" class="kamui-nav-brand">
+      <img src="/brand/logo.svg" alt="KAMUI Logo">
+      <div class="kamui-brand-text">
+        <span class="kamui-brand-title">KAMUI</span>
+        <span class="kamui-brand-tagline">Play &nbsp;·&nbsp; Connect &nbsp;·&nbsp; Belong</span>
+      </div>
+    </a>
+
+    <nav>
+      <ul class="kamui-nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/booking.html" class="active">Live Booking</a></li>
+        <li><a href="/contri-hub.html">Contri Hub</a></li>
+        <li><a href="/junior-zone.html">Junior Zone</a></li>
+        <li><a href="/scan-to-get.html">Scan-to-Get</a></li>
+      </ul>
+    </nav>
+
+    <div class="kamui-nav-badges">
+      <div class="badge-live-crowd">
+        <span class="crowd-dot"></span>
+        <span>Live Crowd: Quiet</span>
+      </div>
+      <div class="badge-loyalty">
+        <span>⭐</span>
+        <span>Loyalty: 5/10 Visits</span>
+      </div>
+      <a href="/staff.html" class="badge-profile" title="Staff Dashboard">👤</a>
+    </div>
+  </header>
+
+  <div class="booking-page-container">
+
+    <!-- ── Top Hero Banner (Image 2) ── -->
+    <section class="booking-hero-banner">
+      <div>
+        <p style="font-size: 0.72rem; letter-spacing: 0.16em; font-weight: 700; text-transform: uppercase; color: var(--sage-deep); margin-bottom: 2px;">
+          STEP IN. PLAY MORE.
+        </p>
+        <h1 class="font-heading" style="font-size: 2.1rem; font-weight: 800; color: var(--ink); margin-bottom: 4px;">
+          Live Table & Multi-Gaming Booking Engine
+        </h1>
+        <p style="font-size: 0.95rem; color: var(--ink-muted);">
+          Snooker &nbsp;·&nbsp; Pool &nbsp;·&nbsp; PS5 &nbsp;·&nbsp; Food &nbsp;·&nbsp; Friends &nbsp;·&nbsp; Good Vibes
+        </p>
+      </div>
+
+      <div class="banner-polaroids">
+        <div class="banner-polaroid">
+          <img src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=200&q=80" alt="Snooker">
+        </div>
+        <div class="banner-polaroid">
+          <img src="https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=200&q=80" alt="PS5 Booth">
+        </div>
+        <div class="sticky-note" style="max-width: 140px; transform: rotate(3deg); padding: 0.5rem 0.75rem; font-size: 0.95rem;">
+          Good Games<br>Good People<br>Great Times ♡
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Main Booking Grid (Floor Map + Booking Wizard) ── -->
+    <div class="booking-grid">
+
+      <!-- ── Left: Club Floor Map (Image 2) ── -->
+      <section class="floor-map-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h2 style="font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; color: var(--ink);">
+            🏟️ Club Floor Map
+          </h2>
+          <!-- Filter Pills -->
+          <div class="floor-filter-pills">
+            <button class="floor-pill active" onclick="filterFloor('all')">All</button>
+            <button class="floor-pill" onclick="filterFloor('snooker')">Snooker</button>
+            <button class="floor-pill" onclick="filterFloor('pool')">Pool</button>
+            <button class="floor-pill" onclick="filterFloor('ps5')">PS5 Booths</button>
+            <button class="floor-pill" onclick="filterFloor('gaming')">Gaming Zone</button>
+            <button class="floor-pill" onclick="filterFloor('cafe')">Café & Lounge</button>
+          </div>
+        </div>
+
+        <!-- Floor Switcher & Viewport -->
+        <div class="floor-map-viewport">
+          <div class="floor-switcher">
+            <button class="floor-btn active" onclick="switchFloor('GF')">GF</button>
+            <button class="floor-btn" onclick="switchFloor('1F')">1F</button>
+            <button class="floor-btn" onclick="switchFloor('2F')">2F</button>
+          </div>
+
+          <!-- Base 3D Floor Map Render -->
+          <img src="/images/booking-floormap.jpg" alt="Kamui Interactive Floor Map">
+
+          <!-- Interactive Hotspot: Table 1 (Snooker Available) -->
+          <div class="map-hotspot glow-green" style="top: 52%; left: 16%; width: 50px; height: 85px;" onclick="selectTable(1)" title="Table 1 (Available)">
+            <span style="font-size: 0.7rem; font-weight: 800; color: white; background: rgba(0,0,0,0.6); padding: 1px 4px; border-radius: 3px;">T1</span>
+          </div>
+
+          <!-- Interactive Hotspot: Table 2 (Snooker Reserved) -->
+          <div class="map-hotspot glow-yellow" style="top: 52%; left: 24%; width: 50px; height: 85px;" onclick="selectTable(2)" title="Table 2 (Reserved)">
+            <span style="font-size: 0.7rem; font-weight: 800; color: white; background: rgba(0,0,0,0.6); padding: 1px 4px; border-radius: 3px;">T2</span>
+          </div>
+
+          <!-- Interactive Hotspot: Table 3 (Snooker Occupied with Live Timer) -->
+          <div class="map-hotspot glow-red" style="top: 52%; left: 32%; width: 50px; height: 85px;" onclick="selectTable(3)" title="Table 3 (Occupied)">
+            <span style="font-size: 0.7rem; font-weight: 800; color: white; background: rgba(0,0,0,0.6); padding: 1px 4px; border-radius: 3px;">T3</span>
+            <span class="hotspot-timer">00:18:27</span>
+          </div>
+
+          <!-- Interactive Hotspot: Table 5 (Pool Occupied with Live Timer) -->
+          <div class="map-hotspot glow-red" style="top: 58%; left: 68%; width: 55px; height: 60px;" onclick="selectTable(5)" title="Pool Table (Occupied)">
+            <span style="font-size: 0.7rem; font-weight: 800; color: white; background: rgba(0,0,0,0.6); padding: 1px 4px; border-radius: 3px;">T5</span>
+            <span class="hotspot-timer">00:07:16</span>
+          </div>
+
+          <!-- Interactive Hotspot: PS5 Booths (Occupied with Live Timer) -->
+          <div class="map-hotspot glow-red" style="top: 38%; left: 68%; width: 55px; height: 50px;" title="PS5 Booth (Occupied)">
+            <span style="font-size: 0.7rem; font-weight: 800; color: white; background: rgba(0,0,0,0.6); padding: 1px 4px; border-radius: 3px;">PS5</span>
+            <span class="hotspot-timer">00:12:34</span>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; font-size: 0.82rem; font-weight: 600; color: var(--ink-muted);">
+          <div style="display: flex; gap: 1.2rem;">
+            <span style="display: flex; align-items: center; gap: 0.35rem;"><span style="width: 10px; height: 10px; border-radius: 50%; background: var(--status-green);"></span> Available</span>
+            <span style="display: flex; align-items: center; gap: 0.35rem;"><span style="width: 10px; height: 10px; border-radius: 50%; background: var(--status-amber);"></span> Reserved</span>
+            <span style="display: flex; align-items: center; gap: 0.35rem;"><span style="width: 10px; height: 10px; border-radius: 50%; background: var(--status-red);"></span> Occupied</span>
+          </div>
+          <button style="background: none; border: none; color: var(--sage); font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;">
+            ℹ️ View Floor Guide
+          </button>
+        </div>
+      </section>
+
+      <!-- ── Right: Booking Wizard (Image 2) ── -->
+      <section class="wizard-card">
+        <!-- Header -->
+        <div class="wizard-steps-header">
+          <div>
+            <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--ink);">Book Your Slot</h2>
+            <p style="font-size: 0.78rem; color: var(--ink-muted);">Choose your table, game & preferences</p>
+          </div>
+          <div style="display: flex; gap: 0.85rem;">
+            <div class="step-indicator active">
+              <span class="step-circle">1</span>
+              <span class="step-label">Select</span>
+            </div>
+            <div class="step-indicator">
+              <span class="step-circle">2</span>
+              <span class="step-label">Details</span>
+            </div>
+            <div class="step-indicator">
+              <span class="step-circle">3</span>
+              <span class="step-label">Pay</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 1: Date & Time Picker -->
+        <div style="margin-bottom: 1.25rem;">
+          <h3 style="font-size: 0.88rem; font-weight: 700; color: var(--ink); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span style="width: 20px; height: 20px; border-radius: 50%; background: var(--ink); color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 0.72rem;">1</span>
+            Date & Time
+          </h3>
+          <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 0.65rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; background: white; border: 1.5px solid #D8C7B0; border-radius: 10px; padding: 0.5rem 0.85rem;">
+              <span>📅</span>
+              <input type="date" id="bookingDateInput" style="border: none; outline: none; width: 100%; font-size: 0.9rem; font-weight: 500; color: var(--ink);">
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; background: white; border: 1.5px solid #D8C7B0; border-radius: 10px; padding: 0.5rem 0.85rem;">
+              <span>⏰</span>
+              <select id="bookingTimeSelect" style="border: none; outline: none; width: 100%; font-size: 0.9rem; font-weight: 500; color: var(--ink); background: transparent;">
+                <option value="11:00">11:00 AM</option>
+                <option value="14:00">02:00 PM</option>
+                <option value="17:00">05:00 PM (Peak)</option>
+                <option value="18:00" selected>06:00 PM (Peak)</option>
+                <option value="19:00">07:00 PM (Peak)</option>
+                <option value="20:00">08:00 PM (Peak)</option>
+                <option value="21:00">09:00 PM (Peak)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Choose Your Game / Table -->
+        <div style="margin-bottom: 1.25rem;">
+          <h3 style="font-size: 0.88rem; font-weight: 700; color: var(--ink); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span style="width: 20px; height: 20px; border-radius: 50%; background: var(--ink); color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 0.72rem;">2</span>
+            Choose Your Game / Table
+          </h3>
+
+          <div style="display: flex; gap: 0.4rem; margin-bottom: 0.75rem;">
+            <button class="floor-pill active" id="gameBtnSnooker" onclick="filterGameType('snooker')">Snooker</button>
+            <button class="floor-pill" id="gameBtnPool" onclick="filterGameType('pool')">Pool</button>
+            <button class="floor-pill" id="gameBtnPS5" onclick="filterGameType('ps5')">PS5 Booths</button>
+            <button class="floor-pill" id="gameBtnGaming" onclick="filterGameType('gaming')">Gaming Zone</button>
+          </div>
+
+          <div class="table-selection-grid" id="tablesGridContainer">
+            <!-- Table 1 -->
+            <div class="table-select-card selected" id="cardTable1" onclick="selectTable(1)">
+              <div class="table-mini-img"></div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 700; font-size: 0.85rem;">Table 1 (Snooker)</span>
+                <span class="status-pill available" style="font-size: 0.7rem; padding: 1px 6px;">Available</span>
+              </div>
+              <div style="font-size: 0.78rem; color: var(--ink-muted); margin-top: 2px;">₹400/hr · Heated tournament slate</div>
+            </div>
+
+            <!-- Table 2 -->
+            <div class="table-select-card" id="cardTable2" onclick="selectTable(2)">
+              <div class="table-mini-img"></div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 700; font-size: 0.85rem;">Table 2 (Snooker)</span>
+                <span class="status-pill reserved" style="font-size: 0.7rem; padding: 1px 6px;">Reserved</span>
+              </div>
+              <div style="font-size: 0.78rem; color: var(--ink-muted); margin-top: 2px;">₹400/hr · Next free 19:15</div>
+            </div>
+
+            <!-- Table 3 -->
+            <div class="table-select-card occupied" id="cardTable3">
+              <div class="table-mini-img"></div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 700; font-size: 0.85rem;">Table 3 (Snooker)</span>
+                <span class="status-pill occupied" style="font-size: 0.7rem; padding: 1px 6px;">Occupied</span>
+              </div>
+              <div style="font-size: 0.75rem; color: var(--status-red); font-weight: 600; margin-top: 2px;">⏱ In Play (00:18:27)</div>
+            </div>
+
+            <!-- Table 4 -->
+            <div class="table-select-card" id="cardTable4" onclick="selectTable(4)">
+              <div class="table-mini-img"></div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 700; font-size: 0.85rem;">Table 4 (Snooker)</span>
+                <span class="status-pill available" style="font-size: 0.7rem; padding: 1px 6px;">Available</span>
+              </div>
+              <div style="font-size: 0.78rem; color: var(--ink-muted); margin-top: 2px;">₹350/hr · Club Star Edition</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Add-ons & Filters -->
+        <div>
+          <h3 style="font-size: 0.88rem; font-weight: 700; color: var(--ink); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span style="width: 20px; height: 20px; border-radius: 50%; background: var(--ink); color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 0.72rem;">3</span>
+            Add-ons & Filters
+          </h3>
+
+          <div style="background: white; border: 1.5px solid #E5D9C8; border-radius: 12px; padding: 0.5rem 0.85rem; margin-bottom: 0.75rem;">
+            <div class="addon-item">
+              <span style="font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 0.4rem;">
+                👑 Heated Tournament Table
+              </span>
+              <label class="switch-toggle">
+                <input type="checkbox" id="heatedToggle" checked onchange="updatePricePreview()">
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+            <div class="addon-item">
+              <span style="font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 0.4rem;">
+                🌸 Women-Only Slot
+              </span>
+              <label class="switch-toggle">
+                <input type="checkbox" id="womenToggle">
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+            <div class="addon-item" style="border-bottom: none;">
+              <span style="font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 0.4rem;">
+                💼 Corporate Power Hour
+              </span>
+              <label class="switch-toggle">
+                <input type="checkbox" id="corpToggle">
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Add-ons with checkbox selection -->
+          <div style="background: white; border: 1.5px solid #E5D9C8; border-radius: 12px; padding: 0.5rem 0.85rem;">
+            <div class="addon-item">
+              <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; cursor: pointer;">
+                <input type="checkbox" id="addonPS5" onchange="updatePricePreview()"> 🎮 PS5 Session (1 hr)
+              </label>
+              <span style="font-size: 0.85rem; font-weight: 700; color: var(--ink);">₹299</span>
+            </div>
+            <div class="addon-item">
+              <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; cursor: pointer;">
+                <input type="checkbox" id="addonCue" onchange="updatePricePreview()"> 🥢 Carbon Cue Rental
+              </label>
+              <span style="font-size: 0.85rem; font-weight: 700; color: var(--ink);">₹199</span>
+            </div>
+            <div class="addon-item" style="border-bottom: none;">
+              <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; cursor: pointer;">
+                <input type="checkbox" id="addonSnacks" onchange="updatePricePreview()"> ☕ Snacks & Beverages
+              </label>
+              <span style="font-size: 0.85rem; font-weight: 700; color: var(--ink);">₹149</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Price Summary & Book CTA (Image 2) -->
+        <div class="booking-summary-bar">
+          <div>
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--ink);" id="summarySlotText">
+              Tomorrow · 06:00 PM · Table 1 - Snooker
+            </div>
+            <div style="font-size: 0.8rem; color: var(--sage); font-weight: 600;" id="summaryPriceText">
+              Estimated Total: ₹600 (Deposit 50%: ₹300)
+            </div>
+          </div>
+          <button class="btn-kamui-primary" onclick="proceedBooking()" style="padding: 0.75rem 1.4rem;">
+            <span>Book Slot via UPI</span>
+            <span>→</span>
+          </button>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ── Why Kamui Bottom Strip (Image 2) ── -->
+    <section class="why-kamui-strip">
+      <div style="font-weight: 800; font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--ink);">
+        Why Kamui?
+      </div>
+      <div class="why-feature">
+        <span class="why-icon">🎱</span>
+        <div class="why-text">
+          <h4>Premium Tables & Equipment</h4>
+          <p>Tournament standard slate & cloth</p>
+        </div>
+      </div>
+      <div class="why-feature">
+        <span class="why-icon">🎮</span>
+        <div class="why-text">
+          <h4>PS5 Gaming Booths</h4>
+          <p>Multi-gaming & 4K display lounge</p>
+        </div>
+      </div>
+      <div class="why-feature">
+        <span class="why-icon">🍕</span>
+        <div class="why-text">
+          <h4>Great Food & Beverages</h4>
+          <p>Variety & custom contactless orders</p>
+        </div>
+      </div>
+      <div class="why-feature">
+        <span class="why-icon">🛡️</span>
+        <div class="why-text">
+          <h4>Safe & Family Friendly</h4>
+          <p>CCTV coverage & Under-14 Curfew</p>
+        </div>
+      </div>
+      <div class="why-feature">
+        <span class="why-icon">⭐</span>
+        <div class="why-text">
+          <h4>Loyalty Rewards</h4>
+          <p>Free dessert on 5th, table on 10th</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- UPI Checkout Modal -->
+  <div class="kamui-modal-backdrop" id="checkoutModalBackdrop">
+    <div class="kamui-modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+        <h3 class="font-heading" style="font-size: 1.35rem; color: var(--ink);">Confirm & Pay via UPI</h3>
+        <button onclick="closeCheckoutModal()" style="background: none; border: none; font-size: 1.4rem; cursor: pointer;">✕</button>
+      </div>
+      <div style="background: #F8F3EA; border: 1px solid #DFCEB9; border-radius: 14px; padding: 1rem; margin-bottom: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-size: 0.9rem;">
+          <span>Table & Slot:</span>
+          <strong id="modalSlotDetail">Table 1 (60 min)</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-size: 0.9rem;">
+          <span>Base Booking Cost:</span>
+          <strong id="modalBaseCost">₹600</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-size: 0.9rem;">
+          <span>Add-ons Total:</span>
+          <strong id="modalAddonCost">₹0</strong>
+        </div>
+        <hr style="border: none; border-top: 1px dashed #D6C4AD; margin: 0.6rem 0;">
+        <div style="display: flex; justify-content: space-between; font-size: 1.05rem; font-weight: 700;">
+          <span>Total Payable:</span>
+          <span style="color: var(--sage-deep);" id="modalTotalPayable">₹600</span>
+        </div>
+      </div>
+
+      <!-- UPI QR Simulated View -->
+      <div style="text-align: center; margin-bottom: 1.25rem;">
+        <div style="display: inline-block; padding: 12px; background: white; border-radius: 12px; border: 1px solid #D8C7B0; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+          <img src="/brand/logo.svg" style="width: 140px; height: 140px;" alt="UPI QR">
+        </div>
+        <p style="font-size: 0.82rem; color: var(--ink-muted); margin-top: 6px;">Scan with GPay, PhonePe, Paytm, or BHIM</p>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem;">
+        <button class="btn-kamui-outline" style="flex: 1;" onclick="confirmBooking('pay_at_club')">Pay at Club</button>
+        <button class="btn-kamui-primary" style="flex: 1;" onclick="confirmBooking('pay_now')">Pay Deposit via UPI</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script>
+    let selectedTableId = 1;
+    let selectedGame = 'snooker';
+
+    // Set tomorrow's date by default
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    document.getElementById('bookingDateInput').value = tomorrow.toISOString().split('T')[0];
+
+    function selectTable(id) {
+      if (id === 3) {
+        showToast('Table 3 is currently occupied with a live match. Please choose an available table.');
+        return;
+      }
+      selectedTableId = id;
+      document.querySelectorAll('.table-select-card').forEach(c => c.classList.remove('selected'));
+      const activeCard = document.getElementById(`cardTable${id}`);
+      if (activeCard) activeCard.classList.add('selected');
+      updatePricePreview();
+    }
+
+    function filterGameType(type) {
+      selectedGame = type;
+      ['Snooker', 'Pool', 'PS5', 'Gaming'].forEach(g => {
+        const btn = document.getElementById(`gameBtn${g}`);
+        if (btn) btn.classList.toggle('active', g.toLowerCase() === type);
+      });
+      showToast(`Filtered view for: ${type.toUpperCase()}`);
+    }
+
+    function switchFloor(f) {
+      document.querySelectorAll('.floor-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      showToast(`Showing Floor Map: ${f}`);
+    }
+
+    function filterFloor(category) {
+      document.querySelectorAll('.floor-pill').forEach(p => p.classList.remove('active'));
+      event.target.classList.add('active');
+      showToast(`Floor map filtered: ${category.toUpperCase()}`);
+    }
+
+    function updatePricePreview() {
+      let base = 600; // Peak 60m rate for snooker table 1
+      if (selectedTableId === 4) base = 525;
+      if (selectedTableId === 5 || selectedTableId === 6) base = 375;
+
+      let addons = 0;
+      if (document.getElementById('addonPS5').checked) addons += 299;
+      if (document.getElementById('addonCue').checked) addons += 199;
+      if (document.getElementById('addonSnacks').checked) addons += 149;
+
+      const total = base + addons;
+      const deposit = Math.round(total * 0.5);
+
+      const timeVal = document.getElementById('bookingTimeSelect').value;
+      document.getElementById('summarySlotText').textContent = `Tomorrow · ${timeVal} · Table ${selectedTableId} (${selectedGame})`;
+      document.getElementById('summaryPriceText').textContent = `Estimated Total: ₹${total} (50% Deposit: ₹${deposit})`;
+
+      document.getElementById('modalSlotDetail').textContent = `Table ${selectedTableId} (${selectedGame}) - 60 min`;
+      document.getElementById('modalBaseCost').textContent = `₹${base}`;
+      document.getElementById('modalAddonCost').textContent = `₹${addons}`;
+      document.getElementById('modalTotalPayable').textContent = `₹${total}`;
+    }
+
+    function proceedBooking() {
+      document.getElementById('checkoutModalBackdrop').classList.add('active');
+    }
+    function closeCheckoutModal() {
+      document.getElementById('checkoutModalBackdrop').classList.remove('active');
+    }
+
+    async function confirmBooking(paymentType) {
+      closeCheckoutModal();
+      const token = localStorage.getItem('customer_token');
+      const dateStr = document.getElementById('bookingDateInput').value;
+      const timeStr = document.getElementById('bookingTimeSelect').value;
+      const startTs = new Date(`${dateStr}T${timeStr}:00+05:30`).getTime();
+
+      showToast('Creating booking with Kamui engine...');
+
+      try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        const res = await fetch('/api/bookings', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            tableId: selectedTableId,
+            startTs,
+            durationMin: 60,
+            paymentType: paymentType || 'pay_at_club',
+            phone: '9876543210' // default seed customer phone if guest
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.booking) {
+          showToast(`Booking ${data.booking.booking_code} Confirmed! Taking you to receipt...`);
+          setTimeout(() => {
+            window.location.href = `/receipt.html?code=${data.booking.booking_code}`;
+          }, 1500);
+        } else {
+          showToast(data.error || 'Failed to create booking');
+        }
+      } catch (err) {
+        showToast('Error connecting to Kamui server');
+      }
+    }
+
+    function showToast(msg) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'kamui-toast';
+      toast.innerHTML = `<span>🎱</span><span>${msg}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+  </script>
+</body>
+</html>

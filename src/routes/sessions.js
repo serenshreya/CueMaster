@@ -242,6 +242,37 @@ router.post('/:id/end', requireStaff, (req, res) => {
   res.json({ message: 'Session ended', sessionId: s.id, actualMin, endTs: now });
 });
 
+// ── POST /api/sessions/:id/transfer — transfer session to another table ──
+router.post('/:id/transfer', requireStaff, (req, res) => {
+  const { targetTableId } = req.body || {};
+  if (!targetTableId) return res.status(400).json({ error: 'targetTableId required' });
+  const db = getDb();
+  const s  = db.prepare('SELECT * FROM sessions WHERE id=?').get(Number(req.params.id));
+  if (!s) return res.status(404).json({ error: 'Session not found' });
+  if (!['pending','active','paused'].includes(s.status)) return res.status(409).json({ error: 'Session is not active' });
+
+  const target = db.prepare('SELECT * FROM tables WHERE id=?').get(Number(targetTableId));
+  if (!target) return res.status(404).json({ error: 'Target table not found' });
+  if (['maintenance','disabled'].includes(target.status)) return res.status(409).json({ error: `Target table is ${target.status}` });
+
+  // Check no active session on target
+  const active = db.prepare("SELECT id FROM sessions WHERE table_id=? AND status IN ('pending','active','paused')").get(Number(targetTableId));
+  if (active) return res.status(409).json({ error: 'Target table already has an active session' });
+
+  const oldTableId = s.table_id;
+  db.transaction(() => {
+    db.prepare('UPDATE sessions SET table_id=? WHERE id=?').run(Number(targetTableId), s.id);
+    if (s.booking_id) db.prepare('UPDATE bookings SET table_id=? WHERE id=?').run(Number(targetTableId), s.booking_id);
+    db.prepare("UPDATE tables SET status='available' WHERE id=?").run(oldTableId);
+    db.prepare("UPDATE tables SET status=? WHERE id=?").run(s.status === 'pending' ? 'reserved' : 'in_play', Number(targetTableId));
+    db.prepare('INSERT INTO activity_log(user_id,customer_id,action,entity_type,entity_id,detail) VALUES(?,?,?,?,?,?)')
+      .run(req.user.userId, s.customer_id, 'transfer_table', 'session', s.id,
+        JSON.stringify({ fromTableId: oldTableId, toTableId: Number(targetTableId) }));
+  })();
+
+  res.json({ message: `Session transferred to Table ${target.name || targetTableId}`, targetTableId: Number(targetTableId) });
+});
+
 // ── helper ──
 function calcElapsed(s, now) {
   if (!s.start_ts) return 0;

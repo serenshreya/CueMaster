@@ -234,6 +234,17 @@ function seedData() {
   insertPayment.run(null, bk8.id, 5, 'deposit', 300, 'online', 'Deposit paid online', now-2*DAY);
   insertPayment.run(null, bk8.id, 5, 'refund', 300, 'online', 'Full refund: cancelled 24h+ before', now-2*DAY+3600000);
 
+  // Seed sample kitchen orders (matching Image 8 KOT)
+  const existingOrders = db.prepare("SELECT COUNT(*) as c FROM orders").get();
+  if (existingOrders.c === 0) {
+    const insertOrder = db.prepare("INSERT INTO orders(order_code, table_id, items_summary, total_amount, status, created_at) VALUES(?,?,?,?,?,?)");
+    insertOrder.run('K1023', 3, '2x Margherita Pizza + 1x Coke', 450, 'preparing', now - 11*60000);
+    insertOrder.run('K1022', 5, '1x Truffle Fries + 2x Mocktails', 580, 'ready', now - 14*60000);
+    insertOrder.run('K1021', 1, '1x Nachos + 1x Cold Coffee', 380, 'on_hold', now - 17*60000);
+    insertOrder.run('K1020', 6, '2x Pasta + 1x Garlic Bread', 520, 'preparing', now - 22*60000);
+    insertOrder.run('K1019', 4, '1x Brownie + 2x Lemonade', 340, 'ready', now - 26*60000);
+  }
+
   console.log('[seed] Demo data seeded successfully.');
 }
 
@@ -241,7 +252,7 @@ function resetDemoData() {
   const db = getDb();
   // Delete in reverse FK order
   const tables = [
-    'activity_log','bill_addons','payments','bills','sessions',
+    'orders','activity_log','bill_addons','payments','bills','sessions',
     'bookings','maintenance_blocks','customers','tables','users','settings'
   ];
   for (const t of tables) db.prepare(`DELETE FROM ${t}`).run();

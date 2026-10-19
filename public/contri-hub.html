@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contri & Matchmaking Hub | KAMUI</title>
+  <link rel="icon" type="image/x-icon" href="/brand/logo.png">
+  <link rel="stylesheet" href="/css/kamui-theme.css">
+  <style>
+    .contri-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    /* Top decorative header with taped notes */
+    .contri-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.8rem;
+      position: relative;
+    }
+
+    /* Main two-column layout */
+    .contri-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 1.8rem;
+    }
+
+    /* Matchmaking card */
+    .partner-section-card {
+      background: #FDFBF7;
+      border: 1px solid var(--paper-border);
+      border-radius: 20px;
+      padding: 1.6rem;
+      box-shadow: var(--shadow-card);
+      position: relative;
+    }
+
+    .partner-polaroids-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin: 1.4rem 0;
+    }
+
+    .player-card {
+      background: white;
+      border: 1px solid #E6D8C4;
+      border-radius: 6px;
+      padding: 8px 8px 18px 8px;
+      box-shadow: 0 6px 18px rgba(45, 35, 20, 0.1);
+      position: relative;
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+    .player-card:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 12px 26px rgba(45, 35, 20, 0.18);
+      border-color: var(--sage);
+    }
+    .player-tape {
+      position: absolute;
+      top: -8px;
+      left: 20%;
+      width: 50px;
+      height: 16px;
+      background: rgba(226, 175, 120, 0.7);
+      transform: rotate(-3deg);
+    }
+    .player-img-box {
+      width: 100%;
+      aspect-ratio: 4/5;
+      border-radius: 4px;
+      overflow: hidden;
+      background: #E8DCC9;
+      position: relative;
+    }
+    .player-img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .verified-badge-chip {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: #257D42;
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .player-handwritten-note {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      font-family: 'Caveat', cursive;
+      font-size: 0.95rem;
+      color: #3B2A15;
+      font-weight: 700;
+      background: rgba(255, 245, 220, 0.9);
+      padding: 1px 6px;
+      border-radius: 3px;
+    }
+    .player-elo-badge {
+      display: inline-block;
+      background: #257D42;
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin: 4px 0;
+    }
+    .player-tag {
+      display: inline-block;
+      background: #F1E9DB;
+      color: var(--ink);
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin: 2px 1px;
+    }
+
+    /* Right Splitter Card (Image 3) */
+    .splitter-card {
+      background: #FDFBF7;
+      border: 1px solid var(--paper-border);
+      border-radius: 20px;
+      padding: 1.6rem;
+      box-shadow: var(--shadow-card);
+      position: relative;
+    }
+    .split-mode-toggle {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 0.5rem;
+      background: #EDE3D1;
+      padding: 4px;
+      border-radius: 30px;
+      margin: 1rem 0;
+    }
+    .split-mode-btn {
+      padding: 8px 14px;
+      border-radius: 24px;
+      border: none;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+    .split-mode-btn.active {
+      background: #395E3F;
+      color: white;
+    }
+    .split-mode-btn:not(.active) {
+      background: transparent;
+      color: var(--ink);
+    }
+
+    /* Itemized Table */
+    .contri-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.85rem 0;
+      font-size: 0.88rem;
+    }
+    .contri-table th {
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-muted);
+      padding: 6px 4px;
+      border-bottom: 1.5px solid #DECBB5;
+    }
+    .contri-table td {
+      padding: 8px 4px;
+      border-bottom: 1px dashed #E8DCC9;
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    /* Split & Pay individual UPI cards */
+    .upi-shares-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.65rem;
+      margin-top: 0.85rem;
+    }
+    .upi-share-card {
+      background: white;
+      border: 1.5px solid #E5D9C8;
+      border-radius: 10px;
+      padding: 8px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+    .upi-qr-box {
+      width: 100%;
+      aspect-ratio: 1/1;
+      background: #FAF6EE;
+      border: 1px solid #E0D3C1;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      margin: 6px 0;
+    }
+    .upi-qr-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .btn-share-link {
+      background: #395E3F;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 4px 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    .btn-share-link:hover {
+      background: var(--sage-deep);
+    }
+
+    @media (max-width: 1050px) {
+      .contri-grid { grid-template-columns: 1fr; }
+      .partner-polaroids-grid { grid-template-columns: repeat(2, 1fr); }
+      .upi-shares-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Top Navbar (Reference Image 3) ── -->
+  <header class="kamui-navbar">
+    <a href="/" class="kamui-nav-brand">
+      <img src="/brand/logo.svg" alt="KAMUI Logo">
+      <div class="kamui-brand-text">
+        <span class="kamui-brand-title">KAMUI</span>
+        <span class="kamui-brand-tagline">Play &nbsp;·&nbsp; Connect &nbsp;·&nbsp; Belong</span>
+      </div>
+    </a>
+
+    <nav>
+      <ul class="kamui-nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/booking.html">Live Booking</a></li>
+        <li><a href="/contri-hub.html" class="active">Contri Hub</a></li>
+        <li><a href="/junior-zone.html">Junior Zone</a></li>
+        <li><a href="/scan-to-get.html">Scan-to-Get</a></li>
+      </ul>
+    </nav>
+
+    <div class="kamui-nav-badges">
+      <div class="badge-live-crowd">
+        <span class="crowd-dot"></span>
+        <span>Live Crowd: Quiet</span>
+      </div>
+      <div class="badge-loyalty">
+        <span>⭐</span>
+        <span>Loyalty: 5/10 Visits</span>
+      </div>
+      <a href="/staff.html" class="badge-profile" title="Staff Dashboard">👤</a>
+    </div>
+  </header>
+
+  <div class="contri-container">
+
+    <!-- ── Header Banner with Handwritten Notes (Image 3) ── -->
+    <div class="contri-header-row">
+      <div class="sticky-note" style="max-width: 320px; transform: rotate(-1.5deg);">
+        <h1 class="font-handwritten" style="font-size: 2.1rem; line-height: 1.1; margin-bottom: 2px;">
+          Contri & Matchmaking Hub ♡
+        </h1>
+        <p style="font-size: 0.95rem; color: var(--ink);">
+          Find your game partner. Split your bills.<br>Make better memories.
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <div class="sticky-note" style="font-size: 1.1rem; transform: rotate(2deg);">
+          Good Players<br>Good Food<br>Better Company ♡ 👑
+        </div>
+        <div class="polaroid-card" style="width: 95px; transform: rotate(-2deg); padding: 4px 4px 12px 4px;">
+          <div class="polaroid-img-wrapper" style="height: 55px;">
+            <img src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=200&q=80" alt="Pool table">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Two-Column Main Grid ── -->
+    <div class="contri-grid">
+
+      <!-- ── Left: Find a Snooker Partner (Image 3) ── -->
+      <section class="partner-section-card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--ink); display: flex; align-items: center; gap: 0.5rem;">
+              👥 Find a Snooker Partner
+            </h2>
+            <p style="font-size: 0.8rem; color: var(--ink-muted);">
+              Match with verified players · Play at your skill level · No awkwardness, just good games!
+            </p>
+          </div>
+
+          <!-- Filters -->
+          <div style="display: flex; gap: 0.35rem;">
+            <button class="floor-pill active" onclick="filterPartners('all')">All</button>
+            <button class="floor-pill" onclick="filterPartners('nearby')">Nearby</button>
+            <button class="floor-pill" onclick="filterPartners('college')">Same College</button>
+            <button class="floor-pill" onclick="filterPartners('zone')">Same Zone</button>
+          </div>
+        </div>
+
+        <!-- 4 Polaroid Partner Cards (Image 3) -->
+        <div class="partner-polaroids-grid">
+
+          <!-- Player 1: Arjun S. -->
+          <div class="player-card" onclick="challengePlayer('Arjun S.', 1420)">
+            <div class="player-tape"></div>
+            <div class="player-handwritten-note">Let's play! :)</div>
+            <div class="player-img-box">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" alt="Arjun S.">
+              <span class="verified-badge-chip">🛡️ Aadhaar</span>
+            </div>
+            <div style="margin-top: 6px;">
+              <div style="font-weight: 800; font-size: 0.95rem; color: var(--ink);">Arjun S. <span style="font-size: 0.8rem;">♂</span></div>
+              <span class="player-elo-badge">ELO 1420</span>
+              <div style="font-size: 0.75rem; color: var(--ink-muted);">College Student · 2 km</div>
+              <div style="margin-top: 4px;">
+                <span class="player-tag">Snooker</span>
+                <span class="player-tag">Pool</span>
+                <span class="player-tag">Friendly</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Player 2: Diya K. -->
+          <div class="player-card" onclick="challengePlayer('Diya K.', 1285)">
+            <div class="player-tape"></div>
+            <div class="player-handwritten-note">Good vibes only ♡</div>
+            <div class="player-img-box">
+              <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80" alt="Diya K.">
+              <span class="verified-badge-chip">🛡️ DigiLocker</span>
+            </div>
+            <div style="margin-top: 6px;">
+              <div style="font-weight: 800; font-size: 0.95rem; color: var(--ink);">Diya K. <span style="font-size: 0.8rem;">♀</span></div>
+              <span class="player-elo-badge">ELO 1285</span>
+              <div style="font-size: 0.75rem; color: var(--ink-muted);">B.Tech · 3 km</div>
+              <div style="margin-top: 4px;">
+                <span class="player-tag">Snooker</span>
+                <span class="player-tag">Pool</span>
+                <span class="player-tag">Chill</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Player 3: Rohan P. -->
+          <div class="player-card" onclick="challengePlayer('Rohan P.', 1560)">
+            <div class="player-tape"></div>
+            <div class="player-handwritten-note">Game on! ♡</div>
+            <div class="player-img-box">
+              <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80" alt="Rohan P.">
+              <span class="verified-badge-chip">🛡️ Aadhaar</span>
+            </div>
+            <div style="margin-top: 6px;">
+              <div style="font-weight: 800; font-size: 0.95rem; color: var(--ink);">Rohan P. <span style="font-size: 0.8rem;">♂</span></div>
+              <span class="player-elo-badge">ELO 1560</span>
+              <div style="font-size: 0.75rem; color: var(--ink-muted);">College Student · 4 km</div>
+              <div style="margin-top: 4px;">
+                <span class="player-tag">Snooker</span>
+                <span class="player-tag">Pool</span>
+                <span class="player-tag">Competitive</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Player 4: Sneha M. -->
+          <div class="player-card" onclick="challengePlayer('Sneha M.', 1560)">
+            <div class="player-tape"></div>
+            <div class="player-handwritten-note">Any table? ♡</div>
+            <div class="player-img-box">
+              <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=300&q=80" alt="Sneha M.">
+              <span class="verified-badge-chip">🛡️ DigiLocker</span>
+            </div>
+            <div style="margin-top: 6px;">
+              <div style="font-weight: 800; font-size: 0.95rem; color: var(--ink);">Sneha M. <span style="font-size: 0.8rem;">♀</span></div>
+              <span class="player-elo-badge">ELO 1560</span>
+              <div style="font-size: 0.75rem; color: var(--ink-muted);">B.Tech · 3 km</div>
+              <div style="margin-top: 4px;">
+                <span class="player-tag">Snooker</span>
+                <span class="player-tag">Pool</span>
+                <span class="player-tag">Beginner</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Bottom Feature Callout & Action (Image 3) -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #DECBB5; padding-top: 1rem;">
+          <div style="display: flex; gap: 1.5rem; font-size: 0.78rem;">
+            <div><strong>💡 Better skills</strong><br><span style="color:var(--ink-muted);">& tips from pros</span></div>
+            <div><strong>🤝 New friends</strong><br><span style="color:var(--ink-muted);">& community</span></div>
+            <div><strong>🛡️ Safe & verified</strong><br><span style="color:var(--ink-muted);">real profiles</span></div>
+          </div>
+          <button class="btn-kamui-primary" onclick="showToast('Loading full directory of 48 active club players...')">
+            <span>Browse All Players</span>
+            <span>→</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ── Right: Smart Contri Bill Splitter (Image 3) ── -->
+      <section class="splitter-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--ink); display: flex; align-items: center; gap: 0.4rem;">
+              📋 Smart Contri Bill Splitter
+            </h2>
+            <p style="font-size: 0.8rem; color: var(--ink-muted);">
+              No more "who'll pay?" — split fairly, instantly.
+            </p>
+          </div>
+          <div class="font-handwritten" style="font-size: 1.15rem; color: var(--sage); transform: rotate(3deg);">
+            Good food<br>Better together ♡
+          </div>
+        </div>
+
+        <!-- Mode Toggle -->
+        <div class="split-mode-toggle">
+          <button class="split-mode-btn active" id="modeLoser" onclick="setSplitMode('loser')">
+            👑 Loser Pays Table
+          </button>
+          <button class="split-mode-btn" id="modeFood" onclick="setSplitMode('food')">
+            🍴 Split Food Individually
+          </button>
+        </div>
+
+        <!-- Today's Snacks & Contri Table (Image 3) -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--ink);">🛍️ Today's Snacks & Contri</h3>
+            <button class="floor-pill" onclick="addNewSnackItem()" style="padding: 2px 10px; font-size: 0.78rem;">+ Add Item</button>
+          </div>
+
+          <table class="contri-table" id="snacksTable">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th style="text-align: center;">Qty</th>
+                <th style="text-align: right;">Price (₹)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>🍟 French Fries</td>
+                <td style="text-align: center;">2</td>
+                <td style="text-align: right;">₹200</td>
+              </tr>
+              <tr>
+                <td>🥣 Moong Dal Pakoda</td>
+                <td style="text-align: center;">1</td>
+                <td style="text-align: right;">₹120</td>
+              </tr>
+              <tr>
+                <td>☕ Cold Coffee</td>
+                <td style="text-align: center;">4</td>
+                <td style="text-align: right;">₹360</td>
+              </tr>
+              <tr>
+                <td>🍞 Hot Garlic Bread</td>
+                <td style="text-align: center;">1</td>
+                <td style="text-align: right;">₹150</td>
+              </tr>
+              <tr>
+                <td>🥤 Soft Drinks</td>
+                <td style="text-align: center;">4</td>
+                <td style="text-align: right;">₹280</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr style="border-top: 1.5px solid var(--paper-border); font-weight: 800; font-size: 1rem;">
+                <td>Total</td>
+                <td style="text-align: center;">12</td>
+                <td style="text-align: right; color: var(--sage-deep);" id="contriGrandTotal">₹1,110</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Trust Badges (Image 3) -->
+        <div style="display: flex; justify-content: space-between; background: #FAF5EA; padding: 6px 10px; border-radius: 8px; font-size: 0.72rem; color: var(--ink-muted); margin-bottom: 1rem;">
+          <span>🛡️ End-to-End Encrypted</span>
+          <span>🔒 UPI Secure Powered</span>
+          <span>✅ Verified Members</span>
+        </div>
+
+        <!-- Split & Pay - Individual UPI Links (Image 3) -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="font-size: 0.88rem; font-weight: 700; color: var(--ink);">
+              🔗 Split & Pay — Individual UPI Links
+            </h4>
+            <button onclick="copyAllSplitLinks()" style="background: none; border: none; font-size: 0.78rem; font-weight: 600; color: var(--sage); cursor: pointer;">
+              📋 Copy All
+            </button>
+          </div>
+
+          <div class="upi-shares-grid" id="upiSharesGrid">
+            <!-- Arjun S. ₹278 -->
+            <div class="upi-share-card">
+              <div style="font-size: 0.82rem; font-weight: 700;">Arjun S.</div>
+              <div style="font-size: 0.85rem; font-weight: 800; color: var(--sage-deep);">₹278</div>
+              <div class="upi-qr-box">
+                <img src="/brand/logo.svg" alt="UPI QR">
+              </div>
+              <button class="btn-share-link" onclick="shareUpiLink('Arjun S.', 278)">Share Link</button>
+            </div>
+
+            <!-- Diya K. ₹278 -->
+            <div class="upi-share-card">
+              <div style="font-size: 0.82rem; font-weight: 700;">Diya K.</div>
+              <div style="font-size: 0.85rem; font-weight: 800; color: var(--sage-deep);">₹278</div>
+              <div class="upi-qr-box">
+                <img src="/brand/logo.svg" alt="UPI QR">
+              </div>
+              <button class="btn-share-link" onclick="shareUpiLink('Diya K.', 278)">Share Link</button>
+            </div>
+
+            <!-- Rohan P. ₹278 -->
+            <div class="upi-share-card">
+              <div style="font-size: 0.82rem; font-weight: 700;">Rohan P.</div>
+              <div style="font-size: 0.85rem; font-weight: 800; color: var(--sage-deep);">₹278</div>
+              <div class="upi-qr-box">
+                <img src="/brand/logo.svg" alt="UPI QR">
+              </div>
+              <button class="btn-share-link" onclick="shareUpiLink('Rohan P.', 278)">Share Link</button>
+            </div>
+
+            <!-- Sneha M. ₹276 -->
+            <div class="upi-share-card">
+              <div style="font-size: 0.82rem; font-weight: 700;">Sneha M.</div>
+              <div style="font-size: 0.85rem; font-weight: 800; color: var(--sage-deep);">₹276</div>
+              <div class="upi-qr-box">
+                <img src="/brand/logo.svg" alt="UPI QR">
+              </div>
+              <button class="btn-share-link" onclick="shareUpiLink('Sneha M.', 276)">Share Link</button>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem;">
+            <div class="font-handwritten" style="font-size: 1.15rem; color: var(--sage);">
+              Fair splits.<br>Happy hearts. ♡
+            </div>
+            <button class="btn-kamui-primary" onclick="generateSplitLinks()" style="padding: 0.75rem 1.4rem;">
+              <span>Generate Split Links</span>
+              <span>✈</span>
+            </button>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script>
+    function filterPartners(filter) {
+      document.querySelectorAll('.partner-section-card .floor-pill').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      showToast(`Showing partners for: ${filter.toUpperCase()}`);
+    }
+
+    function challengePlayer(name, elo) {
+      showToast(`Sent friendly game invite to ${name} (ELO ${elo})! They will receive a notification.`);
+    }
+
+    function setSplitMode(mode) {
+      document.getElementById('modeLoser').classList.toggle('active', mode === 'loser');
+      document.getElementById('modeFood').classList.toggle('active', mode === 'food');
+      showToast(mode === 'loser' ? 'Mode set: Loser Pays Table Fee' : 'Mode set: Split Food & Table Individually');
+    }
+
+    function addNewSnackItem() {
+      const item = prompt('Enter item name (e.g. Masala Chai, Nachos):', 'Loaded Nachos');
+      if (!item) return;
+      const price = prompt('Enter total item price (₹):', '220');
+      if (!price) return;
+
+      const tbody = document.querySelector('#snacksTable tbody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>🍟 ${item}</td><td style="text-align:center;">1</td><td style="text-align:right;">₹${price}</td>`;
+      tbody.appendChild(tr);
+      showToast(`Added ${item} (₹${price})! Recalculating fair splits...`);
+      recalculateSplits();
+    }
+
+    async function recalculateSplits() {
+      try {
+        const res = await fetch('/api/contri/split', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ totalAmount: 1330 })
+        });
+        const data = await res.json();
+        if (data.splits) {
+          const grid = document.getElementById('upiSharesGrid');
+          grid.innerHTML = data.splits.map(s => `
+            <div class="upi-share-card">
+              <div style="font-size: 0.82rem; font-weight: 700;">${s.name}</div>
+              <div style="font-size: 0.85rem; font-weight: 800; color: var(--sage-deep);">₹${s.amount}</div>
+              <div class="upi-qr-box"><img src="/brand/logo.svg" alt="UPI QR"></div>
+              <button class="btn-share-link" onclick="shareUpiLink('${s.name}', ${s.amount})">Share Link</button>
+            </div>
+          `).join('');
+        }
+      } catch(e) {}
+    }
+
+    function shareUpiLink(name, amt) {
+      const upiUrl = `upi://pay?pa=kamuiclub@upi&pn=KAMUI+Club&am=${amt}&tn=Contri+Split+${encodeURIComponent(name)}&cu=INR`;
+      navigator.clipboard.writeText(upiUrl).catch(() => {});
+      showToast(`Copied UPI link for ${name} (₹${amt})! Opening payment handler...`);
+    }
+
+    function copyAllSplitLinks() {
+      const text = "KAMUI Table 3 Split Links:\n1. Arjun S: Rs. 278\n2. Diya K: Rs. 278\n3. Rohan P: Rs. 278\n4. Sneha M: Rs. 276\nPay via UPI: upi://pay?pa=kamuiclub@upi";
+      navigator.clipboard.writeText(text).catch(() => {});
+      showToast('All 4 UPI split links copied to clipboard!');
+    }
+
+    function generateSplitLinks() {
+      showToast('4 unique UPI links generated with Largest-Remainder rounding!');
+    }
+
+    function showToast(msg) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'kamui-toast';
+      toast.innerHTML = `<span>🤝</span><span>${msg}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+  </script>
+</body>
+</html>

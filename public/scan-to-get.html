@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scan-to-Get Club Memories | KAMUI</title>
+  <link rel="icon" type="image/x-icon" href="/brand/logo.png">
+  <link rel="stylesheet" href="/css/kamui-theme.css">
+  <style>
+    .memories-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    /* Top Title Header (Image 5) */
+    .memories-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    /* Vintage Scrapbook Open-Book (Image 5) */
+    .scrapbook-book {
+      background: #F9F3E7;
+      border: 3px solid #D6C2A7;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(50, 40, 25, 0.22);
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr 1.1fr;
+      position: relative;
+      padding: 2rem;
+      min-height: 580px;
+      overflow: hidden;
+    }
+
+    /* Center Book Binding Spine */
+    .scrapbook-book::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      background: linear-gradient(90deg, rgba(160, 130, 95, 0.3), rgba(110, 80, 50, 0.5), rgba(160, 130, 95, 0.3));
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.15);
+      z-index: 2;
+    }
+
+    .scrapbook-page {
+      position: relative;
+      z-index: 3;
+    }
+
+    /* Center QR Scanner Column (Image 5) */
+    .center-scanner-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1rem;
+      z-index: 5;
+    }
+
+    .qr-viewfinder {
+      width: 180px;
+      height: 180px;
+      background: white;
+      border: 2px dashed var(--sage);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin: 1.25rem 0;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+    .qr-viewfinder::before {
+      content: '';
+      position: absolute;
+      top: -4px; left: -4px;
+      width: 24px; height: 24px;
+      border-top: 4px solid var(--sage-deep);
+      border-left: 4px solid var(--sage-deep);
+    }
+    .qr-viewfinder::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; right: -4px;
+      width: 24px; height: 24px;
+      border-bottom: 4px solid var(--sage-deep);
+      border-right: 4px solid var(--sage-deep);
+    }
+
+    .checklist-card {
+      background: #FFFFFF;
+      border: 1px solid #E5D9C8;
+      border-radius: 8px;
+      padding: 0.85rem 1.25rem;
+      margin-top: 1.2rem;
+      font-size: 0.88rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      transform: rotate(-1deg);
+    }
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.35rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    @media (max-width: 1024px) {
+      .scrapbook-book {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      .scrapbook-book::before { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Top Navbar (Reference Image 5) ── -->
+  <header class="kamui-navbar">
+    <a href="/" class="kamui-nav-brand">
+      <img src="/brand/logo.svg" alt="KAMUI Logo">
+      <div class="kamui-brand-text">
+        <span class="kamui-brand-title">KAMUI</span>
+        <span class="kamui-brand-tagline">Play &nbsp;·&nbsp; Connect &nbsp;·&nbsp; Belong</span>
+      </div>
+    </a>
+
+    <nav>
+      <ul class="kamui-nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/booking.html">Live Booking</a></li>
+        <li><a href="/contri-hub.html">Contri Hub</a></li>
+        <li><a href="/junior-zone.html">Junior Zone</a></li>
+        <li><a href="/scan-to-get.html" class="active">Scan-to-Get</a></li>
+      </ul>
+    </nav>
+
+    <div class="kamui-nav-badges">
+      <div class="badge-live-crowd">
+        <span class="crowd-dot"></span>
+        <span>Live Crowd: Quiet</span>
+      </div>
+      <div class="badge-loyalty">
+        <span>⭐</span>
+        <span>Loyalty: 5/10 Visits</span>
+      </div>
+      <div class="badge-coins">
+        <span>🪙</span>
+        <span>Kamui Coins: 12,500</span>
+      </div>
+      <a href="/staff.html" class="badge-profile">👤</a>
+    </div>
+  </header>
+
+  <div class="memories-container">
+
+    <!-- ── Header with Handwritten Notes (Image 5) ── -->
+    <div class="memories-header">
+      <div class="sticky-note" style="max-width: 180px; transform: rotate(-3deg);">
+        Same game<br>New stories<br>Every time ♡
+      </div>
+
+      <div style="text-align: center; max-width: 600px;">
+        <h1 class="font-handwritten" style="font-size: 2.8rem; font-weight: 700; color: var(--ink); margin-bottom: 4px;">
+          Scan-to-Get Club Memories ♡
+        </h1>
+        <p class="font-handwritten" style="font-size: 1.35rem; color: var(--sage); margin-bottom: 2px;">
+          Play. Capture. Relive.
+        </p>
+        <p style="font-size: 0.88rem; color: var(--ink-muted);">
+          Scan your table's QR code, instantly download your match highlight videos and Polaroid-style photos — and take the memories home! ♡
+        </p>
+      </div>
+
+      <div class="sticky-note" style="max-width: 190px; transform: rotate(2deg);">
+        Good Times<br>Great People<br>Epic Breaks ♡
+      </div>
+    </div>
+
+    <!-- ── Vintage Scrapbook Open-Book Layout (Image 5) ── -->
+    <div class="scrapbook-book">
+
+      <!-- ── Left Page: College Friends & Checklists (Image 5) ── -->
+      <div class="scrapbook-page">
+        <!-- Polaroid Card: College Friends -->
+        <div class="polaroid-card" style="transform: rotate(-2deg); margin-bottom: 1.25rem;">
+          <div style="position: absolute; top: -8px; left: 20px; background: rgba(226, 175, 120, 0.7); width: 60px; height: 16px; transform: rotate(-3deg);"></div>
+          <div class="polaroid-img-wrapper" style="aspect-ratio: 4/3;">
+            <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=600&q=80" alt="College Friends">
+          </div>
+          <div class="polaroid-caption" style="font-size: 1.25rem;">
+            Same table. Different stories. Still us. ♡
+          </div>
+        </div>
+
+        <div class="checklist-card">
+          <div class="checklist-item">
+            <span style="color: var(--sage); font-size: 1.1rem;">☑</span>
+            <span>Videos (High-Definition Match Highlights)</span>
+          </div>
+          <div class="checklist-item">
+            <span style="color: var(--sage); font-size: 1.1rem;">☑</span>
+            <span>Polaroid Photos & Framed Memories</span>
+          </div>
+          <div class="checklist-item" style="margin-bottom: 0;">
+            <span style="color: var(--sage); font-size: 1.1rem;">☑</span>
+            <span>Instant Download (No Watermark)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Center Column: QR Scanner Viewfinder (Image 5) ── -->
+      <div class="center-scanner-col">
+        <div style="font-size: 2.2rem; margin-bottom: 4px;">📷</div>
+        <h3 class="font-heading" style="font-size: 1.25rem; font-weight: 700; color: var(--ink);">
+          Scan Table QR
+        </h3>
+        <p style="font-size: 0.78rem; color: var(--ink-muted);">
+          Get your match highlights & photos instantly!
+        </p>
+
+        <!-- Viewfinder -->
+        <div class="qr-viewfinder">
+          <img src="/brand/logo.svg" style="width: 130px; height: 130px;" alt="Scan Table QR">
+        </div>
+
+        <button class="btn-kamui-primary" onclick="simulateQrScan()" style="padding: 0.65rem 1.6rem;">
+          <span>🔍 Scan QR Code</span>
+        </button>
+
+        <p class="font-handwritten" style="font-size: 1.15rem; color: var(--sage); margin-top: 1rem;">
+          No app. No hassle. Just memories. ♡
+        </p>
+      </div>
+
+      <!-- ── Right Page: Corporate Teams & Homemakers (Image 5) ── -->
+      <div class="scrapbook-page">
+        <!-- Polaroid Card: Corporate Teams -->
+        <div class="polaroid-card" style="transform: rotate(2deg); margin-bottom: 1.25rem;">
+          <div class="polaroid-img-wrapper" style="aspect-ratio: 4/3;">
+            <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80" alt="Corporate Teams">
+          </div>
+          <div class="polaroid-caption" style="font-size: 1.2rem;">
+            Corporate Teams ♡
+          </div>
+        </div>
+
+        <!-- Polaroid Card: Homemakers -->
+        <div class="polaroid-card" style="transform: rotate(-1.5deg);">
+          <div class="polaroid-img-wrapper" style="aspect-ratio: 4/3;">
+            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80" alt="Homemakers">
+          </div>
+          <div class="polaroid-caption" style="font-size: 1.2rem;">
+            Homemakers ♡
+          </div>
+        </div>
+
+        <div style="text-align: right; margin-top: 1rem;">
+          <span class="font-handwritten" style="font-size: 1.15rem; color: var(--ink);">
+            From casual rounds to big celebrations — KAMUI ♡
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script>
+    function simulateQrScan() {
+      showToast('Camera active! Point at Table QR code (e.g. Table 3)');
+      setTimeout(() => {
+        showToast('Table 3 Match Memories found! 4 Photos & 1 Video Ready.');
+        setTimeout(() => {
+          showToast('Starting instant download of high-res memory package (ZIP)...');
+        }, 1200);
+      }, 1500);
+    }
+
+    function showToast(msg) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'kamui-toast';
+      toast.innerHTML = `<span>📸</span><span>${msg}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+  </script>
+</body>
+</html>

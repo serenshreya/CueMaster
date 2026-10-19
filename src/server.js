@@ -13,6 +13,9 @@ const adminRoutes    = require('./routes/admin');
 const sessionRoutes  = require('./routes/sessions');
 const billingRoutes  = require('./routes/billing');
 const customerRoutes = require('./routes/customers');
+const orderRoutes    = require('./routes/orders');
+const khatabookRoutes= require('./routes/khatabook');
+const contriRoutes   = require('./routes/contri');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -34,6 +37,25 @@ app.use('/api/admin',     adminRoutes);
 app.use('/api/sessions',  sessionRoutes);
 app.use('/api/bills',     billingRoutes);
 app.use('/api/customers', customerRoutes);
+app.use('/api/orders',    orderRoutes);
+app.use('/api/kot',       orderRoutes);
+app.use('/api/khatabook', khatabookRoutes);
+app.use('/api/contri',    contriRoutes);
+
+// ── Clean Page Routes ──
+app.get('/book', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'booking.html')));
+app.get('/booking', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'booking.html')));
+app.get('/contri-hub', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'contri-hub.html')));
+app.get('/contri', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'contri-hub.html')));
+app.get('/table', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'table.html')));
+app.get('/table/:id', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'table.html')));
+app.get('/scan-to-get', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'scan-to-get.html')));
+app.get('/scan', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'scan-to-get.html')));
+app.get('/junior-zone', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'junior-zone.html')));
+app.get('/junior', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'junior-zone.html')));
+app.get('/staff', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'staff.html')));
+app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'staff.html')));
+app.get('/receipt', (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'receipt.html')));
 
 // ── Health check ──
 app.get('/api/health', (req, res) => {

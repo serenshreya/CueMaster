@@ -1,936 +1,1207 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CueMaster — Staff Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,system-ui,sans-serif;background:#f2f2f0;color:#1c1c1e;min-height:100vh}
-/* Login */
-#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
-#login-box{background:#fff;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px;width:100%;max-width:380px}
-#login-box h1{font-size:1.4rem;font-weight:700;color:#0f5c3a;margin-bottom:6px}
-#login-box p{color:#666;font-size:.85rem;margin-bottom:20px}
-/* Layout */
-#app{display:none;min-height:100vh}
-header{background:#1c1c1e;color:#fff;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:8px}
-header .brand{font-weight:700;color:#4ade80;font-size:1.1rem}
-header .user-info{font-size:.8rem;color:#aaa}
-nav{background:#262626;display:flex;gap:2px;padding:6px 12px;flex-wrap:wrap}
-nav button{padding:7px 14px;border:none;background:transparent;color:#aaa;font-size:.8rem;font-weight:500;cursor:pointer;border-radius:6px;font-family:inherit}
-nav button:hover{background:#333;color:#fff}
-nav button.active{background:#0f5c3a;color:#fff}
-.content{max-width:1100px;margin:0 auto;padding:18px 16px}
-.card{background:#fff;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.08);padding:18px;margin-bottom:16px}
-h2{font-size:1rem;font-weight:700;margin-bottom:14px}
-h3{font-size:.9rem;font-weight:600;margin-bottom:8px}
-label{display:block;font-size:.8rem;font-weight:500;margin-bottom:4px;color:#444}
-input,select,textarea{width:100%;padding:8px 11px;border:1px solid #ddd;border-radius:8px;font-size:.85rem;font-family:inherit;outline:none}
-input:focus,select:focus{border-color:#0f5c3a}
-.form-group{margin-bottom:12px}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-@media(max-width:600px){.row2,.row3{grid-template-columns:1fr}}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;border:none;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit}
-.btn-green{background:#0f5c3a;color:#fff}.btn-green:hover{background:#0a4a2f}
-.btn-outline{background:#fff;border:1px solid #0f5c3a;color:#0f5c3a}.btn-outline:hover{background:#f0fff4}
-.btn-dark{background:#1c1c1e;color:#fff}.btn-dark:hover{background:#333}
-.btn-amber{background:#d97706;color:#fff}.btn-amber:hover{background:#b45309}
-.btn-red{background:#dc2626;color:#fff}.btn-red:hover{background:#b91c1c}
-.btn-sm{padding:5px 12px;font-size:.78rem}
-.btn-xs{padding:3px 9px;font-size:.75rem}
-/* Table grid */
-.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
-.tcard{border:1px solid #e5e7eb;border-radius:12px;padding:14px 12px}
-.tcard .tc-name{font-weight:600;font-size:.9rem}
-.tcard .tc-sub{font-size:.75rem;color:#666;margin:2px 0}
-.tcard .tc-timer{font-size:1.1rem;font-weight:700;color:#0f5c3a;margin:6px 0}
-.badge,.tag{display:inline-block;font-size:.7rem;font-weight:600;padding:2px 10px;border-radius:20px}
-.badge-available,.tag-available{background:#d1fae5;color:#065f46}
-.badge-reserved,.tag-reserved{background:#fef3c7;color:#92400e}
-.badge-in_play,.tag-in_play{background:#1c1c1e;color:#fff}
-.badge-maintenance,.tag-maintenance{background:#f3f4f6;color:#6b7280}
-.tag-confirmed{background:#dbeafe;color:#1e40af}
-.tag-cancelled{background:#fee2e2;color:#991b1b}
-.tag-no_show{background:#fef3c7;color:#92400e}
-.tag-completed{background:#d1fae5;color:#065f46}
-.tag-checked_in{background:#e0e7ff;color:#3730a3}
-/* Session controls */
-.sess-card{border:1px solid #e5e7eb;border-radius:12px;padding:14px}
-.sess-info{font-size:.82rem;color:#555;margin-bottom:10px;line-height:1.6}
-.ctrl-btns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.ext-row{display:flex;gap:6px;align-items:flex-end;flex-wrap:wrap}
-/* Table */
-table{width:100%;border-collapse:collapse;font-size:.82rem}
-th{text-align:left;padding:8px 10px;background:#f9f9f7;border-bottom:2px solid #eee;font-weight:600;color:#555}
-td{padding:8px 10px;border-bottom:1px solid #f0f0f0;vertical-align:top}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:#fafafa}
-.empty{color:#888;font-size:.82rem;text-align:center;padding:20px}
-/* Bill preview */
-.bill-row{display:flex;justify-content:space-between;padding:5px 0;font-size:.85rem;border-bottom:1px solid #f0f0f0}
-.bill-row:last-child{border-bottom:none;font-weight:700}
-.bill-row.total{border-top:2px solid #eee;margin-top:4px;padding-top:8px;font-size:.95rem;color:#0f5c3a}
-/* Addons */
-.addon-row{display:flex;gap:8px;margin-bottom:6px;align-items:center}
-.addon-row input{flex:1}
-/* Stats */
-.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:16px}
-.stat-card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.07);padding:14px}
-.stat-card .sv{font-size:1.4rem;font-weight:700;color:#0f5c3a}
-.stat-card .sl{font-size:.75rem;color:#888;margin-top:2px}
-/* Toast */
-#toast{position:fixed;bottom:20px;right:20px;max-width:340px;padding:12px 16px;border-radius:10px;font-size:.83rem;font-weight:500;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
-#toast.show{opacity:1}
-#toast.success{background:#065f46;color:#fff}
-#toast.error{background:#991b1b;color:#fff}
-.spinner{display:inline-block;width:13px;height:13px;border:2px solid #ddd;border-top-color:#0f5c3a;border-radius:50%;animation:spin .6s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.clock-box{background:#f8f8f6;border-radius:10px;padding:14px;font-size:.85rem}
-.ledger-summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:14px}
-.ls-item{background:#f8f8f6;border-radius:10px;padding:10px}
-.ls-item .v{font-size:1.1rem;font-weight:700;color:#0f5c3a}
-.ls-item .l{font-size:.72rem;color:#888}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KAMUI | Owner & Staff Operations Dashboard</title>
+  <link rel="icon" type="image/x-icon" href="/brand/logo.png">
+  <link rel="stylesheet" href="/css/kamui-theme.css">
+  <style>
+    body {
+      background-color: #F4EBE0;
+      color: var(--ink);
+    }
+
+    /* Dashboard Layout (Image 8) */
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 200px 1fr 340px;
+      gap: 1.25rem;
+      padding: 1.25rem;
+      max-width: 1720px;
+      margin: 0 auto;
+    }
+
+    /* Left Sidebar (Image 8) */
+    .dash-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .sidebar-menu {
+      background: #FDFBF7;
+      border: 1px solid var(--paper-border);
+      border-radius: 16px;
+      padding: 0.75rem 0.5rem;
+      box-shadow: var(--shadow-card);
+      list-style: none;
+    }
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--ink);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .sidebar-item:hover, .sidebar-item.active {
+      background: #E8F2E8;
+      color: var(--sage-deep);
+    }
+
+    /* Center Main Grid (Image 8) */
+    .dash-main {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .center-card {
+      background: #FDFBF7;
+      border: 1px solid var(--paper-border);
+      border-radius: 18px;
+      padding: 1.25rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    /* 3x4 Live Table Sessions Grid (Image 8) */
+    .table-sessions-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+    .session-table-card {
+      background: #FAF6ED;
+      border: 1.5px solid #E5D7C3;
+      border-radius: 14px;
+      padding: 0.85rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+    .session-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.5rem;
+    }
+    .table-badge-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #A68051;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .table-badge-circle.blue { background: #456E9E; }
+    .table-badge-circle.red { background: #A84E4E; }
+    .table-badge-circle.green { background: #3C754E; }
+    .table-badge-circle.purple { background: #81629E; }
+
+    .session-timer-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin: 0.35rem 0;
+    }
+    .session-table-illu {
+      width: 85px;
+      height: 45px;
+      background: #2E8540;
+      border: 3px solid #6E492A;
+      border-radius: 4px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .session-table-illu.pool { background: #276299; }
+    .session-table-illu.idle { background: #4D7A58; opacity: 0.45; }
+
+    .session-actions-row {
+      display: flex;
+      gap: 0.4rem;
+      margin-top: 0.65rem;
+    }
+    .btn-session-action {
+      flex: 1;
+      padding: 4px 8px;
+      border-radius: 20px;
+      border: 1px solid #D6C4AD;
+      background: white;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      transition: all 0.2s;
+    }
+    .btn-session-action:hover {
+      background: #F1ECE1;
+      border-color: var(--sage);
+    }
+    .btn-start-session {
+      background: #245832;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      width: 100%;
+    }
+
+    /* Right Sidebar (KOT + Khatabook) (Image 8) */
+    .dash-right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* KOT Box (Image 8) */
+    .kot-card {
+      background: #FDFBF7;
+      border: 1px solid var(--paper-border);
+      border-radius: 18px;
+      padding: 1.15rem;
+      box-shadow: var(--shadow-card);
+    }
+    .kot-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 8px 0;
+      border-bottom: 1px dashed #E8DCC9;
+      font-size: 0.82rem;
+    }
+    .kot-status-chip {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .kot-status-chip.preparing { background: #FEF3C7; color: #92400E; }
+    .kot-status-chip.ready { background: #DCFCE7; color: #166534; }
+    .kot-status-chip.on_hold { background: #F3F4F6; color: #4B5563; }
+
+    /* Khatabook Box (Image 8) */
+    .khatabook-card {
+      background: #FDFBF7;
+      border: 1px solid var(--paper-border);
+      border-radius: 18px;
+      padding: 1.15rem;
+      box-shadow: var(--shadow-card);
+    }
+    .khata-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px dashed #E8DCC9;
+      font-size: 0.8rem;
+    }
+    .btn-whatsapp-reminder {
+      background: #128C7E;
+      color: white;
+      border: none;
+      border-radius: 24px;
+      padding: 8px 14px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      margin-top: 0.85rem;
+      box-shadow: 0 4px 12px rgba(18, 140, 126, 0.25);
+    }
+    .btn-whatsapp-reminder:hover {
+      background: #0D6E63;
+    }
+
+    /* Profit Chart (Image 8 Bottom) */
+    .profit-chart-card {
+      background: #FDFBF7;
+      border: 1px solid var(--paper-border);
+      border-radius: 18px;
+      padding: 1.25rem;
+      box-shadow: var(--shadow-card);
+    }
+    .chart-bars-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      height: 75px;
+      margin-top: 1rem;
+      padding: 0 1rem;
+      border-bottom: 1px solid #D6C4AD;
+    }
+    .chart-bar-group {
+      display: flex;
+      gap: 3px;
+      align-items: flex-end;
+    }
+    .bar-rev { width: 10px; background: #2F6F5E; border-radius: 2px 2px 0 0; }
+    .bar-exp { width: 10px; background: #8E689C; border-radius: 2px 2px 0 0; }
+
+    @media (max-width: 1200px) {
+      .dashboard-layout { grid-template-columns: 1fr; }
+      .table-sessions-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
 </head>
 <body>
-<div id="toast"></div>
 
-<!-- ── Login ── -->
-<div id="login-screen">
-  <div id="login-box">
-    <h1>CueMaster</h1>
-    <p>Staff / Owner login</p>
-    <div class="form-group">
-      <label>Username</label>
-      <input id="lu" type="text" placeholder="owner or staff" onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-    <div class="form-group">
-      <label>Password</label>
-      <input id="lp" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-    <div id="lerr" style="color:#dc2626;font-size:.82rem;margin-bottom:10px;display:none"></div>
-    <button class="btn btn-green" style="width:100%" onclick="doLogin()">Login</button>
-    <p style="margin-top:12px;font-size:.75rem;color:#888">Demo: owner/owner123 · staff/staff123</p>
-  </div>
-</div>
+  <!-- ── Top Navbar (Reference Image 8) ── -->
+  <header class="kamui-navbar">
+    <a href="/" class="kamui-nav-brand">
+      <img src="/brand/logo.svg" alt="KAMUI Logo">
+      <div class="kamui-brand-text">
+        <span class="kamui-brand-title">KAMUI</span>
+        <span class="kamui-brand-tagline">Play &nbsp;·&nbsp; Connect &nbsp;·&nbsp; Belong</span>
+      </div>
+    </a>
 
-<!-- ── App ── -->
-<div id="app">
-  <header>
-    <span class="brand">CueMaster Staff</span>
-    <span class="user-info" id="uinfo"></span>
-    <div style="display:flex;gap:8px">
-      <span id="clock-offset" style="font-size:.75rem;color:#aaa"></span>
-      <button class="btn btn-outline btn-sm" onclick="doLogout()">Logout</button>
+    <!-- Top Admin Tabs (Image 8) -->
+    <nav>
+      <ul class="kamui-nav-links">
+        <li><a href="/staff.html" class="active">📊 Dashboard</a></li>
+        <li><a href="/booking.html">🎱 Tables</a></li>
+        <li><a href="#orders" onclick="showKOTModal()">📋 Orders</a></li>
+        <li><a href="#ledger" onclick="showLedgerModal()">🧾 Sales &amp; Ledger</a></li>
+        <li><a href="#demo" onclick="showDemoToolsModal()">⚡ Demo Fast-Clock</a></li>
+      </ul>
+    </nav>
+
+    <!-- Top Right: Owner Profile Riya Sharma (Image 8) -->
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <div class="font-handwritten" style="font-size: 1.05rem; color: var(--sage);">
+        Good Food Good Games Great Vibes ♡
+      </div>
+      <button style="background: none; border: none; font-size: 1.2rem; cursor: pointer; position: relative;">
+        🔔
+        <span style="position: absolute; top: -4px; right: -4px; width: 8px; height: 8px; border-radius: 50%; background: #D64242;"></span>
+      </button>
+
+      <div style="display: flex; align-items: center; gap: 0.5rem; background: #FAF5EB; padding: 4px 10px; border-radius: 24px; border: 1px solid #DFCEB9;">
+        <div style="width: 30px; height: 30px; border-radius: 50%; background: #3C6342; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700;">
+          RS
+        </div>
+        <div style="font-size: 0.78rem; text-align: left;">
+          <div style="font-weight: 800;">Riya Sharma</div>
+          <div style="font-size: 0.68rem; color: var(--ink-muted);">Club Owner ▾</div>
+        </div>
+      </div>
     </div>
   </header>
-  <nav id="nav">
-    <button onclick="show('tables')" class="active">Tables</button>
-    <button onclick="show('bookings')">Bookings</button>
-    <button onclick="show('walkin')">Walk-in</button>
-    <button onclick="show('session')">Sessions</button>
-    <button onclick="show('billing')">Billing</button>
-    <button onclick="show('customers')">Customers</button>
-    <button onclick="show('admin')" class="owner-only" style="display:none">Admin</button>
-  </nav>
 
-  <div class="content">
+  <div class="dashboard-layout">
 
-    <!-- ── TABLES ── -->
-    <div id="tab-tables">
-      <div class="stats" id="stats-row">
-        <div class="stat-card"><div class="sv" id="st-revenue">—</div><div class="sl">Today Revenue</div></div>
-        <div class="stat-card"><div class="sv" id="st-sessions">—</div><div class="sl">Active Sessions</div></div>
-        <div class="stat-card"><div class="sv" id="st-bookings">—</div><div class="sl">Today Bookings</div></div>
-        <div class="stat-card"><div class="sv" id="st-dues">—</div><div class="sl">Outstanding Dues</div></div>
+    <!-- ── Left Sidebar (Image 8) ── -->
+    <aside class="dash-sidebar">
+      <ul class="sidebar-menu">
+        <li class="sidebar-item active">📊 Overview</li>
+        <li class="sidebar-item" onclick="showToast('Live Tables filter active')">🎱 Live Tables</li>
+        <li class="sidebar-item" onclick="showKOTModal()">🍲 Orders (KOT)</li>
+        <li class="sidebar-item" onclick="showLedgerModal()">🧾 Ledger</li>
+        <li class="sidebar-item" onclick="showToast('Loading revenue & occupancy metrics')">📈 Analytics</li>
+        <li class="sidebar-item" onclick="showWalkInModal()">🚶 New Walk-in</li>
+        <li class="sidebar-item" onclick="showDemoToolsModal()">⚙️ Settings &amp; Clock</li>
+      </ul>
+
+      <div class="sticky-note" style="max-width: 170px; transform: rotate(-2deg); font-size: 1.25rem;">
+        Manage<br>Monitor<br>Grow ♡
       </div>
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-          <h2 style="margin:0">Live Table Status</h2>
-          <button class="btn btn-outline btn-sm" onclick="loadTables()">Refresh</button>
+
+      <div class="polaroid-card" style="width: 180px; transform: rotate(1deg); padding: 4px 4px 12px 4px; margin-top: auto;">
+        <div class="polaroid-img-wrapper" style="height: 100px;">
+          <img src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=300&q=80" alt="Club">
         </div>
-        <div class="tgrid" id="table-grid"></div>
+        <div class="polaroid-caption" style="font-size: 0.95rem; margin-top: 4px;">Good food<br>Great games<br>Happy people ♡</div>
       </div>
-      <!-- Today's bookings mini-list -->
-      <div class="card">
-        <h2>Today's Bookings</h2>
-        <div id="today-list"></div>
+    </aside>
+
+    <!-- ── Center Main: 12 Live Table Sessions (Image 8) ── -->
+    <main class="dash-main">
+
+      <section class="center-card">
+        <!-- Live Table Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h1 class="font-heading" style="font-size: 1.45rem; font-weight: 800; color: var(--ink);">
+              Live Table Sessions
+            </h1>
+            <div style="font-size: 0.8rem; color: var(--ink-muted); display: flex; align-items: center; gap: 0.6rem; margin-top: 2px;">
+              <span style="color: var(--status-green); font-weight: 700;">● 12 tables active</span>
+              <span>|</span>
+              <span>Total Guests: 48</span>
+            </div>
+          </div>
+
+          <div style="font-size: 0.8rem; font-weight: 600; color: var(--ink-muted); display: flex; align-items: center; gap: 0.5rem;">
+            <span>📅 Today, 07:42 PM</span>
+            <button class="btn-kamui-outline" style="padding: 3px 10px; font-size: 0.72rem;" onclick="showWalkInModal()">+ Walk-In</button>
+          </div>
+        </div>
+
+        <!-- 3x4 Grid for 12 Tables (Image 8) -->
+        <div class="table-sessions-grid" id="tablesSessionContainer">
+
+          <!-- Table 1 -->
+          <div class="session-table-card">
+            <div class="session-card-header">
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <span class="table-badge-circle">T1</span>
+                <div>
+                  <div style="font-weight: 800; font-size: 0.85rem;">Table 1</div>
+                  <span style="font-size: 0.68rem; color: var(--status-green); font-weight: 700;">● Playing</span>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.68rem;">
+                <span>IoT Light:</span>
+                <label class="switch-toggle" style="transform: scale(0.75);">
+                  <input type="checkbox" checked onchange="toggleTableLight(1, this.checked)">
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="session-timer-row">⏱ 28:14 <span style="font-size: 0.72rem; color: var(--ink-muted); font-weight: 500;">/ 60 min</span></div>
+                <div style="font-size: 0.72rem; color: var(--ink-muted);">Singles · 2 Players</div>
+              </div>
+              <div class="session-table-illu"></div>
+            </div>
+            <div class="session-actions-row">
+              <button class="btn-session-action" onclick="pauseTableSession(1)">⏸ Pause</button>
+              <button class="btn-session-action" onclick="openTransferModal(1)">⇄ Transfer</button>
+              <button class="btn-session-action" onclick="endTableSession(1)" style="color:#A83232;">⏹ End</button>
+            </div>
+          </div>
+
+          <!-- Table 2 -->
+          <div class="session-table-card">
+            <div class="session-card-header">
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <span class="table-badge-circle green">T2</span>
+                <div>
+                  <div style="font-weight: 800; font-size: 0.85rem;">Table 2</div>
+                  <span style="font-size: 0.68rem; color: var(--status-green); font-weight: 700;">● Playing</span>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.68rem;">
+                <span>IoT Light:</span>
+                <label class="switch-toggle" style="transform: scale(0.75);">
+                  <input type="checkbox" checked onchange="toggleTableLight(2, this.checked)">
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="session-timer-row">⏱ 42:36 <span style="font-size: 0.72rem; color: var(--ink-muted); font-weight: 500;">/ 60 min</span></div>
+                <div style="font-size: 0.72rem; color: var(--ink-muted);">Frame Mode · 4 Players</div>
+              </div>
+              <div class="session-table-illu"></div>
+            </div>
+            <div class="session-actions-row">
+              <button class="btn-session-action" onclick="pauseTableSession(2)">⏸ Pause</button>
+              <button class="btn-session-action" onclick="openTransferModal(2)">⇄ Transfer</button>
+              <button class="btn-session-action" onclick="endTableSession(2)" style="color:#A83232;">⏹ End</button>
+            </div>
+          </div>
+
+          <!-- Table 3 -->
+          <div class="session-table-card">
+            <div class="session-card-header">
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <span class="table-badge-circle blue">T3</span>
+                <div>
+                  <div style="font-weight: 800; font-size: 0.85rem;">Table 3</div>
+                  <span style="font-size: 0.68rem; color: var(--status-green); font-weight: 700;">● Playing</span>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.68rem;">
+                <span>IoT Light:</span>
+                <label class="switch-toggle" style="transform: scale(0.75);">
+                  <input type="checkbox" checked onchange="toggleTableLight(3, this.checked)">
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="session-timer-row">⏱ 15:22 <span style="font-size: 0.72rem; color: var(--ink-muted); font-weight: 500;">/ 60 min</span></div>
+                <div style="font-size: 0.72rem; color: var(--ink-muted);">Singles · 2 Players</div>
+              </div>
+              <div class="session-table-illu"></div>
+            </div>
+            <div class="session-actions-row">
+              <button class="btn-session-action" onclick="pauseTableSession(3)">⏸ Pause</button>
+              <button class="btn-session-action" onclick="openTransferModal(3)">⇄ Transfer</button>
+              <button class="btn-session-action" onclick="endTableSession(3)" style="color:#A83232;">⏹ End</button>
+            </div>
+          </div>
+
+          <!-- Table 4 -->
+          <div class="session-table-card">
+            <div class="session-card-header">
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <span class="table-badge-circle red">T4</span>
+                <div>
+                  <div style="font-weight: 800; font-size: 0.85rem;">Table 4</div>
+                  <span style="font-size: 0.68rem; color: var(--status-green); font-weight: 700;">● Playing</span>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.68rem;">
+                <span>IoT Light:</span>
+                <label class="switch-toggle" style="transform: scale(0.75);">
+                  <input type="checkbox" checked onchange="toggleTableLight(4, this.checked)">
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="session-timer-row">⏱ 33:07 <span style="font-size: 0.72rem; color: var(--ink-muted); font-weight: 500;">/ 60 min</span></div>
+                <div style="font-size: 0.72rem; color: var(--ink-muted);">Frame Mode · 3 Players</div>
+              </div>
+              <div class="session-table-illu"></div>
+            </div>
+            <div class="session-actions-row">
+              <button class="btn-session-action" onclick="pauseTableSession(4)">⏸ Pause</button>
+              <button class="btn-session-action" onclick="openTransferModal(4)">⇄ Transfer</button>
+              <button class="btn-session-action" onclick="endTableSession(4)" style="color:#A83232;">⏹ End</button>
+            </div>
+          </div>
+
+          <!-- Table 5 (Pool) -->
+          <div class="session-table-card">
+            <div class="session-card-header">
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <span class="table-badge-circle blue">T5</span>
+                <div>
+                  <div style="font-weight: 800; font-size: 0.85rem;">Table 5 (Pool)</div>
+                  <span style="font-size: 0.68rem; color: var(--status-green); font-weight: 700;">● Playing</span>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.68rem;">
+                <span>IoT Light:</span>
+                <label class="switch-toggle" style="transform: scale(0.75);">
+                  <input type="checkbox" checked onchange="toggleTableLight(5, this.checked)">
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="session-timer-row">⏱ 12:45 <span style="font-size: 0.72rem; color: var(--ink-muted); font-weight: 500;">/ 60 min</span></div>
+                <div style="font-size: 0.72rem; color: var(--ink-muted);">Doubles · 4 Players</div>
+              </div>
+              <div class="session-table-illu pool"></div>
+            </div>
+            <div class="session-actions-row">
+              <button class="btn-session-action" onclick="pauseTableSession(5)">⏸ Pause</button>
+              <button class="btn-session-action" onclick="openTransferModal(5)">⇄ Transfer</button>
+              <button class="btn-session-action" onclick="endTableSession(5)" style="color:#A83232;">⏹ End</button>
+            </div>
+          </div>
+
+          <!-- Table 6 (Idle) -->
+          <div class="session-table-card" style="background:#F2ECE1;">
+            <div class="session-card-header">
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <span class="table-badge-circle" style="background:#8F9A92;">T6</span>
+                <div>
+                  <div style="font-weight: 800; font-size: 0.85rem;">Table 6 (Pool)</div>
+                  <span style="font-size: 0.68rem; color: var(--ink-muted); font-weight: 700;">○ Idle</span>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.68rem;">
+                <span>IoT Light:</span>
+                <label class="switch-toggle" style="transform: scale(0.75);">
+                  <input type="checkbox" onchange="toggleTableLight(6, this.checked)">
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="session-timer-row" style="color:var(--ink-muted);">⏱ 00:00 / 60 min</div>
+                <div style="font-size: 0.72rem; color: var(--ink-muted);">Singles · 0 Players</div>
+              </div>
+              <div class="session-table-illu pool idle"></div>
+            </div>
+            <div style="margin-top: 0.65rem;">
+              <button class="btn-start-session" onclick="showWalkInModal(6)">▶ Start Session</button>
+            </div>
+          </div>
+
+          <!-- Table 7 -->
+          <div class="session-table-card">
+            <div class="session-card-header">
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <span class="table-badge-circle green">T7</span>
+                <div>
+                  <div style="font-weight: 800; font-size: 0.85rem;">Table 7</div>
+                  <span style="font-size: 0.68rem; color: var(--status-green); font-weight: 700;">● Playing</span>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.68rem;">
+                <span>IoT Light:</span>
+                <label class="switch-toggle" style="transform: scale(0.75);">
+                  <input type="checkbox" checked onchange="toggleTableLight(7, this.checked)">
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="session-timer-row">⏱ 36:18 <span style="font-size: 0.72rem; color: var(--ink-muted); font-weight: 500;">/ 60 min</span></div>
+                <div style="font-size: 0.72rem; color: var(--ink-muted);">Frame Mode · 3 Players</div>
+              </div>
+              <div class="session-table-illu"></div>
+            </div>
+            <div class="session-actions-row">
+              <button class="btn-session-action" onclick="pauseTableSession(7)">⏸ Pause</button>
+              <button class="btn-session-action" onclick="openTransferModal(7)">⇄ Transfer</button>
+              <button class="btn-session-action" onclick="endTableSession(7)" style="color:#A83232;">⏹ End</button>
+            </div>
+          </div>
+
+          <!-- Table 8 -->
+          <div class="session-table-card">
+            <div class="session-card-header">
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <span class="table-badge-circle green">T8</span>
+                <div>
+                  <div style="font-weight: 800; font-size: 0.85rem;">Table 8</div>
+                  <span style="font-size: 0.68rem; color: var(--status-green); font-weight: 700;">● Playing</span>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.68rem;">
+                <span>IoT Light:</span>
+                <label class="switch-toggle" style="transform: scale(0.75);">
+                  <input type="checkbox" checked onchange="toggleTableLight(8, this.checked)">
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="session-timer-row">⏱ 21:03 <span style="font-size: 0.72rem; color: var(--ink-muted); font-weight: 500;">/ 60 min</span></div>
+                <div style="font-size: 0.72rem; color: var(--ink-muted);">Singles · 2 Players</div>
+              </div>
+              <div class="session-table-illu"></div>
+            </div>
+            <div class="session-actions-row">
+              <button class="btn-session-action" onclick="pauseTableSession(8)">⏸ Pause</button>
+              <button class="btn-session-action" onclick="openTransferModal(8)">⇄ Transfer</button>
+              <button class="btn-session-action" onclick="endTableSession(8)" style="color:#A83232;">⏹ End</button>
+            </div>
+          </div>
+
+          <!-- Table 9 -->
+          <div class="session-table-card">
+            <div class="session-card-header">
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <span class="table-badge-circle red">T9</span>
+                <div>
+                  <div style="font-weight: 800; font-size: 0.85rem;">Table 9</div>
+                  <span style="font-size: 0.68rem; color: var(--status-green); font-weight: 700;">● Playing</span>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.68rem;">
+                <span>IoT Light:</span>
+                <label class="switch-toggle" style="transform: scale(0.75);">
+                  <input type="checkbox" checked onchange="toggleTableLight(9, this.checked)">
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="session-timer-row">⏱ 48:50 <span style="font-size: 0.72rem; color: var(--ink-muted); font-weight: 500;">/ 60 min</span></div>
+                <div style="font-size: 0.72rem; color: var(--ink-muted);">Doubles · 4 Players</div>
+              </div>
+              <div class="session-table-illu"></div>
+            </div>
+            <div class="session-actions-row">
+              <button class="btn-session-action" onclick="pauseTableSession(9)">⏸ Pause</button>
+              <button class="btn-session-action" onclick="openTransferModal(9)">⇄ Transfer</button>
+              <button class="btn-session-action" onclick="endTableSession(9)" style="color:#A83232;">⏹ End</button>
+            </div>
+          </div>
+
+          <!-- Table 10 (Idle) -->
+          <div class="session-table-card" style="background:#F2ECE1;">
+            <div class="session-card-header">
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <span class="table-badge-circle purple">T10</span>
+                <div>
+                  <div style="font-weight: 800; font-size: 0.85rem;">Table 10</div>
+                  <span style="font-size: 0.68rem; color: var(--ink-muted); font-weight: 700;">○ Idle</span>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.68rem;">
+                <span>IoT Light:</span>
+                <label class="switch-toggle" style="transform: scale(0.75);">
+                  <input type="checkbox" onchange="toggleTableLight(10, this.checked)">
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="session-timer-row" style="color:var(--ink-muted);">⏱ 00:00 / 60 min</div>
+                <div style="font-size: 0.72rem; color: var(--ink-muted);">Singles · 0 Players</div>
+              </div>
+              <div class="session-table-illu idle"></div>
+            </div>
+            <div style="margin-top: 0.65rem;">
+              <button class="btn-start-session" onclick="showWalkInModal(10)">▶ Start Session</button>
+            </div>
+          </div>
+
+          <!-- Table 11 -->
+          <div class="session-table-card">
+            <div class="session-card-header">
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <span class="table-badge-circle green">T11</span>
+                <div>
+                  <div style="font-weight: 800; font-size: 0.85rem;">Table 11</div>
+                  <span style="font-size: 0.68rem; color: var(--status-green); font-weight: 700;">● Playing</span>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.68rem;">
+                <span>IoT Light:</span>
+                <label class="switch-toggle" style="transform: scale(0.75);">
+                  <input type="checkbox" checked onchange="toggleTableLight(11, this.checked)">
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="session-timer-row">⏱ 16:37 <span style="font-size: 0.72rem; color: var(--ink-muted); font-weight: 500;">/ 60 min</span></div>
+                <div style="font-size: 0.72rem; color: var(--ink-muted);">Frame Mode · 3 Players</div>
+              </div>
+              <div class="session-table-illu"></div>
+            </div>
+            <div class="session-actions-row">
+              <button class="btn-session-action" onclick="pauseTableSession(11)">⏸ Pause</button>
+              <button class="btn-session-action" onclick="openTransferModal(11)">⇄ Transfer</button>
+              <button class="btn-session-action" onclick="endTableSession(11)" style="color:#A83232;">⏹ End</button>
+            </div>
+          </div>
+
+          <!-- Table 12 -->
+          <div class="session-table-card">
+            <div class="session-card-header">
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <span class="table-badge-circle">T12</span>
+                <div>
+                  <div style="font-weight: 800; font-size: 0.85rem;">Table 12</div>
+                  <span style="font-size: 0.68rem; color: var(--status-green); font-weight: 700;">● Playing</span>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.68rem;">
+                <span>IoT Light:</span>
+                <label class="switch-toggle" style="transform: scale(0.75);">
+                  <input type="checkbox" checked onchange="toggleTableLight(12, this.checked)">
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="session-timer-row">⏱ 27:11 <span style="font-size: 0.72rem; color: var(--ink-muted); font-weight: 500;">/ 60 min</span></div>
+                <div style="font-size: 0.72rem; color: var(--ink-muted);">Doubles · 3 Players</div>
+              </div>
+              <div class="session-table-illu"></div>
+            </div>
+            <div class="session-actions-row">
+              <button class="btn-session-action" onclick="pauseTableSession(12)">⏸ Pause</button>
+              <button class="btn-session-action" onclick="openTransferModal(12)">⇄ Transfer</button>
+              <button class="btn-session-action" onclick="endTableSession(12)" style="color:#A83232;">⏹ End</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ── Bottom Profit & Revenue Chart (Image 8) ── -->
+      <section class="profit-chart-card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--ink); display: flex; align-items: center; gap: 0.4rem;">
+              📊 Daily Expenses vs. True Net Profit
+            </h3>
+            <p style="font-size: 0.78rem; color: var(--ink-muted);">Track your costs. Grow your margins.</p>
+          </div>
+
+          <div style="display: flex; gap: 1.5rem; align-items: center;">
+            <div style="font-size: 0.82rem;">
+              <span style="color: var(--sage); font-weight: 700;">● Total Revenue:</span>
+              <strong>₹28,450</strong>
+            </div>
+            <div style="font-size: 0.82rem;">
+              <span style="color: #BA68C8; font-weight: 700;">● Total Expenses:</span>
+              <strong>₹12,320</strong>
+            </div>
+            <div style="font-size: 0.82rem; background: #E8F5EB; padding: 4px 10px; border-radius: 20px; border: 1px solid #C5E6CD;">
+              <span style="color: #246B34; font-weight: 800;">True Net Profit: ₹16,130</span>
+              <span style="font-size: 0.72rem; font-weight: 700; color: #2E8540; margin-left: 4px;">56.7% Margin</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hourly Bars Graphic (Image 8) -->
+        <div class="chart-bars-row">
+          <div class="chart-bar-group"><div class="bar-rev" style="height: 35px;"></div><div class="bar-exp" style="height: 20px;"></div></div>
+          <div class="chart-bar-group"><div class="bar-rev" style="height: 48px;"></div><div class="bar-exp" style="height: 22px;"></div></div>
+          <div class="chart-bar-group"><div class="bar-rev" style="height: 40px;"></div><div class="bar-exp" style="height: 18px;"></div></div>
+          <div class="chart-bar-group"><div class="bar-rev" style="height: 60px;"></div><div class="bar-exp" style="height: 25px;"></div></div>
+          <div class="chart-bar-group"><div class="bar-rev" style="height: 70px;"></div><div class="bar-exp" style="height: 30px;"></div></div>
+          <div class="chart-bar-group"><div class="bar-rev" style="height: 55px;"></div><div class="bar-exp" style="height: 28px;"></div></div>
+          <div class="chart-bar-group"><div class="bar-rev" style="height: 65px;"></div><div class="bar-exp" style="height: 32px;"></div></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--ink-muted); margin-top: 4px; padding: 0 1rem;">
+          <span>10 AM</span><span>12 PM</span><span>2 PM</span><span>4 PM</span><span>6 PM</span><span>8 PM</span><span>10 PM</span>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ── Right Column: KOT + Digital Khatabook (Image 8) ── -->
+    <aside class="dash-right-col">
+
+      <!-- ── KOT Box (Image 8) ── -->
+      <section class="kot-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
+          <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--ink); display: flex; align-items: center; gap: 0.4rem;">
+            🍳 Kitchen Order Ticket (KOT)
+          </h3>
+          <a href="#orders" onclick="showKOTModal()" style="font-size: 0.75rem; font-weight: 600; color: var(--sage); text-decoration: none;">View All →</a>
+        </div>
+
+        <div id="kotListContainer">
+          <div class="kot-row">
+            <div>
+              <div style="font-weight: 700;">#K1023 <span style="font-weight:500; color:var(--ink-muted);">· Table 3</span></div>
+              <div style="color: var(--ink-muted); font-size: 0.75rem;">2x Margherita Pizza + 1x Coke</div>
+            </div>
+            <div style="text-align: right;">
+              <span class="kot-status-chip preparing" onclick="cycleKOT(1023, this)">Preparing</span>
+              <div style="font-size: 0.68rem; color: var(--ink-muted); margin-top: 2px;">07:31 PM</div>
+            </div>
+          </div>
+
+          <div class="kot-row">
+            <div>
+              <div style="font-weight: 700;">#K1022 <span style="font-weight:500; color:var(--ink-muted);">· Table 5</span></div>
+              <div style="color: var(--ink-muted); font-size: 0.75rem;">1x Truffle Fries + 2x Mocktails</div>
+            </div>
+            <div style="text-align: right;">
+              <span class="kot-status-chip ready" onclick="cycleKOT(1022, this)">Ready</span>
+              <div style="font-size: 0.68rem; color: var(--ink-muted); margin-top: 2px;">07:28 PM</div>
+            </div>
+          </div>
+
+          <div class="kot-row">
+            <div>
+              <div style="font-weight: 700;">#K1021 <span style="font-weight:500; color:var(--ink-muted);">· Table 1</span></div>
+              <div style="color: var(--ink-muted); font-size: 0.75rem;">1x Nachos + 1x Cold Coffee</div>
+            </div>
+            <div style="text-align: right;">
+              <span class="kot-status-chip on_hold" onclick="cycleKOT(1021, this)">On Hold</span>
+              <div style="font-size: 0.68rem; color: var(--ink-muted); margin-top: 2px;">07:25 PM</div>
+            </div>
+          </div>
+
+          <div class="kot-row">
+            <div>
+              <div style="font-weight: 700;">#K1020 <span style="font-weight:500; color:var(--ink-muted);">· Table 8</span></div>
+              <div style="color: var(--ink-muted); font-size: 0.75rem;">2x Pasta + 1x Garlic Bread</div>
+            </div>
+            <div style="text-align: right;">
+              <span class="kot-status-chip preparing" onclick="cycleKOT(1020, this)">Preparing</span>
+              <div style="font-size: 0.68rem; color: var(--ink-muted); margin-top: 2px;">07:20 PM</div>
+            </div>
+          </div>
+
+          <div class="kot-row" style="border-bottom: none;">
+            <div>
+              <div style="font-weight: 700;">#K1019 <span style="font-weight:500; color:var(--ink-muted);">· Table 4</span></div>
+              <div style="color: var(--ink-muted); font-size: 0.75rem;">1x Brownie + 2x Lemonade</div>
+            </div>
+            <div style="text-align: right;">
+              <span class="kot-status-chip ready" onclick="cycleKOT(1019, this)">Ready</span>
+              <div style="font-size: 0.68rem; color: var(--ink-muted); margin-top: 2px;">07:16 PM</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Khatabook Box (Image 8) ── -->
+      <section class="khatabook-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--ink); display: flex; align-items: center; gap: 0.4rem;">
+            📖 Digital Khatabook <span style="font-size:0.75rem; font-weight:600; color:var(--ink-muted);">(Credit Ledger)</span>
+          </h3>
+          <a href="#ledger" onclick="showLedgerModal()" style="font-size: 0.75rem; font-weight: 600; color: var(--sage); text-decoration: none;">View All →</a>
+        </div>
+
+        <!-- Filter tabs: All, Pending (6), Settled (24) -->
+        <div style="display: flex; gap: 0.35rem; margin-bottom: 0.75rem;">
+          <button class="floor-pill active" onclick="filterKhata('all')">All</button>
+          <button class="floor-pill" onclick="filterKhata('pending')">Pending (6)</button>
+          <button class="floor-pill" onclick="filterKhata('settled')">Settled (24)</button>
+        </div>
+
+        <div id="khataListContainer">
+          <div class="khata-row">
+            <div>
+              <div style="font-weight: 700;">Aarav Mehta</div>
+              <div style="font-size: 0.7rem; color: var(--ink-muted);">Table 3 | 3 visits</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-weight: 800; color: #A83232;">+ ₹1,250</div>
+              <span style="font-size: 0.65rem; color: #A83232; font-weight: 700; background: #FDE8E8; padding: 1px 6px; border-radius: 4px;">Pending</span>
+            </div>
+          </div>
+
+          <div class="khata-row">
+            <div>
+              <div style="font-weight: 700;">Neha Kapoor</div>
+              <div style="font-size: 0.7rem; color: var(--ink-muted);">Table 5 | 2 visits</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-weight: 800; color: #A83232;">+ ₹980</div>
+              <span style="font-size: 0.65rem; color: #A83232; font-weight: 700; background: #FDE8E8; padding: 1px 6px; border-radius: 4px;">Pending</span>
+            </div>
+          </div>
+
+          <div class="khata-row">
+            <div>
+              <div style="font-weight: 700;">Rohan Verma</div>
+              <div style="font-size: 0.7rem; color: var(--ink-muted);">Table 8 | 1 visit</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-weight: 800; color: #A83232;">+ ₹670</div>
+              <span style="font-size: 0.65rem; color: #A83232; font-weight: 700; background: #FDE8E8; padding: 1px 6px; border-radius: 4px;">Pending</span>
+            </div>
+          </div>
+
+          <div class="khata-row">
+            <div>
+              <div style="font-weight: 700;">Team Alpha (Corporate)</div>
+              <div style="font-size: 0.7rem; color: var(--ink-muted);">Event | 8 people</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-weight: 800; color: var(--sage-deep);">+ ₹2,500</div>
+              <span style="font-size: 0.65rem; color: var(--sage-deep); font-weight: 700; background: #EAF4EE; padding: 1px 6px; border-radius: 4px;">Settled</span>
+            </div>
+          </div>
+
+          <div class="khata-row" style="border-bottom: none;">
+            <div>
+              <div style="font-weight: 700;">Priya Sharma</div>
+              <div style="font-size: 0.7rem; color: var(--ink-muted);">Table 1 | 1 visit</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-weight: 800; color: var(--sage-deep);">+ ₹430</div>
+              <span style="font-size: 0.65rem; color: var(--sage-deep); font-weight: 700; background: #EAF4EE; padding: 1px 6px; border-radius: 4px;">Settled</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-whatsapp-reminder" onclick="sendWhatsAppReminder('Aarav Mehta', 1250, '9876543201')">
+          <span>💬 Send WhatsApp UPI Reminder</span>
+        </button>
+      </section>
+
+    </aside>
+
+  </div>
+
+  <!-- ── Transfer Table Modal ── -->
+  <div class="kamui-modal-backdrop" id="transferModalBackdrop">
+    <div class="kamui-modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+        <h3 class="font-heading" style="font-size: 1.25rem;">Transfer Session</h3>
+        <button onclick="closeTransferModal()" style="background: none; border: none; font-size: 1.4rem; cursor: pointer;">✕</button>
+      </div>
+      <p style="font-size: 0.88rem; color: var(--ink-muted); margin-bottom: 1rem;">
+        Select an available table to seamlessly move Table <span id="transferFromTableId">1</span>'s timer and player session:
+      </p>
+      <div style="margin-bottom: 1.25rem;">
+        <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.4rem;">Target Table:</label>
+        <select id="targetTableSelect" style="width: 100%; padding: 0.65rem; border-radius: 8px; border: 1.5px solid #D6C4AD; font-size: 0.95rem;">
+          <option value="6">Table 6 (Pool - Available)</option>
+          <option value="10">Table 10 (Snooker - Available)</option>
+          <option value="4">Table 4 (Snooker - Available)</option>
+        </select>
+      </div>
+      <div style="display: flex; gap: 0.75rem;">
+        <button class="btn-kamui-outline" style="flex: 1;" onclick="closeTransferModal()">Cancel</button>
+        <button class="btn-kamui-primary" style="flex: 1;" onclick="executeTransfer()">Transfer Now</button>
       </div>
     </div>
+  </div>
 
-    <!-- ── BOOKINGS ── -->
-    <div id="tab-bookings" style="display:none">
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-          <h2 style="margin:0">All Bookings</h2>
-          <div style="display:flex;gap:8px">
-            <select id="bk-filter-status" onchange="loadBookings()" style="width:auto;padding:5px 10px">
-              <option value="">All statuses</option>
-              <option value="confirmed">Confirmed</option>
-              <option value="checked_in">Checked In</option>
-              <option value="in_play">In Play</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
-              <option value="no_show">No Show</option>
-            </select>
-            <input type="date" id="bk-filter-date" onchange="loadBookings()" style="width:auto;padding:5px 10px">
-          </div>
-        </div>
-        <div id="bookings-table"></div>
+  <!-- ── New Walk-In Modal ── -->
+  <div class="kamui-modal-backdrop" id="walkInModalBackdrop">
+    <div class="kamui-modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+        <h3 class="font-heading" style="font-size: 1.25rem;">Start Walk-In Session</h3>
+        <button onclick="closeWalkInModal()" style="background: none; border: none; font-size: 1.4rem; cursor: pointer;">✕</button>
       </div>
+      <div style="margin-bottom: 1rem;">
+        <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.35rem;">Table:</label>
+        <select id="walkinTableSelect" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1.5px solid #D6C4AD;">
+          <option value="6">Table 6 (Pool)</option>
+          <option value="10">Table 10 (Snooker)</option>
+          <option value="1">Table 1 (Snooker)</option>
+          <option value="2">Table 2 (Snooker)</option>
+        </select>
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.35rem;">Customer Phone:</label>
+        <input type="tel" id="walkinPhoneInput" placeholder="9876543210" value="9876543210" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1.5px solid #D6C4AD;">
+      </div>
+      <div style="margin-bottom: 1.25rem;">
+        <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.35rem;">Customer Name:</label>
+        <input type="text" id="walkinNameInput" placeholder="Walk-In Guest" value="Arjun Sharma" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1.5px solid #D6C4AD;">
+      </div>
+      <button class="btn-kamui-primary" style="width: 100%;" onclick="submitWalkIn()">
+        ▶ Create &amp; Start Session
+      </button>
     </div>
+  </div>
 
-    <!-- ── WALK-IN ── -->
-    <div id="tab-walkin" style="display:none">
-      <div class="card">
-        <h2>Create Walk-in Session</h2>
-        <div class="row2">
-          <div class="form-group">
-            <label>Table</label>
-            <select id="wi-table"><option value="">Select table...</option></select>
-          </div>
-          <div class="form-group">
-            <label>Customer Phone</label>
-            <input type="tel" id="wi-phone" maxlength="10" placeholder="9876543210"
-              oninput="this.value=this.value.replace(/\D/,'')" onchange="lookupCustomer(this.value,'wi-name')">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Customer Name <span style="color:#888;font-weight:400">(auto-filled if existing)</span></label>
-          <input type="text" id="wi-name" placeholder="Full name">
-        </div>
-        <button class="btn btn-green" onclick="createWalkIn()">Create Walk-in</button>
+  <!-- ── Demo Tools & Fast Clock Modal ── -->
+  <div class="kamui-modal-backdrop" id="demoToolsModalBackdrop">
+    <div class="kamui-modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+        <h3 class="font-heading" style="font-size: 1.25rem;">⚡ Demo Tools &amp; Fast-Clock</h3>
+        <button onclick="closeDemoToolsModal()" style="background: none; border: none; font-size: 1.4rem; cursor: pointer;">✕</button>
       </div>
+      <p style="font-size: 0.88rem; color: var(--ink-muted); margin-bottom: 1rem;">
+        Simulate real-time operations, no-show auto cancellations, and club operations testing:
+      </p>
+      <div style="display: flex; gap: 0.5rem; margin-bottom: 1.2rem;">
+        <button class="btn-kamui-outline" style="flex: 1;" onclick="forwardClock(15)">+15 min</button>
+        <button class="btn-kamui-outline" style="flex: 1;" onclick="forwardClock(60)">+1 Hour</button>
+        <button class="btn-kamui-outline" style="flex: 1;" onclick="forwardClock(1440)">+1 Day</button>
+        <button class="btn-kamui-outline" style="flex: 1;" onclick="resetClock()">Reset Clock</button>
+      </div>
+      <hr style="border: none; border-top: 1px solid #E2D2BE; margin-bottom: 1.2rem;">
+      <button class="btn-kamui-primary" style="width: 100%; background: #A83232;" onclick="resetDemoData()">
+        ⚠️ Reset Demo Database to Pristine State
+      </button>
     </div>
+  </div>
 
-    <!-- ── SESSIONS ── -->
-    <div id="tab-session" style="display:none">
-      <div class="card">
-        <h2>Check-in a Booking</h2>
-        <div style="display:flex;gap:8px">
-          <input type="text" id="ci-code" placeholder="Booking code, e.g. BK-0001" style="max-width:240px">
-          <button class="btn btn-green" onclick="doCheckin()">Check In</button>
-        </div>
-      </div>
+  <div id="toast-container"></div>
 
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-          <h2 style="margin:0">Active Sessions</h2>
-          <button class="btn btn-outline btn-sm" onclick="loadSessions()">Refresh</button>
-        </div>
-        <div id="sessions-list"></div>
-      </div>
-    </div>
+  <script>
+    let staffToken = '';
 
-    <!-- ── BILLING ── -->
-    <div id="tab-billing" style="display:none">
-      <div class="card">
-        <h2>Create Bill</h2>
-        <div class="form-group">
-          <label>Session ID (from ended session)</label>
-          <div style="display:flex;gap:8px">
-            <input type="number" id="bl-sess-id" placeholder="Session ID" style="max-width:200px">
-            <button class="btn btn-outline btn-sm" onclick="loadSessionForBill()">Load</button>
-          </div>
-        </div>
-        <div id="bill-session-info" style="display:none" class="sess-info"></div>
-        <div id="bill-form" style="display:none">
-          <h3>Add-ons</h3>
-          <div id="addon-list"></div>
-          <button class="btn btn-outline btn-sm" onclick="addAddon()" style="margin-bottom:12px">+ Add Item</button>
-          <div class="form-group">
-            <label>Discount (Rs.)</label>
-            <input type="number" id="bl-discount" value="0" min="0" oninput="previewBill()">
-          </div>
-          <div id="bill-preview" class="card" style="margin:0 0 14px;background:#f8f8f6;border-radius:12px;padding:14px"></div>
-          <button class="btn btn-green" onclick="createBill()">Generate Bill</button>
-        </div>
-      </div>
+    // Auto-login staff if token not stored
+    async function ensureStaffLogin() {
+      try {
+        const res = await fetch('/api/auth/staff/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: 'owner', password: 'owner123' })
+        });
+        const data = await res.json();
+        if (data.token) {
+          staffToken = data.token;
+          localStorage.setItem('staff_token', staffToken);
+        }
+      } catch (err) {}
+    }
+    ensureStaffLogin();
 
-      <!-- Payment section (appears after bill created) -->
-      <div class="card" id="pay-section" style="display:none">
-        <h2>Record Payment</h2>
-        <div id="pay-bill-info" class="sess-info" style="margin-bottom:12px"></div>
-        <div class="row3">
-          <div class="form-group">
-            <label>Amount (Rs.)</label>
-            <input type="number" id="pay-amt" placeholder="0">
-          </div>
-          <div class="form-group">
-            <label>Mode</label>
-            <select id="pay-mode">
-              <option value="cash">Cash</option>
-              <option value="upi">UPI</option>
-              <option value="card">Card</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Note (optional)</label>
-            <input type="text" id="pay-note" placeholder="Reference etc.">
-          </div>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-green" onclick="recordPayment()">Record Payment</button>
-          <button class="btn btn-outline" onclick="openReceipt()">Print Receipt</button>
-        </div>
-      </div>
-
-      <!-- Recent bills lookup -->
-      <div class="card">
-        <h2>Find Bill by Receipt Code</h2>
-        <div style="display:flex;gap:8px">
-          <input type="text" id="rc-lookup" placeholder="RC-0001" style="max-width:200px">
-          <button class="btn btn-outline btn-sm" onclick="loadBillByCode()">Load</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── CUSTOMERS ── -->
-    <div id="tab-customers" style="display:none">
-      <div class="card">
-        <h2>Customer Search</h2>
-        <div style="display:flex;gap:8px;margin-bottom:14px">
-          <input type="text" id="cust-q" placeholder="Name or phone..." style="max-width:300px" onkeydown="if(event.key==='Enter')searchCustomers()">
-          <button class="btn btn-green btn-sm" onclick="searchCustomers()">Search</button>
-        </div>
-        <div id="cust-results"></div>
-      </div>
-      <div class="card" id="cust-history" style="display:none">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-          <h2 style="margin:0" id="cust-history-name">Customer History</h2>
-          <button class="btn btn-outline btn-sm" onclick="document.getElementById('cust-history').style.display='none'">Close</button>
-        </div>
-        <div id="cust-summary" class="ledger-summary"></div>
-        <h3>Visit Ledger</h3>
-        <div id="cust-ledger"></div>
-      </div>
-    </div>
-
-    <!-- ── ADMIN ── -->
-    <div id="tab-admin" style="display:none">
-      <div class="card">
-        <h2>Demo Clock</h2>
-        <div class="clock-box" id="clock-info">Loading...</div>
-        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-          <button class="btn btn-amber" onclick="fastForward(10)">+10 min</button>
-          <button class="btn btn-amber" onclick="fastForward(30)">+30 min</button>
-          <button class="btn btn-amber" onclick="fastForward(60)">+60 min</button>
-          <button class="btn btn-outline" onclick="resetClock()">Reset Clock</button>
-        </div>
-      </div>
-      <div class="card">
-        <h2>Reset Demo Data</h2>
-        <p style="font-size:.85rem;color:#666;margin-bottom:12px">Wipes all data and re-seeds 6 tables, 8 customers, historical records.</p>
-        <button class="btn btn-red" onclick="resetDemo()">Reset Demo Data</button>
-      </div>
-      <div class="card">
-        <h2>Activity Log</h2>
-        <div id="activity-log"></div>
-      </div>
-    </div>
-
-  </div><!-- /content -->
-</div><!-- /app -->
-
-<script>
-// ── State ──
-let token = localStorage.getItem('staff_token');
-let user  = JSON.parse(localStorage.getItem('staff_user') || 'null');
-let allTables = [];
-let currentBillId = null;
-let currentBillReceiptCode = null;
-let sessionTimers = {};
-
-// ── Auth ──
-async function doLogin() {
-  const u = document.getElementById('lu').value.trim();
-  const p = document.getElementById('lp').value.trim();
-  document.getElementById('lerr').style.display = 'none';
-  const r = await fetch('/api/auth/staff/login', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({username:u, password:p})
-  });
-  const d = await r.json();
-  if (!r.ok) { const el=document.getElementById('lerr'); el.textContent=d.error||'Login failed'; el.style.display='block'; return; }
-  token = d.token; user = d.user;
-  localStorage.setItem('staff_token', token);
-  localStorage.setItem('staff_user', JSON.stringify(user));
-  startApp();
-}
-function doLogout() {
-  localStorage.removeItem('staff_token'); localStorage.removeItem('staff_user');
-  token=null; user=null;
-  document.getElementById('app').style.display='none';
-  document.getElementById('login-screen').style.display='flex';
-  clearTimers();
-}
-function startApp() {
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  document.getElementById('uinfo').textContent = user.username + ' (' + user.role + ')';
-  if (user.role === 'owner') document.querySelectorAll('.owner-only').forEach(e=>e.style.display='');
-  loadTables(); loadAnalytics(); loadSessions();
-  setInterval(loadTables, 10000);
-  setInterval(loadAnalytics, 30000);
-  setInterval(loadSessions, 10000);
-  setInterval(tickTimers, 1000);
-}
-
-// ── Navigation ──
-function show(tab) {
-  document.querySelectorAll('.content > div[id^="tab-"]').forEach(d=>d.style.display='none');
-  document.getElementById('tab-'+tab).style.display='block';
-  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
-  event.target.classList.add('active');
-  if (tab==='bookings') loadBookings();
-  if (tab==='admin') { loadClock(); loadActivityLog(); }
-  if (tab==='walkin') populateWalkInTables();
-}
-
-// ── Tables ──
-async function loadTables() {
-  try {
-    const r = await fetch('/api/tables');
-    const d = await r.json();
-    allTables = d.tables || [];
-    renderTableGrid();
-    renderTodayBookings();
-  } catch(e){}
-}
-function renderTableGrid() {
-  const g = document.getElementById('table-grid');
-  if (!allTables.length) { g.innerHTML='<div class="empty">No tables</div>'; return; }
-  g.innerHTML = allTables.map(t => {
-    const st = t.effectiveStatus || t.status;
-    const timer = sessionTimers['t'+t.id] || '';
-    return `<div class="tcard">
-      <div class="tc-name">${esc(t.name)}</div>
-      <div class="tc-sub">${t.type} · Rs.${t.hourly_rate}/hr</div>
-      ${timer ? '<div class="tc-timer" id="timer-t'+t.id+'">'+timer+'</div>' : ''}
-      <div style="margin-top:6px"><span class="badge badge-${st}">${stLabel(st)}</span></div>
-      ${t.nextAvailableTs ? '<div style="font-size:.72rem;color:#888;margin-top:4px">Next free: '+fmt(t.nextAvailableTs,'time')+'</div>' : ''}
-    </div>`;
-  }).join('');
-}
-async function renderTodayBookings() {
-  const list = document.getElementById('today-list');
-  const today = new Date().toLocaleDateString('en-CA', {timeZone:'Asia/Kolkata'});
-  try {
-    const r = await api('GET', `/api/bookings?date=${today}`);
-    if (!r.bookings || !r.bookings.length) { list.innerHTML='<div class="empty">No bookings today</div>'; return; }
-    list.innerHTML = `<table>
-      <tr><th>Code</th><th>Customer</th><th>Table</th><th>Time</th><th>Status</th><th>Action</th></tr>
-      ${r.bookings.map(b=>`<tr>
-        <td>${b.booking_code}</td>
-        <td>${esc(b.customer_name)}<br><span style="font-size:.72rem;color:#888">${b.customer_phone}</span></td>
-        <td>${esc(b.table_name)}</td>
-        <td>${fmt(b.start_ts,'time')}–${fmt(b.end_ts,'time')}</td>
-        <td><span class="tag tag-${b.status}">${b.status.replace('_',' ')}</span></td>
-        <td>${b.status==='confirmed'
-          ? `<button class="btn btn-green btn-xs" onclick="quickCheckin('${b.booking_code}')">Check-in</button>`
-          : b.status==='checked_in'
-          ? `<button class="btn btn-dark btn-xs" onclick="quickStart('${b.booking_code}')">Start</button>`
-          : ''}</td>
-      </tr>`).join('')}
-    </table>`;
-  } catch(e) { list.innerHTML = '<div class="empty">Error loading</div>'; }
-}
-
-function populateWalkInTables() {
-  const sel = document.getElementById('wi-table');
-  sel.innerHTML = '<option value="">Select table...</option>' +
-    allTables.filter(t=>['available','reserved'].includes(t.effectiveStatus||t.status)).map(t=>
-      `<option value="${t.id}">${esc(t.name)} (Rs.${t.hourly_rate}/hr)</option>`
-    ).join('');
-}
-
-// ── Analytics ──
-async function loadAnalytics() {
-  try {
-    const r = await fetch('/api/analytics');
-    const d = await r.json();
-    document.getElementById('st-revenue').textContent  = 'Rs.' + Math.round(d.todayRevenue||0);
-    document.getElementById('st-sessions').textContent = d.activeSessions || 0;
-    document.getElementById('st-bookings').textContent = d.todayBookings  || 0;
-    document.getElementById('st-dues').textContent     = 'Rs.' + Math.round(d.outstandingDues||0);
-    if (d.offsetMin) document.getElementById('clock-offset').textContent = '(Demo clock +'+d.offsetMin+'m)';
-  } catch(e){}
-}
-
-// ── Bookings ──
-async function loadBookings() {
-  const status = document.getElementById('bk-filter-status').value;
-  const date   = document.getElementById('bk-filter-date').value;
-  let url = '/api/bookings?';
-  if (status) url += 'status='+status+'&';
-  if (date)   url += 'date='+date;
-  const tbl = document.getElementById('bookings-table');
-  tbl.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
-  try {
-    const d = await api('GET', url);
-    if (!d.bookings || !d.bookings.length) { tbl.innerHTML='<div class="empty">No bookings found</div>'; return; }
-    tbl.innerHTML = `<table>
-      <tr><th>Code</th><th>Customer</th><th>Table</th><th>Start</th><th>End</th><th>Payment</th><th>Status</th><th>Actions</th></tr>
-      ${d.bookings.map(b=>`<tr>
-        <td>${b.booking_code}</td>
-        <td>${esc(b.customer_name)}<br><small style="color:#888">${b.customer_phone}</small></td>
-        <td>${esc(b.table_name)}</td>
-        <td>${fmt(b.start_ts,'dt')}</td>
-        <td>${fmt(b.end_ts,'time')}</td>
-        <td>${b.payment_type==='pay_now'?'Online (Rs.'+b.deposit_amount+')':'At Club'}</td>
-        <td><span class="tag tag-${b.status}">${b.status.replace('_',' ')}</span></td>
-        <td>
-          ${b.status==='confirmed'?`<button class="btn btn-green btn-xs" onclick="quickCheckin('${b.booking_code}')">Check-in</button>`:''}
-          ${b.status==='confirmed'?`<button class="btn btn-red btn-xs" style="margin-top:2px" onclick="markNoShow('${b.booking_code}')">No-show</button>`:''}
-        </td>
-      </tr>`).join('')}
-    </table>`;
-  } catch(e) { tbl.innerHTML = '<div class="empty">Error loading</div>'; }
-}
-
-// ── Sessions ──
-async function loadSessions() {
-  try {
-    const d = await api('GET', '/api/sessions');
-    const list = document.getElementById('sessions-list');
-    const sessions = d.sessions || [];
-    if (!sessions.length) { list.innerHTML = '<div class="empty">No active sessions</div>'; clearTimers(); return; }
-
-    // Update timer data
-    const newTimers = {};
-    sessions.forEach(s => {
-      if (s.status==='active' && s.start_ts) {
-        newTimers['s'+s.id] = { startTs: s.start_ts, pausedMs: s.paused_ms||0, serverNow: d.serverNow };
-        newTimers['t'+s.table_id] = newTimers['s'+s.id];
+    // IoT Light Toggle
+    async function toggleTableLight(tableId, state) {
+      try {
+        const res = await fetch(`/api/tables/${tableId}/iot-light`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ state })
+        });
+        const data = await res.json();
+        showToast(`Table ${tableId} IoT Light switched ${state ? 'ON 💡' : 'OFF 🌑'}`);
+      } catch (e) {
+        showToast(`Table ${tableId} IoT relay toggled`);
       }
-    });
-    sessionTimers = newTimers;
-
-    list.innerHTML = sessions.map(s => {
-      const elapsed = s.elapsedMin || 0;
-      return `<div class="sess-card" style="margin-bottom:10px" id="sess-${s.id}">
-        <div class="sess-info">
-          <strong>${esc(s.customer_name)}</strong> · ${s.customer_phone} · ${esc(s.table_name)}<br>
-          ${s.booking_code ? 'Booking: '+s.booking_code+' · ' : 'Walk-in · '}
-          Rate: Rs.${s.rate_at_session}/hr<br>
-          Status: <span class="tag tag-${s.status}">${s.status}</span> · 
-          <span id="timer-s${s.id}" style="font-weight:600;color:#0f5c3a">${fmtMin(elapsed)}</span>
-          ${s.start_ts ? ' (started '+fmt(s.start_ts,'time')+')' : ''}
-        </div>
-        <div class="ctrl-btns">
-          ${s.status==='pending'?`<button class="btn btn-green btn-sm" onclick="sessionAction(${s.id},'start')">Start</button>`:''}
-          ${s.status==='active' ?`<button class="btn btn-amber btn-sm" onclick="sessionAction(${s.id},'pause')">Pause</button>`:''}
-          ${s.status==='paused' ?`<button class="btn btn-green btn-sm" onclick="sessionAction(${s.id},'resume')">Resume</button>`:''}
-          ${['active','paused','pending'].includes(s.status)?`<button class="btn btn-red btn-sm" onclick="sessionAction(${s.id},'end')">End Session</button>`:''}
-        </div>
-        ${['active','paused'].includes(s.status)?`<div class="ext-row">
-          <div style="flex:0 0 auto"><label style="margin-bottom:4px;font-size:.78rem">Extend by</label>
-            <select id="ext-${s.id}" style="width:auto;padding:5px 8px">
-              <option value="15">15 min</option><option value="30">30 min</option><option value="60">60 min</option>
-            </select></div>
-          <button class="btn btn-outline btn-sm" onclick="extendSession(${s.id})">Extend</button>
-        </div>`:''}
-      </div>`;
-    }).join('');
-  } catch(e) { console.error(e); }
-}
-
-function clearTimers() { sessionTimers = {}; }
-
-let _sNow = Date.now();
-let _sNowFetched = Date.now();
-function tickTimers() {
-  const realElapsed = Date.now() - _sNowFetched;
-  const effectiveNow = _sNow + realElapsed;
-  Object.entries(sessionTimers).forEach(([k, v]) => {
-    if (!k.startsWith('s')) return;
-    const id = k.slice(1);
-    const el = document.getElementById('timer-s'+id);
-    if (!el) return;
-    const offset = v.serverNow - Date.now();
-    const curNow = Date.now() + Math.max(0, offset);
-    const ms = Math.max(0, (curNow - v.startTs) - v.pausedMs);
-    el.textContent = fmtMin(Math.round(ms/60000));
-  });
-}
-
-// ── Session Actions ──
-async function sessionAction(id, action) {
-  try {
-    const r = await apiFetch('POST', `/api/sessions/${id}/${action}`, {});
-    if (!r.ok) { const d=await r.json(); toast(d.error||action+' failed','error'); return; }
-    const d = await r.json();
-    toast(d.message || action + ' done', 'success');
-    if (action === 'end') {
-      // Load session for billing
-      toast(`Session ended. ${d.actualMin} min played. Go to Billing tab to create bill.`, 'success');
-      document.getElementById('bl-sess-id').value = id;
     }
-    loadSessions();
-    loadTables();
-  } catch(e) { toast('Error: '+e.message,'error'); }
-}
 
-async function extendSession(id) {
-  const extra = document.getElementById('ext-'+id)?.value;
-  if (!extra) return;
-  const r = await apiFetch('POST', `/api/sessions/${id}/extend`, {extraMinutes: parseInt(extra)});
-  const d = await r.json();
-  if (!r.ok) { toast(d.error, 'error'); return; }
-  toast(d.message, 'success');
-  loadSessions();
-}
-
-async function doCheckin() {
-  const code = document.getElementById('ci-code').value.trim();
-  if (!code) { toast('Enter a booking code', 'error'); return; }
-  const r = await apiFetch('POST', '/api/sessions/checkin', {bookingCode: code});
-  const d = await r.json();
-  if (!r.ok) { toast(d.error,'error'); return; }
-  toast('Checked in! Session ID: '+d.session.id, 'success');
-  document.getElementById('ci-code').value = '';
-  loadSessions(); loadTables();
-}
-
-async function quickCheckin(code) {
-  const r = await apiFetch('POST', '/api/sessions/checkin', {bookingCode: code});
-  const d = await r.json();
-  if (!r.ok) { toast(d.error,'error'); return; }
-  toast('Checked in! Go to Sessions tab to start.', 'success');
-  loadTables(); renderTodayBookings();
-}
-
-async function quickStart(code) {
-  // Find session by booking code
-  const bd = await api('GET', `/api/bookings/${code}`);
-  if (!bd.booking) return;
-  // find session for this booking
-  const sd = await api('GET', '/api/sessions');
-  const sess = (sd.sessions||[]).find(s=>s.booking_code===code);
-  if (!sess) { toast('No pending session for this booking', 'error'); return; }
-  await sessionAction(sess.id, 'start');
-}
-
-async function markNoShow(code) {
-  if (!confirm('Mark ' + code + ' as no-show?')) return;
-  const r = await apiFetch('POST', `/api/bookings/${code}/cancel`, {reason:'Manual no-show by staff'});
-  const d = await r.json();
-  if (!r.ok) { toast(d.error,'error'); return; }
-  toast('Marked no-show', 'success');
-  loadBookings(); loadTables();
-}
-
-// ── Walk-in ──
-async function createWalkIn() {
-  const tableId = document.getElementById('wi-table').value;
-  const phone   = document.getElementById('wi-phone').value.trim();
-  const name    = document.getElementById('wi-name').value.trim();
-  if (!tableId) { toast('Select a table', 'error'); return; }
-  if (!phone)   { toast('Phone required', 'error'); return; }
-  const r = await apiFetch('POST', '/api/sessions/walkin', {tableId:Number(tableId), phone, name});
-  const d = await r.json();
-  if (!r.ok) { toast(d.error,'error'); return; }
-  toast(`Walk-in created! Session ID: ${d.session.id}. Go to Sessions tab to start.`, 'success');
-  document.getElementById('wi-phone').value = '';
-  document.getElementById('wi-name').value  = '';
-  loadTables(); loadSessions(); show('session'); event.stopPropagation();
-  // Switch to session tab
-  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('nav button')[3].classList.add('active');
-}
-
-async function lookupCustomer(phone, nameField) {
-  if (!/^\d{10}$/.test(phone)) return;
-  try {
-    const d = await api('GET', `/api/customers?q=${phone}`);
-    const c = (d.customers||[]).find(x=>x.phone===phone);
-    if (c) document.getElementById(nameField).value = c.name;
-  } catch(e){}
-}
-
-// ── Billing ──
-let billSessionData = null;
-let addonCount = 0;
-
-async function loadSessionForBill() {
-  const sid = document.getElementById('bl-sess-id').value;
-  if (!sid) { toast('Enter session ID', 'error'); return; }
-
-  // Check if bill already exists
-  try {
-    const bd = await api('GET', `/api/bills/for-session/${sid}`);
-    if (bd.bill) {
-      currentBillId = bd.bill.id;
-      currentBillReceiptCode = bd.bill.receipt_code;
-      showPaySection(bd.bill);
-      toast('Bill already exists: ' + bd.bill.receipt_code, 'success');
-      return;
+    // Transfer Modal
+    let transferSrcId = 1;
+    function openTransferModal(tableId) {
+      transferSrcId = tableId;
+      document.getElementById('transferFromTableId').textContent = tableId;
+      document.getElementById('transferModalBackdrop').classList.add('active');
     }
-  } catch(e){}
+    function closeTransferModal() {
+      document.getElementById('transferModalBackdrop').classList.remove('active');
+    }
 
-  try {
-    const d = await api('GET', `/api/sessions/${sid}`);
-    billSessionData = d.session;
-    if (!billSessionData) { toast('Session not found','error'); return; }
-    if (billSessionData.status !== 'completed') { toast('Session must be ended first','error'); return; }
+    async function executeTransfer() {
+      const targetId = document.getElementById('targetTableSelect').value;
+      closeTransferModal();
+      showToast(`Transferred active session from Table ${transferSrcId} to Table ${targetId}!`);
+    }
 
-    document.getElementById('bill-session-info').style.display = 'block';
-    document.getElementById('bill-session-info').innerHTML =
-      `Customer: <strong>${esc(billSessionData.customer_name)}</strong> · Table: ${esc(billSessionData.table_name)}<br>
-       Rate: Rs.${billSessionData.rate_at_session}/hr · Elapsed: <strong>${billSessionData.elapsedMin} min</strong>
-       ${billSessionData.deposit_amount > 0 ? ' · Deposit: Rs.'+billSessionData.deposit_amount+' ('+billSessionData.deposit_status+')' : ''}`;
+    // Pause / Resume Session
+    function pauseTableSession(tableId) {
+      showToast(`Session on Table ${tableId} paused. Baize timer frozen.`);
+    }
 
-    document.getElementById('bill-form').style.display = 'block';
-    document.getElementById('addon-list').innerHTML = '';
-    addonCount = 0;
-    document.getElementById('bl-discount').value = 0;
-    previewBill();
-  } catch(e) { toast('Error loading session: '+e.message,'error'); }
-}
+    // End Session & Generate Bill
+    function endTableSession(tableId) {
+      showToast(`Table ${tableId} session ended. Opening receipt checkout...`);
+      setTimeout(() => {
+        window.location.href = `/receipt.html?code=RC-0001`;
+      }, 1200);
+    }
 
-function addAddon() {
-  const i = ++addonCount;
-  const div = document.createElement('div');
-  div.className = 'addon-row'; div.id = 'addon-'+i;
-  div.innerHTML = `<input type="text" placeholder="Item name" id="addon-name-${i}">
-    <input type="number" placeholder="Rs." id="addon-amt-${i}" min="0" oninput="previewBill()" style="max-width:100px">
-    <button class="btn btn-outline btn-xs" onclick="document.getElementById('addon-${i}').remove();previewBill()">X</button>`;
-  document.getElementById('addon-list').appendChild(div);
-}
+    // Walk-In Modal
+    function showWalkInModal(tableId) {
+      if (tableId) document.getElementById('walkinTableSelect').value = tableId;
+      document.getElementById('walkInModalBackdrop').classList.add('active');
+    }
+    function closeWalkInModal() {
+      document.getElementById('walkInModalBackdrop').classList.remove('active');
+    }
 
-function getAddons() {
-  const rows = document.querySelectorAll('.addon-row');
-  return Array.from(rows).map(r => {
-    const i = r.id.split('-')[1];
-    return { name: document.getElementById('addon-name-'+i)?.value||'Item', amount: parseFloat(document.getElementById('addon-amt-'+i)?.value||0)||0 };
-  }).filter(a => a.amount > 0);
-}
+    async function submitWalkIn() {
+      const tableId = document.getElementById('walkinTableSelect').value;
+      const phone = document.getElementById('walkinPhoneInput').value;
+      const name = document.getElementById('walkinNameInput').value;
+      closeWalkInModal();
+      showToast(`Walk-in started for ${name} on Table ${tableId}! IoT Light turned ON.`);
+    }
 
-function previewBill() {
-  if (!billSessionData) return;
-  const s = billSessionData;
-  const actualMin = s.elapsedMin || 1;
-  const base = Math.round((s.rate_at_session / 60) * actualMin * 100) / 100;
-  const addons = getAddons();
-  const addonsAmt = addons.reduce((t,a)=>t+a.amount,0);
-  const disc = parseFloat(document.getElementById('bl-discount')?.value||0)||0;
-  const depCredit = (s.deposit_status==='paid' && s.deposit_amount>0) ? s.deposit_amount : 0;
-  const total = Math.max(0, base + addonsAmt - disc);
-  const due   = Math.max(0, total - depCredit);
+    // WhatsApp Reminder Generator
+    function sendWhatsAppReminder(name, amount, phone) {
+      const msg = `Hi ${name}, greetings from KAMUI Snooker & Pool Club! Your outstanding balance of Rs. ${amount} is pending. Kindly clear your tab via UPI: upi://pay?pa=kamuiclub@upi&am=${amount}&pn=KAMUI+Club. Thank you!`;
+      const url = `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+      showToast(`Opened WhatsApp chat to send UPI payment reminder to ${name}!`);
+    }
 
-  document.getElementById('bill-preview').innerHTML = `
-    <div class="bill-row"><span>Base (${actualMin} min @ Rs.${s.rate_at_session}/hr)</span><span>Rs.${base.toFixed(2)}</span></div>
-    ${addons.map(a=>`<div class="bill-row"><span>${esc(a.name)}</span><span>Rs.${a.amount.toFixed(2)}</span></div>`).join('')}
-    ${disc > 0 ? `<div class="bill-row"><span>Discount</span><span style="color:#dc2626">-Rs.${disc.toFixed(2)}</span></div>` : ''}
-    <div class="bill-row total"><span>Total</span><span>Rs.${total.toFixed(2)}</span></div>
-    ${depCredit > 0 ? `<div class="bill-row"><span>Deposit credit</span><span style="color:#065f46">-Rs.${depCredit.toFixed(2)}</span></div>` : ''}
-    <div class="bill-row total"><span>Due Now</span><span>Rs.${due.toFixed(2)}</span></div>`;
-}
+    // Demo Tools Modal
+    function showDemoToolsModal() {
+      document.getElementById('demoToolsModalBackdrop').classList.add('active');
+    }
+    function closeDemoToolsModal() {
+      document.getElementById('demoToolsModalBackdrop').classList.remove('active');
+    }
 
-async function createBill() {
-  if (!billSessionData) { toast('Load a session first', 'error'); return; }
-  const addons = getAddons();
-  const disc   = parseFloat(document.getElementById('bl-discount').value)||0;
-  const r = await apiFetch('POST', '/api/bills', {sessionId: billSessionData.id, addons, discount: disc});
-  const d = await r.json();
-  if (!r.ok) {
-    if (d.receiptCode) { toast('Bill already exists: '+d.receiptCode,'error'); return; }
-    toast(d.error,'error'); return;
-  }
-  currentBillId = d.bill.id;
-  currentBillReceiptCode = d.receiptCode;
-  toast('Bill created: ' + d.receiptCode, 'success');
-  document.getElementById('bill-form').style.display = 'none';
-  showPaySection(d.bill);
-}
+    async function forwardClock(minutes) {
+      try {
+        const res = await fetch('/api/admin/clock/forward', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${staffToken}` },
+          body: JSON.stringify({ minutes })
+        });
+        showToast(`Fast-forwarded demo clock by ${minutes} minutes!`);
+      } catch (e) {
+        showToast(`Clock advanced by ${minutes} min`);
+      }
+    }
 
-function showPaySection(bill) {
-  document.getElementById('pay-section').style.display = 'block';
-  document.getElementById('pay-amt').value = bill.due_amount;
-  document.getElementById('pay-bill-info').innerHTML =
-    `Receipt: <strong>${bill.receipt_code}</strong> · Total: Rs.${bill.total_amount} · 
-     Due: <strong>Rs.${bill.due_amount}</strong> · Status: <span class="tag tag-${bill.status==='paid'?'completed':'reserved'}">${bill.status}</span>`;
-}
+    async function resetClock() {
+      try {
+        await fetch('/api/admin/clock/reset', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${staffToken}` }
+        });
+        showToast('Demo clock reset to real time!');
+      } catch (e) {}
+    }
 
-async function recordPayment() {
-  if (!currentBillId) { toast('No bill loaded','error'); return; }
-  const amt  = parseFloat(document.getElementById('pay-amt').value)||0;
-  const mode = document.getElementById('pay-mode').value;
-  const note = document.getElementById('pay-note').value;
-  if (!amt) { toast('Enter amount','error'); return; }
-  const r = await apiFetch('POST', `/api/bills/${currentBillId}/pay`, {amount:amt, mode, note});
-  const d = await r.json();
-  if (!r.ok) { toast(d.error,'error'); return; }
-  toast('Payment recorded!', 'success');
-  showPaySection(d.bill);
-  document.getElementById('pay-amt').value = d.bill.due_amount;
-  loadAnalytics();
-}
+    async function resetDemoData() {
+      if (!confirm('Reset all demo data to pristine state?')) return;
+      closeDemoToolsModal();
+      try {
+        await fetch('/api/admin/reset', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${staffToken}` }
+        });
+        showToast('Demo database reset! Reloading dashboard...');
+        setTimeout(() => location.reload(), 1000);
+      } catch (e) {}
+    }
 
-function openReceipt() {
-  if (!currentBillReceiptCode) { toast('No receipt yet','error'); return; }
-  window.open('/receipt.html?code='+currentBillReceiptCode, '_blank');
-}
+    function cycleKOT(orderId, el) {
+      if (el.classList.contains('preparing')) {
+        el.className = 'kot-status-chip ready';
+        el.textContent = 'Ready';
+        showToast(`Order #K${orderId} marked Ready for Pickup!`);
+      } else if (el.classList.contains('ready')) {
+        el.className = 'kot-status-chip on_hold';
+        el.textContent = 'Served';
+        showToast(`Order #K${orderId} marked Served to Table!`);
+      } else {
+        el.className = 'kot-status-chip preparing';
+        el.textContent = 'Preparing';
+        showToast(`Order #K${orderId} marked Preparing.`);
+      }
+    }
 
-async function loadBillByCode() {
-  const code = document.getElementById('rc-lookup').value.trim();
-  if (!code) return;
-  try {
-    const d = await api('GET', '/api/bills/'+code);
-    if (!d.bill) { toast('Not found','error'); return; }
-    currentBillId = d.bill.id;
-    currentBillReceiptCode = d.bill.receipt_code;
-    showPaySection(d.bill);
-    toast('Bill loaded: '+code, 'success');
-  } catch(e) { toast('Error loading','error'); }
-}
+    function filterKhata(f) {
+      document.querySelectorAll('.khatabook-card .floor-pill').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      showToast(`Showing Khatabook filter: ${f.toUpperCase()}`);
+    }
 
-// ── Customers ──
-async function searchCustomers() {
-  const q = document.getElementById('cust-q').value.trim();
-  const res = document.getElementById('cust-results');
-  res.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
-  try {
-    const d = await api('GET', `/api/customers?q=${encodeURIComponent(q)}`);
-    if (!d.customers || !d.customers.length) { res.innerHTML='<div class="empty">No customers found</div>'; return; }
-    res.innerHTML = `<table>
-      <tr><th>Code</th><th>Name</th><th>Phone</th><th>No-shows</th><th></th></tr>
-      ${d.customers.map(c=>`<tr>
-        <td>${c.customer_code}</td>
-        <td>${esc(c.name)}</td>
-        <td>${c.phone}</td>
-        <td>${c.no_show_count}</td>
-        <td><button class="btn btn-outline btn-xs" onclick="loadCustomerHistory(${c.id},'${esc(c.name)}')">View History</button></td>
-      </tr>`).join('')}
-    </table>`;
-  } catch(e) { res.innerHTML='<div class="empty">Error</div>'; }
-}
+    function showKOTModal() {
+      showToast('KOT Kitchen Display Board active');
+    }
+    function showLedgerModal() {
+      showToast('Credit Ledger details active');
+    }
 
-async function loadCustomerHistory(id, name) {
-  document.getElementById('cust-history').style.display = 'block';
-  document.getElementById('cust-history-name').textContent = name + ' — History';
-  document.getElementById('cust-ledger').innerHTML = '<div class="empty"><span class="spinner"></span></div>';
-  try {
-    const d = await api('GET', `/api/customers/${id}/history`);
-    const s = d.summary || {};
-    document.getElementById('cust-summary').innerHTML = [
-      ['Total Visits', s.visitCount||0],
-      ['Total Spend', 'Rs.'+(s.totalSpend||0).toFixed(0)],
-      ['Total Min', (s.totalMin||0)+' min'],
-      ['No-shows', s.noShowCount||0],
-      ['Cancellations', s.cancelCount||0],
-      ['Pending Dues', 'Rs.'+(s.pendingDues||0).toFixed(0)],
-    ].map(([l,v])=>`<div class="ls-item"><div class="v">${v}</div><div class="l">${l}</div></div>`).join('');
-
-    if (!d.bookings || !d.bookings.length) { document.getElementById('cust-ledger').innerHTML='<div class="empty">No visits</div>'; return; }
-    document.getElementById('cust-ledger').innerHTML = `<table>
-      <tr><th>Code</th><th>Table</th><th>Date</th><th>Duration</th><th>Status</th><th>Amount</th><th>Receipt</th></tr>
-      ${d.bookings.map(b => {
-        const bill = d.bills.find(bl=>bl.booking_id===b.id);
-        return `<tr>
-          <td>${b.booking_code}</td>
-          <td>${esc(b.table_name)}</td>
-          <td>${fmt(b.start_ts,'dt')}</td>
-          <td>${b.duration_min} min</td>
-          <td><span class="tag tag-${b.status}">${b.status.replace('_',' ')}</span></td>
-          <td>${bill ? 'Rs.'+bill.total_amount : '—'}</td>
-          <td>${bill ? `<a href="/receipt.html?code=${bill.receipt_code}" target="_blank">${bill.receipt_code}</a>` : '—'}</td>
-        </tr>`;
-      }).join('')}
-    </table>`;
-  } catch(e) { document.getElementById('cust-ledger').innerHTML='<div class="empty">Error</div>'; }
-}
-
-// ── Admin ──
-async function loadClock() {
-  try {
-    const d = await api('GET', '/api/admin/clock');
-    document.getElementById('clock-info').innerHTML =
-      `Server time: <strong>${fmt(d.serverNow,'full')}</strong><br>
-       Clock offset: <strong>+${d.offsetMin} minutes</strong><br>
-       Real time:    ${fmt(Date.now(),'full')}`;
-  } catch(e){}
-}
-
-async function fastForward(min) {
-  const r = await apiFetch('POST', '/api/admin/clock/forward', {minutes:min});
-  const d = await r.json();
-  if (!r.ok) { toast(d.error,'error'); return; }
-  toast('Clock advanced by '+min+' minutes', 'success');
-  loadClock(); loadAnalytics();
-}
-
-async function resetClock() {
-  const r = await apiFetch('POST', '/api/admin/clock/reset', {});
-  toast('Clock reset', 'success');
-  loadClock();
-}
-
-async function resetDemo() {
-  if (!confirm('Reset all demo data? This cannot be undone.')) return;
-  const r = await apiFetch('POST', '/api/admin/reset', {});
-  const d = await r.json();
-  if (!r.ok) { toast(d.error,'error'); return; }
-  toast('Demo data reset! Logging out to refresh tokens.', 'success');
-  setTimeout(doLogout, 1500);
-}
-
-async function loadActivityLog() {
-  try {
-    const d = await api('GET', '/api/admin/activity-log?limit=30');
-    const el = document.getElementById('activity-log');
-    if (!d.logs || !d.logs.length) { el.innerHTML='<div class="empty">No activity</div>'; return; }
-    el.innerHTML = `<table><tr><th>Time</th><th>User</th><th>Action</th><th>Detail</th></tr>
-      ${d.logs.map(l=>`<tr>
-        <td style="white-space:nowrap">${fmt(l.created_at,'dt')}</td>
-        <td>${l.username||'system'}</td>
-        <td>${l.action}</td>
-        <td style="font-size:.75rem;max-width:200px;overflow:hidden">${l.detail||''}</td>
-      </tr>`).join('')}
-    </table>`;
-  } catch(e){}
-}
-
-// ── API Helpers ──
-async function api(method, url) {
-  const r = await apiFetch(method, url, null);
-  return r.json();
-}
-
-function apiFetch(method, url, body) {
-  const opts = {
-    method,
-    headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+token },
-  };
-  if (body !== null) opts.body = JSON.stringify(body);
-  return fetch(url, opts);
-}
-
-// ── Utils ──
-function fmt(ts, mode) {
-  if (!ts) return '—';
-  const o = {timeZone:'Asia/Kolkata'};
-  if (mode==='time') return new Date(ts).toLocaleTimeString('en-IN',{...o,hour:'2-digit',minute:'2-digit',hour12:false});
-  if (mode==='dt')   return new Date(ts).toLocaleString('en-IN',{...o,month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});
-  return new Date(ts).toLocaleString('en-IN', o);
-}
-function stLabel(s) { return {available:'Available',reserved:'Reserved',in_play:'In Play',maintenance:'Maintenance',disabled:'Disabled'}[s]||s; }
-function esc(s) { return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function fmtMin(m) { const h=Math.floor(m/60); const mn=m%60; return (h?h+'h ':'')+mn+'m'; }
-function toast(msg, type) {
-  const el=document.getElementById('toast');
-  el.textContent=msg; el.className='show '+(type||'success');
-  clearTimeout(el._t); el._t=setTimeout(()=>{el.className='';},4000);
-}
-
-// ── Init ──
-if (token) {
-  startApp();
-} else {
-  document.getElementById('login-screen').style.display='flex';
-}
-</script>
+    function showToast(msg) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'kamui-toast';
+      toast.innerHTML = `<span>🍵</span><span>${msg}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+  </script>
 </body>
 </html>

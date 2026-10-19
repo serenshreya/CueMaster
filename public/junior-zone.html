@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Junior Academy & Under-14 Zone | KAMUI</title>
+  <link rel="icon" type="image/x-icon" href="/brand/logo.png">
+  <link rel="stylesheet" href="/css/kamui-theme.css">
+  <style>
+    .junior-container {
+      max-width: 1420px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    /* Top Title Header (Image 6) */
+    .junior-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    /* 4-Column Layout (Image 6) */
+    .junior-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.4rem;
+    }
+
+    .junior-card {
+      background: #FDFBF7;
+      border: 1px solid var(--paper-border);
+      border-radius: 20px;
+      padding: 1.4rem;
+      box-shadow: var(--shadow-card);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .junior-num-badge {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--sage);
+      color: white;
+      font-weight: 800;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    /* Badge Medals in Column 1 */
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.4rem;
+      text-align: center;
+      margin: 1rem 0;
+    }
+    .badge-item {
+      background: #FAF5EB;
+      border: 1px solid #E5D8C4;
+      border-radius: 8px;
+      padding: 6px 2px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .badge-item:hover {
+      transform: translateY(-3px);
+      border-color: var(--gold);
+    }
+    .badge-icon {
+      font-size: 1.5rem;
+      margin-bottom: 2px;
+    }
+    .badge-name {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .badge-desc {
+      font-size: 0.62rem;
+      color: var(--ink-muted);
+      line-height: 1.1;
+    }
+
+    /* 4 items in Column 2 */
+    .bundle-items-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+      margin: 1rem 0;
+    }
+    .bundle-item-card {
+      background: white;
+      border: 1px solid #E5D8C4;
+      border-radius: 10px;
+      padding: 8px;
+      text-align: center;
+    }
+    .bundle-item-img {
+      width: 100%;
+      height: 55px;
+      object-fit: contain;
+      margin-bottom: 4px;
+      background: #FAF6EE;
+      border-radius: 6px;
+    }
+
+    /* Safety portal cards in Column 4 */
+    .safety-item-box {
+      background: white;
+      border: 1.5px solid #E5D9C8;
+      border-radius: 12px;
+      padding: 0.85rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      transition: all 0.2s;
+    }
+    .safety-item-box:hover {
+      border-color: var(--sage);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .safety-icon-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #EAF4EE;
+      color: var(--sage-deep);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 1100px) {
+      .junior-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 650px) {
+      .junior-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Top Navbar (Reference Image 6) ── -->
+  <header class="kamui-navbar">
+    <a href="/" class="kamui-nav-brand">
+      <img src="/brand/logo.svg" alt="KAMUI Logo">
+      <div class="kamui-brand-text">
+        <span class="kamui-brand-title">KAMUI</span>
+        <span class="kamui-brand-tagline">Play &nbsp;·&nbsp; Connect &nbsp;·&nbsp; Belong</span>
+      </div>
+    </a>
+
+    <nav>
+      <ul class="kamui-nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/booking.html">Live Booking</a></li>
+        <li><a href="/contri-hub.html">Contri Hub</a></li>
+        <li><a href="/junior-zone.html" class="active">Junior Zone</a></li>
+        <li><a href="/scan-to-get.html">Scan-to-Get</a></li>
+      </ul>
+    </nav>
+
+    <div class="kamui-nav-badges">
+      <div class="badge-live-crowd">
+        <span class="crowd-dot"></span>
+        <span>Live Crowd: Quiet</span>
+      </div>
+      <div class="badge-loyalty">
+        <span>⭐</span>
+        <span>Loyalty: 5/10 Visits</span>
+      </div>
+      <div class="badge-coins">
+        <span>🪙</span>
+        <span>Kamui Coins: 12,500</span>
+      </div>
+      <a href="/staff.html" class="badge-profile">👤</a>
+    </div>
+  </header>
+
+  <div class="junior-container">
+
+    <!-- ── Top Title Header (Image 6) ── -->
+    <div class="junior-header">
+      <div class="sticky-note" style="max-width: 190px; transform: rotate(-3deg);">
+        Little Champions<br>Big Dreams ♡ 👑
+      </div>
+
+      <div style="text-align: center;">
+        <h1 class="font-handwritten" style="font-size: 3rem; font-weight: 700; color: var(--ink); margin-bottom: 2px;">
+          Junior Academy &amp; Under-14 Zone ♡
+        </h1>
+        <p style="font-size: 0.85rem; letter-spacing: 0.2em; font-weight: 700; text-transform: uppercase; color: var(--sage);">
+          LEARN &nbsp;·&nbsp; PLAY &nbsp;·&nbsp; GROW
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 0.85rem; align-items: center;">
+        <div class="sticky-note" style="font-size: 0.95rem; transform: rotate(2deg); max-width: 150px;">
+          Good skills today,<br>Great stories tomorrow! ♡
+        </div>
+        <div class="polaroid-card" style="width: 100px; transform: rotate(-2deg); padding: 4px 4px 10px 4px;">
+          <div class="polaroid-img-wrapper" style="height: 60px;">
+            <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=300&q=80" alt="Junior play">
+          </div>
+          <div class="polaroid-caption" style="font-size: 0.82rem; margin-top: 4px;">Small Steps ♡</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 4 Main Columns (Image 6) ── -->
+    <div class="junior-grid">
+
+      <!-- ── Column 1: Grassroots Coaching & Summer Camps ── -->
+      <section class="junior-card">
+        <div style="display: flex; align-items: center; margin-bottom: 0.35rem;">
+          <span class="junior-num-badge">1</span>
+          <h2 style="font-size: 1.05rem; font-weight: 800; color: var(--ink);">
+            Grassroots Coaching &amp; Summer Camps ☀️
+          </h2>
+        </div>
+        <p style="font-size: 0.78rem; color: var(--ink-muted); margin-bottom: 0.75rem;">
+          Build skills. Gain confidence. Play with purpose.
+        </p>
+
+        <!-- Coaching Photo -->
+        <div style="width: 100%; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; margin-bottom: 0.75rem;">
+          <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=600&q=80" style="width: 100%; height: 100%; object-fit: cover;" alt="Junior Coaching">
+        </div>
+
+        <h3 style="font-size: 0.82rem; font-weight: 700; color: var(--ink);">Skill Progression Badges</h3>
+        <div class="badges-grid">
+          <div class="badge-item" onclick="showToast('Bronze Badge: Master stance, grip, and primary bridge control.')">
+            <div class="badge-icon">🥉</div>
+            <div class="badge-name">Bronze</div>
+            <div class="badge-desc">(1-3 mos)<br>Basics</div>
+          </div>
+          <div class="badge-item" onclick="showToast('Silver Badge: Accuracy in potting and cue ball positioning.')">
+            <div class="badge-icon">🥈</div>
+            <div class="badge-name">Silver</div>
+            <div class="badge-desc">(3-6 mos)<br>Accuracy</div>
+          </div>
+          <div class="badge-item" onclick="showToast('Gold Badge: Tactical safety play and consistent breaks.')">
+            <div class="badge-icon">🥇</div>
+            <div class="badge-name">Gold</div>
+            <div class="badge-desc">(6-12 mos)<br>Strategy</div>
+          </div>
+          <div class="badge-item" onclick="showToast('Elite Badge: Tournament entry and championship readiness.')">
+            <div class="badge-icon">👑</div>
+            <div class="badge-name">Elite</div>
+            <div class="badge-desc">(12+ mos)<br>Advanced</div>
+          </div>
+        </div>
+
+        <div style="background: #F8F1E4; border: 1px solid #E2D2BC; border-radius: 10px; padding: 0.65rem; margin-top: auto;">
+          <div style="font-size: 0.82rem; font-weight: 700; color: var(--ink);">🌴 Summer Camps</div>
+          <div style="font-size: 0.72rem; color: var(--ink-muted);">5+ years | Beginners to Advanced batches</div>
+          <button class="btn-kamui-outline" style="width: 100%; padding: 0.35rem; font-size: 0.75rem; margin-top: 6px;" onclick="showToast('Camp enrollment open! Registrations sent to coaching desk.')">
+            Enroll for Summer Camp
+          </button>
+        </div>
+      </section>
+
+      <!-- ── Column 2: Parent + Kid Family Bundle ── -->
+      <section class="junior-card">
+        <div style="display: flex; align-items: center; margin-bottom: 0.35rem;">
+          <span class="junior-num-badge">2</span>
+          <h2 style="font-size: 1.05rem; font-weight: 800; color: var(--ink);">
+            Parent + Kid Family Bundle ♡
+          </h2>
+        </div>
+        <p style="font-size: 0.78rem; color: var(--ink-muted); margin-bottom: 0.75rem;">
+          Everything your child needs for a great start.
+        </p>
+
+        <!-- 4 Items Grid -->
+        <div class="bundle-items-grid">
+          <div class="bundle-item-card">
+            <div style="font-size: 1.8rem; margin-bottom: 2px;">🎱</div>
+            <div style="font-weight: 700; font-size: 0.8rem;">6ft Table</div>
+            <div style="font-size: 0.68rem; color: var(--ink-muted);">Perfect junior size. Safe &amp; stable.</div>
+          </div>
+          <div class="bundle-item-card">
+            <div style="font-size: 1.8rem; margin-bottom: 2px;">🥢</div>
+            <div style="font-weight: 700; font-size: 0.8rem;">48" Junior Cue</div>
+            <div style="font-size: 0.68rem; color: var(--ink-muted);">Lightweight. Easy to handle.</div>
+          </div>
+          <div class="bundle-item-card">
+            <div style="font-size: 1.8rem; margin-bottom: 2px;">📦</div>
+            <div style="font-weight: 700; font-size: 0.8rem;">Step-Box</div>
+            <div style="font-size: 0.68rem; color: var(--ink-muted);">Helps stance &amp; balance.</div>
+          </div>
+          <div class="bundle-item-card">
+            <div style="font-size: 1.8rem; margin-bottom: 2px;">🟩</div>
+            <div style="font-weight: 700; font-size: 0.8rem;">Rip-Proof Cloth</div>
+            <div style="font-size: 0.68rem; color: var(--ink-muted);">Durable, smooth &amp; long-lasting.</div>
+          </div>
+        </div>
+
+        <div style="background: #FDF3F3; border: 1px solid #F5D3D3; border-radius: 12px; padding: 0.85rem; margin-top: auto; text-align: center;">
+          <div class="font-handwritten" style="font-size: 1.25rem; color: #9C3838; font-weight: 700;">
+            Special Family Bundle Pricing ♡
+          </div>
+          <div style="font-size: 0.75rem; color: var(--ink-muted); margin: 2px 0 6px 0;">(Parent + Child 1-Hour Slot)</div>
+          <div style="font-size: 1.2rem; font-weight: 800; color: var(--ink);">₹499 <span style="font-size: 0.75rem; font-weight: 500; text-decoration: line-through; color: #A69282;">₹850</span></div>
+          <button class="btn-kamui-primary" style="width: 100%; padding: 0.45rem; font-size: 0.8rem; margin-top: 6px;" onclick="showToast('Family Bundle added! Selected Table 6 (Kid Friendly).')">
+            Book Family Slot
+          </button>
+        </div>
+      </section>
+
+      <!-- ── Column 3: Kids Birthday Party Builder ── -->
+      <section class="junior-card">
+        <div style="display: flex; align-items: center; margin-bottom: 0.35rem;">
+          <span class="junior-num-badge">3</span>
+          <h2 style="font-size: 1.05rem; font-weight: 800; color: var(--ink);">
+            Kids Birthday Party Builder 🎂
+          </h2>
+        </div>
+        <p style="font-size: 0.78rem; color: var(--ink-muted); margin-bottom: 0.75rem;">
+          Make their special day unforgettable!
+        </p>
+
+        <!-- Party Photo -->
+        <div style="width: 100%; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; margin-bottom: 0.75rem;">
+          <img src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=600&q=80" style="width: 100%; height: 100%; object-fit: cover;" alt="Birthday party">
+        </div>
+
+        <div style="background: white; border: 1px solid #E5D8C4; border-radius: 10px; padding: 0.65rem; margin-bottom: 0.75rem; font-size: 0.75rem;">
+          <div style="font-weight: 700; margin-bottom: 3px;">🏆 Mini Tournament Included:</div>
+          <div>✓ Fun &amp; Friendly Matches</div>
+          <div>✓ Certificates &amp; Medals for all kids</div>
+          <div>✓ Dedicated Decorated Party Area</div>
+        </div>
+
+        <h4 style="font-size: 0.82rem; font-weight: 700; color: var(--ink);">Pizza Party Packages</h4>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.35rem; margin-top: 0.35rem; margin-bottom: auto;">
+          <div style="background: #FFF4E6; border: 1px solid #EED5AD; border-radius: 6px; padding: 4px; text-align: center; cursor: pointer;" onclick="showToast('Selected: Classic Pizza Package')">
+            <div style="font-weight: 800; font-size: 0.72rem;">Classic</div>
+            <div style="font-size: 0.62rem;">1 Pizza + Drinks</div>
+          </div>
+          <div style="background: #FDF0EE; border: 1px solid #F6D0C9; border-radius: 6px; padding: 4px; text-align: center; cursor: pointer;" onclick="showToast('Selected: Deluxe Pizza Package')">
+            <div style="font-weight: 800; font-size: 0.72rem;">Deluxe</div>
+            <div style="font-size: 0.62rem;">2 Pizzas + Drinks</div>
+          </div>
+          <div style="background: #EAF4EE; border: 1px solid #C4E2CC; border-radius: 6px; padding: 4px; text-align: center; cursor: pointer;" onclick="showToast('Selected: Ultimate Party Package')">
+            <div style="font-weight: 800; font-size: 0.72rem;">Ultimate</div>
+            <div style="font-size: 0.62rem;">Pizza+Cake+Play</div>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 0.75rem;">
+          <span class="font-handwritten" style="font-size: 1.05rem; color: var(--sage);">More Fun · More Friends · More Memories ♡</span>
+          <button class="btn-kamui-gold" style="width: 100%; padding: 0.45rem; font-size: 0.8rem; margin-top: 4px;" onclick="showToast('Party enquiry submitted! Event coordinator will call.')">
+            Build Custom Party
+          </button>
+        </div>
+      </section>
+
+      <!-- ── Column 4: Parent Safety Portal ── -->
+      <section class="junior-card">
+        <div style="display: flex; align-items: center; margin-bottom: 0.35rem;">
+          <span class="junior-num-badge">4</span>
+          <h2 style="font-size: 1.05rem; font-weight: 800; color: var(--ink);">
+            Parent Safety Portal 🛡️
+          </h2>
+        </div>
+        <p style="font-size: 0.78rem; color: var(--ink-muted); margin-bottom: 0.75rem;">
+          Your child's safety, our top priority.
+        </p>
+
+        <!-- 4 Safety Features (Image 6) -->
+        <div class="safety-item-box">
+          <div class="safety-icon-circle">⏰</div>
+          <div>
+            <div style="font-weight: 800; font-size: 0.85rem;">9 AM – 6 PM Safe Curfew</div>
+            <div style="font-size: 0.72rem; color: var(--ink-muted);">All juniors must be picked up within this time window.</div>
+          </div>
+        </div>
+
+        <div class="safety-item-box">
+          <div class="safety-icon-circle">📹</div>
+          <div>
+            <div style="font-weight: 800; font-size: 0.85rem;">Live CCTV Family Zone</div>
+            <div style="font-size: 0.72rem; color: var(--ink-muted);">Real-time parent monitoring for enhanced safety.</div>
+          </div>
+        </div>
+
+        <div class="safety-item-box">
+          <div class="safety-icon-circle">👛</div>
+          <div>
+            <div style="font-weight: 800; font-size: 0.85rem;">Parent Wallet ₹150 Spend Cap</div>
+            <div style="font-size: 0.72rem; color: var(--ink-muted);">No energy drinks. Controlled spending for healthy choices.</div>
+          </div>
+        </div>
+
+        <div class="safety-item-box">
+          <div class="safety-icon-circle">🔑</div>
+          <div>
+            <div style="font-weight: 800; font-size: 0.85rem;">4-Digit Pickup OTP</div>
+            <div style="font-size: 0.72rem; color: var(--ink-muted);">For verified &amp; trusted pickup by guardians: <strong style="color:var(--sage-deep);">8942</strong></div>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: auto;">
+          <span class="font-handwritten" style="font-size: 1.15rem; color: var(--sage);">
+            Safe Kids ♡ Happy Parents Stronger Community ♡
+          </span>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ── Bottom Footer Strip (Image 6) ── -->
+    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #DECBB5; margin-top: 2rem; padding-top: 1rem;">
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <img src="/brand/logo.svg" style="height: 28px;" alt="Kamui">
+        <span class="font-handwritten" style="font-size: 1.15rem; color: var(--ink-muted);">Better Skills · Brighter Futures · Together ♡</span>
+      </div>
+      <div class="font-handwritten" style="font-size: 1.15rem; color: var(--sage);">
+        ♡ Play · Learn · Grow
+      </div>
+    </div>
+
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script>
+    function showToast(msg) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'kamui-toast';
+      toast.innerHTML = `<span>🧒</span><span>${msg}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>No-App Table QR Experience | KAMUI</title>
+  <link rel="icon" type="image/x-icon" href="/brand/logo.png">
+  <link rel="stylesheet" href="/css/kamui-theme.css">
+  <style>
+    .table-qr-container {
+      max-width: 1420px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    /* Top Banner (Image 4) */
+    .table-qr-hero {
+      background: #FAF5EB;
+      border: 1px solid var(--paper-border);
+      border-radius: 20px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 1.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }
+
+    /* 3 Column Top Grid: 1 Contactless Dining, 2 Scoreboard, 3 Spin & Win */
+    .table-top-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.6rem;
+    }
+
+    .feature-box {
+      background: #FDFBF7;
+      border: 1px solid var(--paper-border);
+      border-radius: 20px;
+      padding: 1.4rem;
+      box-shadow: var(--shadow-card);
+      position: relative;
+    }
+
+    .feature-num-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--sage);
+      color: white;
+      font-weight: 800;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 0.4rem;
+    }
+
+    /* Phone Mockup for Dining Menu (Image 4) */
+    .phone-mockup {
+      background: #FFFFFF;
+      border: 4px solid #334135;
+      border-radius: 24px;
+      padding: 0.85rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      margin-top: 0.85rem;
+    }
+    .menu-cat-pills {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+    .menu-cat-btn {
+      flex: 1;
+      padding: 4px;
+      border-radius: 14px;
+      border: none;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: #EFE6D6;
+      color: var(--ink);
+      cursor: pointer;
+    }
+    .menu-cat-btn.active {
+      background: var(--sage);
+      color: white;
+    }
+    .food-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px dashed #EAE0D0;
+    }
+    .food-item-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .food-item-thumb {
+      width: 38px;
+      height: 38px;
+      border-radius: 6px;
+      background: #EFE4D2;
+      object-fit: cover;
+    }
+    .btn-add-food {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1.5px solid var(--sage);
+      background: white;
+      color: var(--sage);
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .btn-add-food:hover {
+      background: var(--sage);
+      color: white;
+    }
+
+    /* Customization chips */
+    .custom-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 14px;
+      border: 1px solid #D8C7B0;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: white;
+      cursor: pointer;
+      margin: 3px 2px;
+      transition: all 0.2s;
+    }
+    .custom-chip.selected {
+      background: var(--sage-light);
+      border-color: var(--sage);
+      color: var(--sage-deep);
+    }
+
+    /* Scoreboard Tablet (Image 4) */
+    .scoreboard-tablet {
+      background: #EAE3D2;
+      border: 5px solid #28362B;
+      border-radius: 20px;
+      padding: 1.25rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+      color: var(--ink);
+      margin-top: 0.85rem;
+    }
+    .score-duel-box {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: #FAF6ED;
+      border-radius: 14px;
+      padding: 1rem;
+      border: 1px solid #D6C5AF;
+      margin-bottom: 0.85rem;
+    }
+    .score-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+    .score-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 1px solid #C4B5A0;
+      background: white;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* Spin Wheel Canvas Container (Image 4) */
+    .spin-wheel-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 1rem 0;
+      position: relative;
+    }
+    #wheelCanvas {
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      border: 4px solid #DFCEB9;
+      transition: transform 3.5s cubic-bezier(0.15, 0.9, 0.25, 1);
+    }
+    .btn-spin-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--ink);
+      color: white;
+      border: 3px solid white;
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+
+    /* Loyalty milestone dots (Image 4) */
+    .loyalty-stepper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      margin: 1rem 0 0.5rem 0;
+    }
+    .loyalty-stepper::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #D8C7B0;
+      z-index: 1;
+    }
+    .milestone-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid #D8C7B0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 700;
+      position: relative;
+      z-index: 2;
+    }
+    .milestone-dot.completed {
+      background: var(--sage);
+      border-color: var(--sage-deep);
+      color: white;
+    }
+    .milestone-dot.target {
+      background: var(--gold);
+      border-color: var(--gold-deep);
+      color: white;
+      transform: scale(1.15);
+    }
+
+    /* Bottom Two Columns: 4 Points, 5 Contri + UI Spec */
+    .table-bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 1024px) {
+      .table-top-grid { grid-template-columns: 1fr; }
+      .table-bottom-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Top Navbar (Reference Image 4) ── -->
+  <header class="kamui-navbar">
+    <a href="/" class="kamui-nav-brand">
+      <img src="/brand/logo.svg" alt="KAMUI Logo">
+      <div class="kamui-brand-text">
+        <span class="kamui-brand-title">KAMUI</span>
+        <span class="kamui-brand-tagline">Play &nbsp;·&nbsp; Connect &nbsp;·&nbsp; Belong</span>
+      </div>
+    </a>
+
+    <nav>
+      <ul class="kamui-nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/booking.html">Live Booking</a></li>
+        <li><a href="/contri-hub.html">Contri Hub</a></li>
+        <li><a href="/junior-zone.html">Junior Zone</a></li>
+        <li><a href="/scan-to-get.html">Scan-to-Get</a></li>
+      </ul>
+    </nav>
+
+    <div class="kamui-nav-badges">
+      <div class="badge-live-crowd">
+        <span class="crowd-dot"></span>
+        <span>Live Crowd: Quiet</span>
+      </div>
+      <div class="badge-loyalty">
+        <span>⭐</span>
+        <span>Loyalty: 5/10 Visits</span>
+      </div>
+      <div class="badge-coins">
+        <span>🪙</span>
+        <span>Kamui Coins: 12,500</span>
+      </div>
+      <a href="/staff.html" class="badge-profile">👤</a>
+    </div>
+  </header>
+
+  <div class="table-qr-container">
+
+    <!-- ── Top Header Banner (Image 4) ── -->
+    <div class="table-qr-hero">
+      <div>
+        <h1 class="font-heading" style="font-size: 2.1rem; font-weight: 800; color: var(--ink);">
+          No-App Table QR Experience
+        </h1>
+        <p style="font-size: 0.85rem; letter-spacing: 0.14em; font-weight: 700; text-transform: uppercase; color: var(--sage); margin-top: 2px;">
+          ORDER &nbsp;·&nbsp; PLAY &nbsp;·&nbsp; ENJOY &nbsp;—&nbsp; ALL FROM YOUR TABLE.
+        </p>
+      </div>
+      <div class="sticky-note" style="transform: rotate(2deg); max-width: 170px;">
+        Same Table<br>More Time<br>More Fun ♡
+      </div>
+    </div>
+
+    <!-- ── Top Grid (1 Dining, 2 Scoreboard, 3 Spin & Win) ── -->
+    <div class="table-top-grid">
+
+      <!-- ── Box 1: Introvert Contactless Dining (Image 4) ── -->
+      <section class="feature-box">
+        <div style="display: flex; align-items: center; margin-bottom: 0.35rem;">
+          <span class="feature-num-badge">1</span>
+          <h2 style="font-size: 1.1rem; font-weight: 800; color: var(--ink);">Introvert Contactless Dining</h2>
+        </div>
+        <p style="font-size: 0.78rem; color: var(--ink-muted); margin-bottom: 0.5rem;">
+          Order your food, drinks and special requests without leaving your vibe.
+        </p>
+
+        <!-- Phone Mockup -->
+        <div class="phone-mockup">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-family:'Playfair Display', serif; font-size: 0.82rem; font-weight: 800;">KAMUI</span>
+            <span style="font-size: 0.72rem; background: #EFE4D2; padding: 1px 6px; border-radius: 10px; font-weight: 600;">Table 3</span>
+          </div>
+
+          <div class="menu-cat-pills">
+            <button class="menu-cat-btn active">Food</button>
+            <button class="menu-cat-btn">Drinks</button>
+            <button class="menu-cat-btn">Snacks</button>
+          </div>
+
+          <!-- Items -->
+          <div class="food-item-row">
+            <div class="food-item-info">
+              <span style="font-size: 1.2rem;">🍟</span>
+              <div>
+                <div style="font-size: 0.82rem; font-weight: 700;">Truffle Fries</div>
+                <div style="font-size: 0.75rem; color: var(--ink-muted);">₹299</div>
+              </div>
+            </div>
+            <button class="btn-add-food" onclick="addToTableCart('Truffle Fries', 299)">+</button>
+          </div>
+
+          <div class="food-item-row">
+            <div class="food-item-info">
+              <span style="font-size: 1.2rem;">🧀</span>
+              <div>
+                <div style="font-size: 0.82rem; font-weight: 700;">Loaded Nachos</div>
+                <div style="font-size: 0.75rem; color: var(--ink-muted);">₹349</div>
+              </div>
+            </div>
+            <button class="btn-add-food" onclick="addToTableCart('Loaded Nachos', 349)">+</button>
+          </div>
+
+          <div class="food-item-row">
+            <div class="food-item-info">
+              <span style="font-size: 1.2rem;">🍕</span>
+              <div>
+                <div style="font-size: 0.82rem; font-weight: 700;">Margherita Pizza</div>
+                <div style="font-size: 0.75rem; color: var(--ink-muted);">₹399</div>
+              </div>
+            </div>
+            <button class="btn-add-food" onclick="addToTableCart('Margherita Pizza', 399)">+</button>
+          </div>
+
+          <div class="food-item-row" style="border-bottom: none;">
+            <div class="food-item-info">
+              <span style="font-size: 1.2rem;">☕</span>
+              <div>
+                <div style="font-size: 0.82rem; font-weight: 700;">Cold Coffee</div>
+                <div style="font-size: 0.75rem; color: var(--ink-muted);">₹149</div>
+              </div>
+            </div>
+            <button class="btn-add-food" onclick="addToTableCart('Cold Coffee', 149)">+</button>
+          </div>
+        </div>
+
+        <!-- Customisation Chips (Image 4) -->
+        <div style="margin-top: 0.85rem;">
+          <h4 style="font-size: 0.82rem; font-weight: 700; color: var(--ink); margin-bottom: 4px;">Customise Your Food</h4>
+          <div>
+            <span class="custom-chip selected" onclick="toggleChip(this)">🧊 Less Ice</span>
+            <span class="custom-chip" onclick="toggleChip(this)">🧀 Extra Cheese</span>
+            <span class="custom-chip" onclick="toggleChip(this)">🧅 No Onion</span>
+            <span class="custom-chip" onclick="toggleChip(this)">🌶️ Less Spicy</span>
+            <span class="custom-chip" onclick="toggleChip(this)">🌿 Jain</span>
+          </div>
+          <button class="btn-kamui-primary" style="width: 100%; margin-top: 0.75rem; padding: 0.55rem;" onclick="sendKitchenOrder()">
+            🛒 Send to Kitchen (KOT)
+          </button>
+        </div>
+      </section>
+
+      <!-- ── Box 2: Live Digital Scoreboard (Image 4) ── -->
+      <section class="feature-box">
+        <div style="display: flex; align-items: center; margin-bottom: 0.35rem;">
+          <span class="feature-num-badge">2</span>
+          <h2 style="font-size: 1.1rem; font-weight: 800; color: var(--ink);">Live Digital Scoreboard</h2>
+        </div>
+        <p style="font-size: 0.78rem; color: var(--ink-muted);">
+          Real-time scores, match history, and shareable moments — all on your screen.
+        </p>
+
+        <!-- Tablet Display -->
+        <div class="scoreboard-tablet">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-size: 0.78rem; font-weight: 800; letter-spacing: 0.05em;">KAMUI LIVE</span>
+            <span style="font-size: 0.75rem; background: #DFD5C2; padding: 2px 8px; border-radius: 10px; font-weight: 700;">8-Ball Pool · Race to 7</span>
+            <span style="font-size: 0.75rem; font-weight: 600;">Table 3</span>
+          </div>
+
+          <div class="score-duel-box">
+            <!-- Player A -->
+            <div style="text-align: center;">
+              <div style="font-weight: 700; font-size: 0.88rem;">Aryan S.</div>
+              <div class="score-num" id="playerAScore" style="color: var(--sage-deep);">5</div>
+              <div style="display: flex; gap: 4px; justify-content: center;">
+                <button class="score-btn" onclick="adjustScore('A', -1)">-</button>
+                <button class="score-btn" onclick="adjustScore('A', 1)">+</button>
+              </div>
+            </div>
+
+            <!-- 8 Ball graphic in middle -->
+            <div style="font-size: 2.2rem;">🎱</div>
+
+            <!-- Player B -->
+            <div style="text-align: center;">
+              <div style="font-weight: 700; font-size: 0.88rem;">Diya K.</div>
+              <div class="score-num" id="playerBScore" style="color: #9C3838;">3</div>
+              <div style="display: flex; gap: 4px; justify-content: center;">
+                <button class="score-btn" onclick="adjustScore('B', -1)">-</button>
+                <button class="score-btn" onclick="adjustScore('B', 1)">+</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Last Shots & Match History -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.75rem; margin-bottom: 0.85rem;">
+            <div style="background: white; padding: 6px 8px; border-radius: 6px;">
+              <strong>Last Shots:</strong>
+              <div>• Aryan S. - Break <span style="color:var(--sage); font-weight:700;">+1</span></div>
+              <div>• Aryan S. - 8 Ball Shot <span style="color:var(--sage); font-weight:700;">+2</span></div>
+            </div>
+            <div style="background: white; padding: 6px 8px; border-radius: 6px;">
+              <strong>Match History:</strong>
+              <div>Aryan vs Diya: 2-5</div>
+              <div>Riya vs Sneha: 4-3</div>
+            </div>
+          </div>
+
+          <button class="btn-kamui-outline" style="width: 100%; padding: 0.5rem; background: white;" onclick="exportInstagramStory()">
+            📸 Export to Instagram Story
+          </button>
+        </div>
+
+        <div style="text-align: center; margin-top: 0.65rem;">
+          <span class="font-handwritten" style="font-size: 1.15rem; color: var(--sage);">Turn your match into a story! ♡</span>
+        </div>
+      </section>
+
+      <!-- ── Box 3: Closing-Hour Ladies Spin & Win (Image 4) ── -->
+      <section class="feature-box">
+        <div style="display: flex; align-items: center; margin-bottom: 0.35rem;">
+          <span class="feature-num-badge">3</span>
+          <h2 style="font-size: 1.1rem; font-weight: 800; color: var(--ink);">Closing-Hour Ladies Spin & Win ✨</h2>
+        </div>
+        <p style="font-size: 0.78rem; color: var(--ink-muted);">
+          Play the spin wheel after 9 PM (Thu-Sun) and win exciting rewards!
+        </p>
+
+        <!-- Spin Wheel -->
+        <div class="spin-wheel-box">
+          <canvas id="wheelCanvas" width="200" height="200"></canvas>
+          <button class="btn-spin-center" id="spinBtn" onclick="spinWheel()">SPIN</button>
+        </div>
+
+        <!-- Loyalty Tracker (Image 4) -->
+        <div style="border-top: 1px dashed #DECBB5; padding-top: 0.75rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="font-size: 0.85rem; font-weight: 700; color: var(--ink);">⭐ Loyalty Tracker</h4>
+            <span style="font-size: 0.75rem; color: var(--sage); font-weight: 600;">5/10 Visits</span>
+          </div>
+
+          <div class="loyalty-stepper">
+            <span class="milestone-dot completed">1</span>
+            <span class="milestone-dot completed">2</span>
+            <span class="milestone-dot completed">3</span>
+            <span class="milestone-dot completed">4</span>
+            <span class="milestone-dot target">5</span>
+            <span class="milestone-dot">6</span>
+            <span class="milestone-dot">7</span>
+            <span class="milestone-dot">8</span>
+            <span class="milestone-dot">9</span>
+            <span class="milestone-dot">10</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.5rem; font-size: 0.72rem;">
+            <div style="background: #FFF4E3; padding: 4px 6px; border-radius: 6px; border: 1px solid #EED5AD;">
+              <strong>5th Visit:</strong> Free Dessert 🍰
+            </div>
+            <div style="background: #EAF4EE; padding: 4px 6px; border-radius: 6px; border: 1px solid #C4E2CC;">
+              <strong>10th Visit:</strong> Free Session 🎮
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ── Bottom Grid (4 Points & Payments, 5 Contri Mini Hub) ── -->
+    <div class="table-bottom-grid">
+
+      <!-- ── Box 4: Bill Payment & Kamui Points (Image 4) ── -->
+      <section class="feature-box">
+        <div style="display: flex; align-items: center; margin-bottom: 0.35rem;">
+          <span class="feature-num-badge">4</span>
+          <h2 style="font-size: 1.1rem; font-weight: 800; color: var(--ink);">Bill Payment & Kamui Points</h2>
+        </div>
+        <p style="font-size: 0.78rem; color: var(--ink-muted); margin-bottom: 0.85rem;">
+          Spend more. Earn more. Use more.
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; text-align: center; font-size: 0.75rem; margin-bottom: 1rem;">
+          <div style="background: white; padding: 8px; border-radius: 8px; border: 1px solid #E5D9C8;">
+            <div style="font-size: 1.2rem;">🪙</div>
+            <strong>₹100 Spent</strong><br>= 10 Points
+          </div>
+          <div style="background: white; padding: 8px; border-radius: 8px; border: 1px solid #E5D9C8;">
+            <div style="font-size: 1.2rem;">📊</div>
+            <strong>Track Points</strong><br>in Profile
+          </div>
+          <div style="background: white; padding: 8px; border-radius: 8px; border: 1px solid #E5D9C8;">
+            <div style="font-size: 1.2rem;">🍹</div>
+            <strong>Redeem</strong><br>for Drinks
+          </div>
+          <div style="background: white; padding: 8px; border-radius: 8px; border: 1px solid #E5D9C8;">
+            <div style="font-size: 1.2rem;">🎁</div>
+            <strong>Unlock</strong><br>Perks & Badges
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; background: #FAF5EB; padding: 0.85rem 1.2rem; border-radius: 12px; border: 1px solid #E2D2BC;">
+          <div>
+            <div style="font-size: 0.95rem; font-weight: 700;">10,000 Points = 1 Free Lemonade 🍋</div>
+            <div style="font-size: 0.78rem; color: var(--ink-muted);">You have: 12,500 Kamui Points available</div>
+          </div>
+          <button class="btn-kamui-gold" onclick="showToast('Redeemed Free Mint Lemonade! Added to Table 3 tab.')">
+            Redeem Now
+          </button>
+        </div>
+      </section>
+
+      <!-- ── Box 5: Contri Hub Mini & Design System (Image 4) ── -->
+      <section class="feature-box">
+        <div style="display: flex; align-items: center; margin-bottom: 0.35rem;">
+          <span class="feature-num-badge">5</span>
+          <h2 style="font-size: 1.1rem; font-weight: 800; color: var(--ink);">Contri Hub & Bill Splitting</h2>
+        </div>
+        <p style="font-size: 0.78rem; color: var(--ink-muted); margin-bottom: 0.85rem;">
+          Play together. Share easily.
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; text-align: center; font-size: 0.75rem; margin-bottom: 1rem;">
+          <div style="background: white; padding: 8px; border-radius: 8px; border: 1px solid #E5D9C8;">
+            <div style="font-size: 1.2rem;">🤝</div>
+            <strong>Create / Join</strong><br>Game Rooms
+          </div>
+          <div style="background: white; padding: 8px; border-radius: 8px; border: 1px solid #E5D9C8;">
+            <div style="font-size: 1.2rem;">📜</div>
+            <strong>View Match</strong><br>History
+          </div>
+          <div style="background: white; padding: 8px; border-radius: 8px; border: 1px solid #E5D9C8;">
+            <div style="font-size: 1.2rem;">⚖️</div>
+            <strong>Split Bill</strong><br>with Friends
+          </div>
+          <div style="background: white; padding: 8px; border-radius: 8px; border: 1px solid #E5D9C8;">
+            <div style="font-size: 1.2rem;">🧾</div>
+            <strong>Track Group</strong><br>Expenses
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #DECBB5; padding-top: 0.85rem;">
+          <div style="font-size: 0.8rem; color: var(--ink-muted);">
+            Running Table 3 Balance: <strong>₹1,110</strong> (4 Players)
+          </div>
+          <a href="/contri-hub.html" class="btn-kamui-primary" style="padding: 0.5rem 1.2rem;">
+            Open Contri Hub →
+          </a>
+        </div>
+      </section>
+
+    </div>
+
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script>
+    // Draw Animated Spin Wheel on Canvas
+    const canvas = document.getElementById('wheelCanvas');
+    const ctx = canvas.getContext('2d');
+    const segments = ['Mocktail 🍹', 'Free Dessert 🍰', '₹50 Off 🎟️', 'Try Again 🎱'];
+    const colors = ['#2EA259', '#F0B6AA', '#D29F4D', '#EADDC8'];
+
+    function drawWheel() {
+      const numSegs = segments.length;
+      const arc = (2 * Math.PI) / numSegs;
+      const radius = canvas.width / 2;
+
+      for (let i = 0; i < numSegs; i++) {
+        const angle = i * arc;
+        ctx.beginPath();
+        ctx.fillStyle = colors[i];
+        ctx.moveTo(radius, radius);
+        ctx.arc(radius, radius, radius, angle, angle + arc);
+        ctx.lineTo(radius, radius);
+        ctx.fill();
+
+        ctx.save();
+        ctx.fillStyle = i === 3 ? '#333' : 'white';
+        ctx.font = 'bold 11px Inter, sans-serif';
+        ctx.translate(radius, radius);
+        ctx.rotate(angle + arc / 2);
+        ctx.textAlign = 'right';
+        ctx.fillText(segments[i], radius - 15, 4);
+        ctx.restore();
+      }
+    }
+    drawWheel();
+
+    let currentRotation = 0;
+    function spinWheel() {
+      const btn = document.getElementById('spinBtn');
+      btn.disabled = true;
+      const extraSpins = 5 + Math.floor(Math.random() * 5);
+      const randomDeg = Math.floor(Math.random() * 360);
+      currentRotation += extraSpins * 360 + randomDeg;
+      canvas.style.transform = `rotate(${currentRotation}deg)`;
+
+      setTimeout(() => {
+        btn.disabled = false;
+        showToast('Congratulations! You won: Complimentary Mocktail on Table 3! 🍹');
+      }, 3600);
+    }
+
+    // Scoreboard adjustment
+    let scoreA = 5;
+    let scoreB = 3;
+    function adjustScore(player, delta) {
+      if (player === 'A') {
+        scoreA = Math.max(0, scoreA + delta);
+        document.getElementById('playerAScore').textContent = scoreA;
+      } else {
+        scoreB = Math.max(0, scoreB + delta);
+        document.getElementById('playerBScore').textContent = scoreB;
+      }
+      showToast(`Updated score: Aryan (${scoreA}) vs Diya (${scoreB})`);
+    }
+
+    function exportInstagramStory() {
+      showToast('Generating 1080x1920 Instagram Story match graphic with Kamui branding...');
+      setTimeout(() => {
+        showToast('Match graphic ready! Download started.');
+      }, 1000);
+    }
+
+    function toggleChip(el) {
+      el.classList.toggle('selected');
+    }
+
+    let cartTotal = 0;
+    let cartItems = [];
+    function addToTableCart(name, price) {
+      cartItems.push(name);
+      cartTotal += price;
+      showToast(`Added ${name} (₹${price}) to Table 3 Cart! Total: ₹${cartTotal}`);
+    }
+
+    async function sendKitchenOrder() {
+      if (cartItems.length === 0) {
+        return showToast('Your cart is empty! Add items from the menu first.');
+      }
+      try {
+        const res = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tableId: 3,
+            itemsSummary: cartItems.join(' + '),
+            totalAmount: cartTotal
+          })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showToast(`Order #${data.order.order_code} sent to Kitchen KOT board!`);
+          cartItems = [];
+          cartTotal = 0;
+        }
+      } catch (err) {
+        showToast('Order sent to kitchen!');
+      }
+    }
+
+    function showToast(msg) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'kamui-toast';
+      toast.innerHTML = `<span>🎱</span><span>${msg}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
