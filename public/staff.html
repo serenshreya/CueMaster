@@ -119,15 +119,20 @@
       margin: 0.35rem 0;
     }
     .session-table-illu {
-      width: 85px;
-      height: 45px;
-      background: #2E8540;
-      border: 3px solid #6E492A;
-      border-radius: 4px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      width: 75px;
+      height: 55px;
+      background-image: url('/images/assets/dash_table_isometric.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
     }
-    .session-table-illu.pool { background: #276299; }
-    .session-table-illu.idle { background: #4D7A58; opacity: 0.45; }
+    .session-table-illu.pool {
+      filter: hue-rotate(180deg);
+    }
+    .session-table-illu.idle {
+      opacity: 0.35;
+      filter: grayscale(80%);
+    }
 
     .session-actions-row {
       display: flex;
@@ -277,7 +282,7 @@
   <!-- ── Top Navbar (Reference Image 8) ── -->
   <header class="kamui-navbar">
     <a href="/" class="kamui-nav-brand">
-      <img src="/brand/logo.svg" alt="KAMUI Logo">
+      <img src="/brand/logo.png" alt="KAMUI Logo">
       <div class="kamui-brand-text">
         <span class="kamui-brand-title">KAMUI</span>
         <span class="kamui-brand-tagline">Play &nbsp;·&nbsp; Connect &nbsp;·&nbsp; Belong</span>
@@ -306,9 +311,7 @@
       </button>
 
       <div style="display: flex; align-items: center; gap: 0.5rem; background: #FAF5EB; padding: 4px 10px; border-radius: 24px; border: 1px solid #DFCEB9;">
-        <div style="width: 30px; height: 30px; border-radius: 50%; background: #3C6342; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700;">
-          RS
-        </div>
+        <img src="/images/assets/dash_avatar_riya.png" alt="Riya Sharma" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;">
         <div style="font-size: 0.78rem; text-align: left;">
           <div style="font-weight: 800;">Riya Sharma</div>
           <div style="font-size: 0.68rem; color: var(--ink-muted);">Club Owner ▾</div>
@@ -337,7 +340,7 @@
 
       <div class="polaroid-card" style="width: 180px; transform: rotate(1deg); padding: 4px 4px 12px 4px; margin-top: auto;">
         <div class="polaroid-img-wrapper" style="height: 100px;">
-          <img src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=300&q=80" alt="Club">
+          <img src="/images/assets/home_polaroid_vibes.png" alt="Club">
         </div>
         <div class="polaroid-caption" style="font-size: 0.95rem; margin-top: 4px;">Good food<br>Great games<br>Happy people ♡</div>
       </div>

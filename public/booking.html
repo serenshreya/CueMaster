@@ -331,7 +331,7 @@
   <!-- ── Top Navbar (Reference Image 2) ── -->
   <header class="kamui-navbar">
     <a href="/" class="kamui-nav-brand">
-      <img src="/brand/logo.svg" alt="KAMUI Logo">
+      <img src="/brand/logo.png" alt="KAMUI Logo">
       <div class="kamui-brand-text">
         <span class="kamui-brand-title">KAMUI</span>
         <span class="kamui-brand-tagline">Play &nbsp;·&nbsp; Connect &nbsp;·&nbsp; Belong</span>
@@ -377,13 +377,8 @@
         </p>
       </div>
 
-      <div class="banner-polaroids">
-        <div class="banner-polaroid">
-          <img src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=200&q=80" alt="Snooker">
-        </div>
-        <div class="banner-polaroid">
-          <img src="https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=200&q=80" alt="PS5 Booth">
-        </div>
+      <div class="banner-polaroids" style="display: flex; align-items: center; gap: 0.75rem;">
+        <img src="/images/assets/booking_header_polaroids.png" alt="Club Vibes" style="height: 120px; border-radius: 8px; box-shadow: var(--shadow-polaroid);">
         <div class="sticky-note" style="max-width: 140px; transform: rotate(3deg); padding: 0.5rem 0.75rem; font-size: 0.95rem;">
           Good Games<br>Good People<br>Great Times ♡
         </div>
@@ -419,7 +414,7 @@
           </div>
 
           <!-- Base 3D Floor Map Render -->
-          <img src="/images/booking-floormap.jpg" alt="Kamui Interactive Floor Map">
+          <img src="/images/assets/booking_floormap_3d.png" alt="Kamui Interactive Floor Map" style="width: 100%; border-radius: 8px;">
 
           <!-- Interactive Hotspot: Table 1 (Snooker Available) -->
           <div class="map-hotspot glow-green" style="top: 52%; left: 16%; width: 50px; height: 85px;" onclick="selectTable(1)" title="Table 1 (Available)">
@@ -530,7 +525,7 @@
           <div class="table-selection-grid" id="tablesGridContainer">
             <!-- Table 1 -->
             <div class="table-select-card selected" id="cardTable1" onclick="selectTable(1)">
-              <div class="table-mini-img"></div>
+              <img src="/images/assets/table_thumb_green.png" alt="Table 1" style="width: 100%; height: 60px; object-fit: contain; margin-bottom: 6px; border-radius: 4px;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
                 <span style="font-weight: 700; font-size: 0.85rem;">Table 1 (Snooker)</span>
                 <span class="status-pill available" style="font-size: 0.7rem; padding: 1px 6px;">Available</span>
@@ -540,7 +535,7 @@
 
             <!-- Table 2 -->
             <div class="table-select-card" id="cardTable2" onclick="selectTable(2)">
-              <div class="table-mini-img"></div>
+              <img src="/images/assets/table_thumb_gold.png" alt="Table 2" style="width: 100%; height: 60px; object-fit: contain; margin-bottom: 6px; border-radius: 4px;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
                 <span style="font-weight: 700; font-size: 0.85rem;">Table 2 (Snooker)</span>
                 <span class="status-pill reserved" style="font-size: 0.7rem; padding: 1px 6px;">Reserved</span>
@@ -550,7 +545,7 @@
 
             <!-- Table 3 -->
             <div class="table-select-card occupied" id="cardTable3">
-              <div class="table-mini-img"></div>
+              <img src="/images/assets/table_thumb_red.png" alt="Table 3" style="width: 100%; height: 60px; object-fit: contain; margin-bottom: 6px; border-radius: 4px;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
                 <span style="font-weight: 700; font-size: 0.85rem;">Table 3 (Snooker)</span>
                 <span class="status-pill occupied" style="font-size: 0.7rem; padding: 1px 6px;">Occupied</span>
@@ -560,7 +555,7 @@
 
             <!-- Table 4 -->
             <div class="table-select-card" id="cardTable4" onclick="selectTable(4)">
-              <div class="table-mini-img"></div>
+              <img src="/images/assets/table_thumb_green4.png" alt="Table 4" style="width: 100%; height: 60px; object-fit: contain; margin-bottom: 6px; border-radius: 4px;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
                 <span style="font-weight: 700; font-size: 0.85rem;">Table 4 (Snooker)</span>
                 <span class="status-pill available" style="font-size: 0.7rem; padding: 1px 6px;">Available</span>
@@ -723,7 +718,7 @@
       <!-- UPI QR Simulated View -->
       <div style="text-align: center; margin-bottom: 1.25rem;">
         <div style="display: inline-block; padding: 12px; background: white; border-radius: 12px; border: 1px solid #D8C7B0; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
-          <img src="/brand/logo.svg" style="width: 140px; height: 140px;" alt="UPI QR">
+          <img src="/brand/logo.png" style="width: 140px; height: 140px;" alt="UPI QR">
         </div>
         <p style="font-size: 0.82rem; color: var(--ink-muted); margin-top: 6px;">Scan with GPay, PhonePe, Paytm, or BHIM</p>
       </div>
